@@ -58,3 +58,8 @@ To run the tests:
 
 The model should load and output a response to a request for grading an essay. While doing this you can inspect memory usage on your computer and adjust the model accordingly.
 
+## Preparing to run Python Scripts
+Make sure to install all the packages required to run the python scripts
+
+`pip install -r requirements.txt`
+
