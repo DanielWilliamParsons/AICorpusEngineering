@@ -8,7 +8,15 @@ PROJECT_ROOT="$(dirname "$(dirname "$SCRIPT_DIR")")" # path to LLM
 echo $PROJECT_ROOT
 LLAMA_BIN="$PROJECT_ROOT/llama.cpp/build/bin/llama-run"
 echo $LLAMA_BIN
-MODEL="$PROJECT_ROOT/llama-3-8b-instruct.Q4_K_M.gguf"
+MODEL_DIR="$PROJECT_ROOT"
+
+# Allow model file to be passed in as an argument, otherwise use default
+if [ -n "$1" ]; then
+  MODEL="$MODEL_DIR/$1"
+else
+  MODEL="$MODEL_DIR/Meta-Llama-3.1-8b-Instruct-Q4_K_M.gguf"
+fi
+echo $MODEL
 
 if [ ! -f "$LLAMA_BIN" ]; then
   echo "❌ llama-run not found at $LLAMA_BIN"
