@@ -3,13 +3,14 @@ import sys
 import spacy
 import re
 from pathlib import Path
+import argparse
 from concurrent.futures import ProcessPoolExecutor
 
 class SpacyTagger:
     # Defaults to smallest rule based tagger, but can be upgraded to "en_core_web_trf" (transformer) or "en_core_wb_md"
     # Retrieve on the command line with python3 -m spacy download en_core_web_trf
     def __init__(self, model: str = "en_core_web_sm"):
-        print("Creating spacy Tagger!")
+        print(f"Creating spaCy tagger with model {model}")
         self.nlp = spacy.load(model, disable=["ner", "parser"]) # Faster, POS only!
 
     def normalize_paragraphs(self, text: str):
@@ -49,7 +50,7 @@ class FileProcessor:
         # Read, process, write
         with file_path.open("r", encoding="utf-8", errors="ignore") as f:
             text = f.read()
-            print(text)
+        print(f"Tagging text in {f}")
         tagged_text = self.tagger.tag_text(text)
         with output_path.open("w", encoding="utf-8") as f:
             f.write(tagged_text)
@@ -67,25 +68,37 @@ def process_file_wrapper(args):
     processor.process_file(file_path)
 
 def main():
-    if len(sys.argv) < 3:
-        print("Usage: python tag_texts.py <input_folder> <output_folder>")
-        sys.exit(1)
+    parser = argparse.ArgumentParser(description="Tag text files using spaCy POS tagger")
+    parser.add_argument("input_folder", type=Path, help="Input folder containing text files")
+    parser.add_argument("output_folder", type=Path, help="Output folder to save tagged files")
+    parser.add_argument(
+        "--model",
+        type=str,
+        default="en_core_web_trf",
+        help="spaCy model to use (e.g. en_core_web_sm, en_core_web_md, en_core_web_trf)"
+    )
+    parser.add_argument(
+        "--workers",
+        type=int,
+        default=2,
+        help="Number of parallel workers (default: 2)"
+    )
+    args = parser.parse_args()
 
-    input_root = Path(sys.argv[1]).resolve()
-    output_root = Path(sys.argv[2]).resolve()
+    input_root = args.input_folder.resolve()
+    output_root = args.output_folder.resolve()
 
     if not input_root.exists() or not input_root.is_dir():
         print(f"Error: Input folder {input_root} does not exist or is not a directory.")
         sys.exit(1)
-    
+
     # Collect files
     processor = FileProcessor(input_root, output_root)
     files = processor.collect_files()
 
-    # Parallel execution
-    tasks =[(f, input_root, output_root, "en_core_web_trf") for f in files] # Uses the transformers model, backed by RoBERTa-base, for highest accuracy, but slower that "en_core_wb_sm" and "en_core_wb_md" which uses word vectors
-    # On my macbook air 24GB RAM, 4 workers spiked the RAM up to 19GB
-    with ProcessPoolExecutor(max_workers=4) as executor:
+    # Parallel execution with user-chosen model
+    tasks = [(f, input_root, output_root, args.model) for f in files]
+    with ProcessPoolExecutor(max_workers=args.workers) as executor:
         list(executor.map(process_file_wrapper, tasks))
 
     print(f"Processing complete. Tagged files saved to {output_root}")
