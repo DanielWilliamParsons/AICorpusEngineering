@@ -38,6 +38,7 @@
     },
     "Stance": {
       "description": "Express the speaker's or writer's perspective, evaluation, or attitude toward the proposition.",
+      "tag": "STANCE",
       "subcategories": {
         "Epistemic Stance": {
           "description": "Express the speaker’s level of certainty, doubt, or probability of the proposition.",
@@ -58,6 +59,7 @@
     },
     "Linking": {
       "description": "Connect the current clause to prior discourse, showing logical or rhetorical relationships.",
+      "tag": "LINKING",
       "subcategories": {
         "Result": {
           "description": "Indicate an outcome or result of what was stated before.",
