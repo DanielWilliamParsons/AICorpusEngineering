@@ -1,79 +1,95 @@
 {
   "Adverbials": {
-    "Circumstance Adverbials": {
-      "description": "Provide information about the situation of the clause (traditional 'adverbials of time, place, manner, etc.').",
+    "Circumstance": {
+      "description": "Provide information about the situation of the clause, including time, place, manner, degree, frequency, duration",
+      "tag": "CIRCUMSTANCE",
       "subcategories": {
         "Time": {
           "description": "Indicate when the action or event takes place.",
-          "examples": ["yesterday", "soon", "already", "later"]
+          "examples": ["yesterday", "soon", "already", "later"],
+          "tag": "TIME"
         },
         "Place": {
           "description": "Indicate the location of the action or event.",
-          "examples": ["here", "there", "nearby", "outside"]
+          "examples": ["here", "there", "nearby", "outside"],
+          "tag": "PLACE"
         },
-        "Manner/Means": {
+        "Manner": {
           "description": "Describe how the action is performed or the means by which it occurs.",
-          "examples": ["quickly", "carefully", "electronically"]
+          "examples": ["quickly", "carefully", "electronically"],
+          "tag": "MANNER"
         },
-        "Degree/Extent": {
+        "Degree": {
           "description": "Express the intensity, extent, or completeness of the action.",
-          "examples": ["completely", "partly", "a lot", "rather"]
+          "examples": ["completely", "partly", "a lot", "rather"],
+          "tag": "DEGREE"
         },
         "Frequency": {
           "description": "Express how often the action occurs.",
-          "examples": ["often", "rarely", "always", "never"]
+          "examples": ["often", "rarely", "always", "never"],
+          "tag": "FREQUENCY"
         },
         "Duration": {
           "description": "Express how long the action lasts.",
-          "examples": ["briefly", "permanently", "forever"]
+          "examples": ["briefly", "permanently", "forever"],
+          "tag": "DURATION"
         }
       }
     },
-    "Stance Adverbials": {
+    "Stance": {
       "description": "Express the speaker's or writer's perspective, evaluation, or attitude toward the proposition.",
       "subcategories": {
         "Epistemic Stance": {
           "description": "Express the speaker’s level of certainty, doubt, or probability of the proposition.",
-          "examples": ["probably", "certainly", "obviously", "maybe"]
+          "examples": ["probably", "certainly", "obviously", "maybe"],
+          "tag": "EPISTEMIC"
         },
         "Attitudinal Stance": {
           "description": "Express the speaker’s emotional reaction or evaluation of the proposition.",
-          "examples": ["fortunately", "sadly", "hopefully", "interestingly"]
+          "examples": ["fortunately", "sadly", "hopefully", "interestingly"],
+          "tag": "ATTITUDE"
         },
-        "Style Stance (Comment)": {
+        "Style Stance": {
           "description": "Comment on the manner of speaking, truthfulness, or rhetorical framing.",
-          "examples": ["frankly", "honestly", "technically", "confidentially"]
+          "examples": ["frankly", "honestly", "technically", "confidentially"],
+          "tag": "STYLE"
         }
       }
     },
-    "Linking Adverbials": {
+    "Linking": {
       "description": "Connect the current clause to prior discourse, showing logical or rhetorical relationships.",
       "subcategories": {
-        "Result/Consequence": {
+        "Result": {
           "description": "Indicate an outcome or result of what was stated before.",
-          "examples": ["therefore", "thus", "consequently", "as a result"]
+          "examples": ["therefore", "thus", "consequently", "as a result"],
+          "tag": "RESULT"
         },
         "Contrast/Concession": {
           "description": "Express opposition, concession, or contrast between clauses.",
-          "examples": ["however", "nevertheless", "still", "instead", "on the other hand"]
+          "examples": ["however", "nevertheless", "still", "instead", "on the other hand"],
+          "tag": "CONTRAST_CONCESSION"
         },
         "Addition": {
           "description": "Add information in relation to the prior clause.",
-          "examples": ["furthermore", "moreover", "also", "besides"]
+          "examples": ["furthermore", "moreover", "also", "besides"],
+          "tag": "ADDITION"
         },
         "Enumeration/Summation": {
           "description": "Organize discourse by listing or summarizing points.",
-          "examples": ["first", "next", "finally", "in conclusion"]
+          "examples": ["first", "next", "finally", "in conclusion"],
+          "tag": "ORGANIZATION"
         },
         "Transition": {
           "description": "Mark a shift in topic or provide a digression.",
-          "examples": ["incidentally", "by the way", "anyway"]
+          "examples": ["incidentally", "by the way", "anyway"],
+          "tag": "TRANSITION"
         }
       }
     },
-    "Discourse Organizing Adverbials": {
+    "Discourse": {
       "description": "Manage the flow of discourse, mark topic changes, or frame interaction.",
-      "examples": ["well", "now", "anyway", "actually", "so"]
+      "examples": ["well", "now", "anyway", "actually", "so"],
+      "tag": "DISCOURSE"
     }
   }
 }
