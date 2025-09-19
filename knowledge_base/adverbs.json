@@ -1,0 +1,79 @@
+{
+  "Adverbials": {
+    "Circumstance Adverbials": {
+      "description": "Provide information about the situation of the clause (traditional 'adverbials of time, place, manner, etc.').",
+      "subcategories": {
+        "Time": {
+          "description": "Indicate when the action or event takes place.",
+          "examples": ["yesterday", "soon", "already", "later"]
+        },
+        "Place": {
+          "description": "Indicate the location of the action or event.",
+          "examples": ["here", "there", "nearby", "outside"]
+        },
+        "Manner/Means": {
+          "description": "Describe how the action is performed or the means by which it occurs.",
+          "examples": ["quickly", "carefully", "electronically"]
+        },
+        "Degree/Extent": {
+          "description": "Express the intensity, extent, or completeness of the action.",
+          "examples": ["completely", "partly", "a lot", "rather"]
+        },
+        "Frequency": {
+          "description": "Express how often the action occurs.",
+          "examples": ["often", "rarely", "always", "never"]
+        },
+        "Duration": {
+          "description": "Express how long the action lasts.",
+          "examples": ["briefly", "permanently", "forever"]
+        }
+      }
+    },
+    "Stance Adverbials": {
+      "description": "Express the speaker's or writer's perspective, evaluation, or attitude toward the proposition.",
+      "subcategories": {
+        "Epistemic Stance": {
+          "description": "Express the speaker’s level of certainty, doubt, or probability of the proposition.",
+          "examples": ["probably", "certainly", "obviously", "maybe"]
+        },
+        "Attitudinal Stance": {
+          "description": "Express the speaker’s emotional reaction or evaluation of the proposition.",
+          "examples": ["fortunately", "sadly", "hopefully", "interestingly"]
+        },
+        "Style Stance (Comment)": {
+          "description": "Comment on the manner of speaking, truthfulness, or rhetorical framing.",
+          "examples": ["frankly", "honestly", "technically", "confidentially"]
+        }
+      }
+    },
+    "Linking Adverbials": {
+      "description": "Connect the current clause to prior discourse, showing logical or rhetorical relationships.",
+      "subcategories": {
+        "Result/Consequence": {
+          "description": "Indicate an outcome or result of what was stated before.",
+          "examples": ["therefore", "thus", "consequently", "as a result"]
+        },
+        "Contrast/Concession": {
+          "description": "Express opposition, concession, or contrast between clauses.",
+          "examples": ["however", "nevertheless", "still", "instead", "on the other hand"]
+        },
+        "Addition": {
+          "description": "Add information in relation to the prior clause.",
+          "examples": ["furthermore", "moreover", "also", "besides"]
+        },
+        "Enumeration/Summation": {
+          "description": "Organize discourse by listing or summarizing points.",
+          "examples": ["first", "next", "finally", "in conclusion"]
+        },
+        "Transition": {
+          "description": "Mark a shift in topic or provide a digression.",
+          "examples": ["incidentally", "by the way", "anyway"]
+        }
+      }
+    },
+    "Discourse Organizing Adverbials": {
+      "description": "Manage the flow of discourse, mark topic changes, or frame interaction.",
+      "examples": ["well", "now", "anyway", "actually", "so"]
+    }
+  }
+}
