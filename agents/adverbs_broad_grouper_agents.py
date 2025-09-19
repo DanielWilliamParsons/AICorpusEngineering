@@ -1,6 +1,13 @@
 import requests, json, re
 
 class BroadGrouperAgent:
+    """
+    This class contains calls to three LLM agents.
+    The first agent attempts to categorize the adverb according to one of four super categories of adverb:
+    Circumstantial, Stance, Linking and Discursive.
+    The categorization is validated by a second agent.
+    If the second agent disagrees with the first, a third agent is called to make the final decision.
+    """
     def __init__(self, server_url):
         self.server_url = server_url
     
