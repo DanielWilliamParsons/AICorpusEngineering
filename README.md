@@ -47,3 +47,14 @@ For reference, directories should have the following organization, e.g.:
 |   ├── Meta-Llama-3.1-8B-Instruct-Q4_K_M.gguf
 |   └── Meta-Llama-3.1-8B-Instruct-Q6_K_L.gguf
 </pre>
+
+## Run basic tests
+There are a few test files written in shell script under the directory shell_tests. In particular, the script `hpt_essay_grading_zero_shot.sh` has been written verbosely so you can check the directories you are in when running the tests.
+
+To run the tests:
+
+1. In the command line navigate to shell_tests directory.
+2. Call the test with the model name. The model name assumes the directory is organized as above. If the model is in another folder, adjust the model name accordingly: `./hpt_essay_grading_zero_shot.sh Meta-Llama-3.1-8B-Instruct-Q6_K_L.gguf`
+
+The model should load and output a response to a request for grading an essay. While doing this you can inspect memory usage on your computer and adjust the model accordingly.
+
