@@ -19,3 +19,31 @@ Downloading different models and testing with the provided shell tests can indic
 
 2. llama.cpp
 
+llama.cpp is a package containing functions that help you run the model, perform diagnositics and even "look inside" the model. This is necessary to work with the model.
+
+First, get the llama.cpp code. Then compile the code. This is necessary to run the model.
+```
+git clone https://github.com/ggerganov/llama.cpp
+cd llama.cpp
+mkdir build
+cd build
+cmake .. -DLLAMA_BUILD_EXAMPLES=ON
+cmake --build . --config Release
+```
+
+For reference, directories should have the following organization, e.g.:
+<pre> 
+├──LLM/
+|   └── AICorpusEngineering/
+|       └── shell_tests/
+|           ├── hpt_essay_grading_zero_shot.sh
+|           ├── ...
+|           └── ...
+|       ├── ...
+|       └──  README.md
+|   ├── llama.cpp/
+|       ├── ...
+|       └── ...
+|   ├── Meta-Llama-3.1-8B-Instruct-Q4_K_M.gguf
+|   └── Meta-Llama-3.1-8B-Instruct-Q6_K_L.gguf
+</pre>
