@@ -1,0 +1,9 @@
+# Ignore test files
+test_data/
+*.txt
+*.log
+*.tmp
+
+# Ignore Python cache
+__pycache__/
+*.pyc
