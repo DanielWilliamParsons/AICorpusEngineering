@@ -11,13 +11,13 @@ class BroadGrouperAgents:
     def __init__(self, server_url):
         self.server_url = server_url
     
-    def _send_request(self, payload, agent_type, temperature=0.001, n_predict=128):
+    def _send_request(self, payload, agent_type, knowledge_base, temperature=0.001, n_predict=128):
         response = requests.post(
             f"{self.server_url}/chat/completions",
             headers={"Content-Type": "application/json"},
             data=json.dumps({
                 "messages": [{"role": "user", "content": payload}],
-                "chat_template_kwargs": {"agent_type": agent_type},
+                "chat_template_kwargs": {"agent_type": agent_type, "knowledge_base": knowledge_base},
                 "n_predict": n_predict,
                 "temperature": temperature,
                 "top_p": 0.85,
@@ -28,6 +28,12 @@ class BroadGrouperAgents:
         if response.status_code != 200:
             raise RuntimeError(f"Server error: {response.text}")
         return response.json()
+    
+    def _retrieve_knowledge_base():
+        print("Retrieve the knowledge base for the agent")
+        knowledge_base = ""
+        # TODO - retrieve the knowledge base
+        return knowledge_base
     
     def analyze_adverb(self, sentence: str, adverb: str):
         """
@@ -46,9 +52,12 @@ class BroadGrouperAgents:
         """
         print(f"Analyzing {adverb} with broad-grouper-agent")
         prompt = json.dumps({"sentence": sentence, "adverb": adverb})
+
+        # Retrieve the knowledge base
+        knowledge_base = self._retrieve_knowledge_base
         
         # Send the data to the LMM
-        data = self._send_request(prompt, "broad-grouper-agent", temperature=0.0, n_predict=64)
+        data = self._send_request(prompt, "broad-grouper-agent", knowledge_base = knowledge_base, temperature=0.0, n_predict=64)
 
         # Get the data back from the LMM
         raw = data["choices"][0]["message"]["content"].strip()
