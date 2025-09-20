@@ -59,7 +59,7 @@ class BroadGrouperAgents:
             knowledge_base += f"{title}: {description}\n"
 
         self.knowledge_base_cache = knowledge_base # Update the cache
-        print(f"Knowledge base prepared:{knowledge_base}")
+        print(f"Knowledge base prepared: {knowledge_base}")
         return knowledge_base
     
     def analyze_adverb(self, sentence: str, adverb: str):
