@@ -120,3 +120,8 @@ The three agents are:
 1. A broad grouping agent: uses knowledge-base + few-shot chain-of-thought prompting to identify the category
 2. A verifcation agent: uses knowledge-base + chain-of-thought prompting to verify the decision of the first agent
 3. A voting agent: uses knowledge-base + generated knowledge and chain-of-thought prompting to mediate the first two agents if there is disagreement and reach a final decision
+
+### Knowledge base
+A knowledge base is provided for adverbs (and later for other categories) in the knowledge_base folder.
+
+The agents classes (e.g., BroadGrouperAgents in adverbs_broad_grouper_agents.py) access the knowledge and prepare it for injection into the jinja templates as needed. This allows the knowledge to be stored separately and can be updated independently of the agents.
