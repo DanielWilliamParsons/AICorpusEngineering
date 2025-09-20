@@ -4,20 +4,24 @@ from llm_server.server_manager import ServerManager
 from agents.adverbs_broad_grouper_agents import BroadGrouperAgents
 from pipelines.broad_grouper_pipeline import BroadGrouperPipeline
 
+def resolve_repo_path(path_str: str) -> Path:
+    repo_root = Path(__file__).resolve().parent.parent.parent
+    return (repo_root / path_str).resolve()
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("input_txt", type=Path, help="Input TXT file with POS-tagged sentences")
     parser.add_argument("output_txt", type=Path, help="Output TXT file with JSON results")
     parser.add_argument(
         "--input_texts_dir",
-        type=Path,
-        default=Path(__file__).resolve().parent.parent.parent / "tagged_texts",
+        type=resolve_repo_path,
+        default="tagged_texts",
         help="Path to the folder with the input text files, defaults to tagged_texts"
     )
     parser.add_argument(
         "--output_texts_dir",
-        type=Path,
-        default=Path(__file__).resolve().parent.parent.parent / "output_texts",
+        type=resolve_repo_path,
+        default="output_texts",
         help="Path to the folder with the output text files, defaults to output_texts"
     )
     parser.add_argument(
