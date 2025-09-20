@@ -37,7 +37,7 @@
       }
     },
     "Stance": {
-      "description": "Express the speaker's or writer's perspective, evaluation, or attitude toward the proposition.",
+      "description": "Express the speaker's or writer's perspective, evaluation, attitude toward or certainty about a proposition.",
       "tag": "STANCE",
       "subcategories": {
         "Epistemic Stance": {
@@ -89,7 +89,7 @@
       }
     },
     "Discourse": {
-      "description": "Manage the flow of discourse, mark topic changes, or frame interaction.",
+      "description": "Manage or frame interaction with the reader or speaker in the discourse.",
       "examples": ["well", "now", "anyway", "actually", "so"],
       "tag": "DISCOURSE"
     }
