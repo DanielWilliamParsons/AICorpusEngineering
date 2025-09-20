@@ -1,4 +1,5 @@
 import requests, json, re
+from pathlib import Path
 
 class BroadGrouperAgents:
     """
@@ -10,6 +11,7 @@ class BroadGrouperAgents:
     """
     def __init__(self, server_url):
         self.server_url = server_url
+        self.knowledge_base_cache = None
     
     def _send_request(self, payload, agent_type, knowledge_base, temperature=0.001, n_predict=128):
         response = requests.post(
@@ -29,10 +31,34 @@ class BroadGrouperAgents:
             raise RuntimeError(f"Server error: {response.text}")
         return response.json()
     
-    def _retrieve_knowledge_base():
+    def _retrieve_knowledge_base(self):
         print("Retrieve the knowledge base for the agent")
-        knowledge_base = ""
-        # TODO - retrieve the knowledge base
+        # Knowledge base looks like this:
+        # KNOWLEDGE ABOUT ADVERB CATEGORIES
+        # - CIRCUMSTANCE ADVERBS provide information about...
+        # - STANCE ADVERBS provide information about ...
+
+        # If knowledge already exists in the knowledge_base_cache, send that back
+        if self.knowledge_base_cache is not None:
+            return self.knowledge_base_cache
+
+        knowledge_base_path = Path(__file__).resolve().parent.parent / "knowledge_base" / "adverbs.json"
+        try:
+            with knowledge_base_path.open("r", encoding="utf-8") as kb_file:
+                self.knowledge_base_cache = json.load(kb_file)
+        except FileNotFoundError as exc:
+            raise RuntimeError(f"Knowledge base not found at {knowledge_base_path} at runtime.") from exc
+        knowledge_base = "KNOWLEDGE ABOUT ADVERB CATEGORIES:\n\n"
+
+        for category_name, category_info in self.knowledge_base_cache["Adverbials"].items():
+            description = category_info["description"]
+            title = f"- {category_name.upper()}"
+            if "adverbs" not in title.lower():
+                title += " ADVERBS"
+            knowledge_base += f"{title}: {description}\n"
+
+        self.knowledge_base_cache = knowledge_base # Update the cache
+
         return knowledge_base
     
     def analyze_adverb(self, sentence: str, adverb: str):
@@ -53,8 +79,7 @@ class BroadGrouperAgents:
         print(f"Analyzing {adverb} with broad-grouper-agent")
         prompt = json.dumps({"sentence": sentence, "adverb": adverb})
 
-        # Retrieve the knowledge base
-        knowledge_base = self._retrieve_knowledge_base
+        knowledge_base = self._retrieve_knowledge_base()
         
         # Send the data to the LMM
         data = self._send_request(prompt, "broad-grouper-agent", knowledge_base = knowledge_base, temperature=0.0, n_predict=64)
