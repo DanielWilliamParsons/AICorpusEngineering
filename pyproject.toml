@@ -1,0 +1,40 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "aicorpusengineering"
+version = "0.1.0"
+description = "Corpus engineering tools for LLMs"
+authors = [
+    { name = "Daniel Parsons" }
+]
+readme = "README.md"
+requires-python = ">=3.9"
+
+dependencies = [
+    "spacy>=3.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "black",
+    "isort",
+]
+
+[tool.setuptools.package-data]
+AICorpusEngineering = [
+    "agent-templates/*.jinja",
+    "knowledge_base/*.json",
+]
+
+[project.scripts]
+tag-texts = "AICorpusEngineering.pos_tagging.tag_texts:main"
+run-adverbs = "AICorpusEngineering.main.adverbs:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]

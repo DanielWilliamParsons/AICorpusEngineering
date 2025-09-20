@@ -8,4 +8,20 @@ test_data/
 __pycache__/
 *.pyc
 
+# Build artifacts
+*.egg-info/
+build/
+dist/
+.eggs/
+
+# Bytecode
+__pycache__/
+*.pyc
+
+# Virtual environments
+venv/
+.venv/
+
+# OS cruft
 .DS_Store
+Thumbs.db

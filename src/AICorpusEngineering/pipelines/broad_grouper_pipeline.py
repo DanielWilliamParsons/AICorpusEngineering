@@ -1,5 +1,5 @@
 import json
-from logger.logger import NDJSONLogger
+from AICorpusEngineering.logger.logger import NDJSONLogger
 
 class BroadGrouperPipeline:
     def __init__(self, grouper_agents, logger: NDJSONLogger):
