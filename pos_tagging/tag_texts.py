@@ -12,6 +12,7 @@ class SpacyTagger:
     def __init__(self, model: str = "en_core_web_sm"):
         print(f"Creating spaCy tagger with model {model}")
         self.nlp = spacy.load(model, disable=["ner", "parser"]) # Faster, POS only!
+        self.nlp.add_pipe("sentencizer") # To allow parsing sentence by sentence
 
     def normalize_paragraphs(self, text: str):
         """Split the text into paragraphs by line breaks, collapsing multiple breaks"""
@@ -22,6 +23,19 @@ class SpacyTagger:
         """Run spaCy tagging on a single paragraph."""
         doc = self.nlp(paragraph)
         return " ".join(f"{token.text}_{token.pos_}" for token in doc)
+    
+    def tag_text_sentence_per_line(self, text: str) -> str:
+        """Process text paragraph by paragraph, sentence by sentence"""
+        paragraphs = self.normalize_paragraphs(text)
+        tagged_paragraphs = []
+        for p in paragraphs:
+            doc = self.nlp(p) # tag once at the paragraph level
+            tagged_sentences = [
+                " ".join(f"{token.text}_{token.pos_}" for token in sent)
+                for sent in doc.sents if sent.text.strip()
+            ]
+            tagged_paragraphs.append("\n".join(tagged_sentences))
+        return "\n\n".join(tagged_paragraphs) # blank line between paragraphs
     
     def tag_text(self, text: str) -> str:
         """Process full text by paragraphs"""
@@ -51,7 +65,7 @@ class FileProcessor:
         with file_path.open("r", encoding="utf-8", errors="ignore") as f:
             text = f.read()
         print(f"Tagging text in {f}")
-        tagged_text = self.tagger.tag_text(text)
+        tagged_text = self.tagger.tag_text_sentence_per_line(text)
         with output_path.open("w", encoding="utf-8") as f:
             f.write(tagged_text)
 
