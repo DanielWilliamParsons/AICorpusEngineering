@@ -1,6 +1,7 @@
 import requests, json, re
 from pathlib import Path
 from logging.logging import NDJSONLogger
+from datetime import datetime
 
 class BroadGrouperAgents:
     """
@@ -10,10 +11,9 @@ class BroadGrouperAgents:
     The categorization is validated by a second agent.
     If the second agent disagrees with the first, a third agent is called to make the final decision.
     """
-    def __init__(self, server_url, logger: NDJSONLogger):
+    def __init__(self, server_url):
         self.server_url = server_url
         self.knowledge_base_cache = None
-        self.logger = logger
     
     def _send_request(self, payload, agent_type, knowledge_base, temperature=0.001, n_predict=128):
         response = requests.post(
@@ -98,7 +98,9 @@ class BroadGrouperAgents:
         # for record-keeping, then pass back
         parsed["sentence"] = sentence
         parsed["adverb"] = adverb
+        parsed["time"] = datetime.now().isoformat()
         print(f"\nAnalyzed {adverb}:\n{parsed}")
+        return parsed
 
     def validate(self, category):
         print("This method will call the validation agent.")

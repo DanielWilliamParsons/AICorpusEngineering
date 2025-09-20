@@ -1,8 +1,10 @@
 import json
+from logging.logging import NDJSONLogger
 
 class BroadGrouperPipeline:
-    def __init__(self, grouper_agents):
+    def __init__(self, grouper_agents, logger: NDJSONLogger):
         self.grouper_agents = grouper_agents
+        self.logger = logger
 
     def run(self, input_txt, output_txt):
         results = []
@@ -19,6 +21,9 @@ class BroadGrouperPipeline:
 
                 # Loop through each adverb in adverbs and send to grouper_agents for analysis
                 for adverb in adverbs:
-                    self.grouper_agents.analyze_adverb(plain_sentence, adverb)
+                    result = self.grouper_agents.analyze_adverb(plain_sentence, adverb)
+                    results.append(result)
+            self.logger.log_records(results)
+
 
         print(f"Done! Enhanced sentences saved to {output_txt}")

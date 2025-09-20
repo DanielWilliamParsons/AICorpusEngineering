@@ -58,7 +58,7 @@ if __name__ == "__main__":
     logger = NDJSONLogger(args.output_txt)
     server.start()
     try:
-        agents = BroadGrouperAgents(args.server_url, logger)
+        agents = BroadGrouperAgents(args.server_url)
         pipeline = BroadGrouperPipeline(agents)
         pipeline.run(input_txt, output_txt)
     finally:
