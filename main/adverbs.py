@@ -3,7 +3,6 @@ import argparse
 from llm_server.server_manager import ServerManager
 from agents.adverbs_broad_grouper_agents import BroadGrouperAgents
 from pipelines.broad_grouper_pipeline import BroadGrouperPipeline
-from logging.logging import NDJSONLogger
 
 def resolve_repo_path(path_str: str) -> Path:
     repo_root = Path(__file__).resolve().parent.parent.parent
