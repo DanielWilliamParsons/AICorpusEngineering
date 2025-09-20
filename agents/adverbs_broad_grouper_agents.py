@@ -77,17 +77,18 @@ class BroadGrouperAgents:
             "adverb": "marvelously"
         }
         """
-        print(f"########Analyzing {adverb} with broad-grouper-agent.########")
+        print(f"\n########Analyzing '{adverb}' with broad-grouper-agent.########")
         prompt = json.dumps({"sentence": sentence, "adverb": adverb})
 
         knowledge_base = self._retrieve_knowledge_base()
         
         # Send the data to the LMM
-        data = self._send_request(prompt, "broad-grouper-agent", knowledge_base = knowledge_base, temperature=0.0, n_predict=64)
+        data = self._send_request(prompt, "broad-grouper-agent", knowledge_base = knowledge_base, temperature=0.0, n_predict=128)
 
         # Get the data back from the LMM
         raw = data["choices"][0]["message"]["content"].strip()
         # Strip anything that is not inside a JSON style string
+        print(raw)
         match = re.search(r"\{.*\}", raw, re.S)
         parsed = json.loads(match.group(0)) if match else {}
 
