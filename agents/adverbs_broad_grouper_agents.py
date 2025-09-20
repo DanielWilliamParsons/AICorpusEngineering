@@ -23,7 +23,7 @@ class BroadGrouperAgents:
                 "n_predict": n_predict,
                 "temperature": temperature,
                 "top_p": 0.85,
-                "stop": ["<|user|>", "<|system|>", "<|assistant|>"]
+                "stop": ["<|user|>", "<|system|>"]
             })
         )
 

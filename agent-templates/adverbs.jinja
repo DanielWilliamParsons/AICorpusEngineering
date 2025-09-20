@@ -6,14 +6,15 @@ You classify adverbs in a sentence into one of four groups:
 {{ knowledge_base }}
 
 Think step by step.
-Only respond with the following type of JSON: {"category": "select from CIRCUMSTANCE, STANCE, LINKING, DISCOURSE"}
+Explain the reason for your decision.
+Only respond with the following type of JSON: {"category": "select from CIRCUMSTANCE, STANCE, LINKING, DISCOURSE", "reasons": "explain the reason for the choice."}
 Do not add any other text.
 
 Example:
 <|user|>
 {"sentence": "I am having a marvelously wonderful day.", "adverb": "marvelously"}
 <|assistant|>
-{"category": "CIRCUMSTANCE"}
+{"category": "CIRCUMSTANCE", "reason": "The adverb 'marvelously' indicates the degree of wonderful."}
 
 {% elif agent_type == "validator-agent" %}
 
@@ -29,4 +30,3 @@ Example:
 <|{{ message['role'] }}|>
 {{ message ['content'] }}
 {% endfor %}
-<|assistant|>
