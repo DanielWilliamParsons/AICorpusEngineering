@@ -1,6 +1,6 @@
 import requests, json, re
 
-class BroadGrouperAgent:
+class BroadGrouperAgents:
     """
     This class contains calls to three LLM agents.
     The first agent attempts to categorize the adverb according to one of four super categories of adverb:
