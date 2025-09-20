@@ -1,6 +1,5 @@
 import requests, json, re
 from pathlib import Path
-from logging.logging import NDJSONLogger
 from datetime import datetime
 
 class BroadGrouperAgents:

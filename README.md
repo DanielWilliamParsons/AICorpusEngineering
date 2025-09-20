@@ -125,3 +125,8 @@ The three agents are:
 A knowledge base is provided for adverbs (and later for other categories) in the knowledge_base folder.
 
 The agents classes (e.g., BroadGrouperAgents in adverbs_broad_grouper_agents.py) access the knowledge and prepare it for injection into the jinja templates as needed. This allows the knowledge to be stored separately and can be updated independently of the agents.
+
+### Tag files
+From inside directory AICorpusEngineering:
+
+`python -m main.adverbs <text_file_name.txt> <logger_output.txt> --input_texts_dir <folder_in_root_containing_corpus_files> --output_texts_dir <any_folder_in_root>`
