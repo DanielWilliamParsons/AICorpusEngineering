@@ -3,6 +3,7 @@ import argparse
 from llm_server.server_manager import ServerManager
 from agents.adverbs_broad_grouper_agents import BroadGrouperAgents
 from pipelines.broad_grouper_pipeline import BroadGrouperPipeline
+from logging.logging import NDJSONLogger
 
 def resolve_repo_path(path_str: str) -> Path:
     repo_root = Path(__file__).resolve().parent.parent.parent
@@ -54,9 +55,10 @@ if __name__ == "__main__":
     output_txt = (args.output_texts_dir / args.output_txt).resolve()
 
     server = ServerManager(args.server_bin, args.model, args.chat_template)
+    logger = NDJSONLogger(args.output_txt)
     server.start()
     try:
-        agents = BroadGrouperAgents(args.server_url)
+        agents = BroadGrouperAgents(args.server_url, logger)
         pipeline = BroadGrouperPipeline(agents)
         pipeline.run(input_txt, output_txt)
     finally:

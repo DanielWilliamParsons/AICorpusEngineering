@@ -99,7 +99,6 @@ class BroadGrouperAgents:
         parsed["sentence"] = sentence
         parsed["adverb"] = adverb
         print(f"\nAnalyzed {adverb}:\n{parsed}")
-        return parsed
 
     def validate(self, category):
         print("This method will call the validation agent.")

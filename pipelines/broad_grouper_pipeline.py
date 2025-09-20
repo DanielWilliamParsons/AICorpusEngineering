@@ -19,11 +19,6 @@ class BroadGrouperPipeline:
 
                 # Loop through each adverb in adverbs and send to grouper_agents for analysis
                 for adverb in adverbs:
-                    result = self.grouper_agents.analyze_adverb(plain_sentence, adverb)
-                    # Call the next agent... TODO
-        
-        with open(output_txt, "w", encoding="utf-8") as outfile:
-            for r in results:
-                outfile.write(json.dumps(r, ensure_ascii=False) + "\n")
+                    self.grouper_agents.analyze_adverb(plain_sentence, adverb)
 
         print(f"Done! Enhanced sentences saved to {output_txt}")
