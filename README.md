@@ -35,12 +35,14 @@ For reference, directories should have the following organization, e.g.:
 <pre> 
 ├──LLM/
 |   └── AICorpusEngineering/
-|       └── shell_tests/
-|           ├── hpt_essay_grading_zero_shot.sh
-|           ├── ...
-|           └── ...
-|       ├── ...
-|       └──  README.md
+|       └── src
+|           └──AICorpusEngineering
+|               └── shell_tests/
+|                   ├── hpt_essay_grading_zero_shot.sh
+|                   ├── ...
+|                   └── ...
+|               ├── ...
+|   └──  README.md
 |   ├── llama.cpp/
 |       ├── ...
 |       └── ...
@@ -59,9 +61,11 @@ To run the tests:
 The model should load and output a response to a request for grading an essay. While doing this you can inspect memory usage on your computer and adjust the model accordingly.
 
 ## Preparing to run Python Scripts
-Make sure to install all the packages required to run the python scripts
+First install the package in editable mode
 
-`pip install -r requirements.txt`
+`pip install -e .`
+
+This makes the command-line entry points available globally in your environment.
 
 ## Preparing texts for parts of speech tagging
 **SpaCy models for tagging text**
@@ -73,23 +77,43 @@ To use SpaCy for parts of speech tagging, download the relevant models. For exam
 `python3 -m spacy download en_core_wen_sm` and `python3 -m spacy download en_core_web_md` and `python3 -m spacy download en_core_web_lg` are other alternatives with _sm being the fastest, though least accurate.
 
 **Tagging**
-In the folder pos_tagging is tag_texts.py, a script for running SpaCy parts of speech tagging. Prepare a folder of text files. The script will tag all the text files in the folder recursively and save into a new folder which you specify, recreating the folder structure. As an example, I placed the root folder of my corpus texts at the same level of AICorpusEngineering:
+Once installed, you can now tag corpus texts diretly using the tag_texts command:
+
+`tag_texts Corpus_Texts Corpus_Texts_Tagged --model en_core_web_trf --workers 4`
+
+* The first argument is the path to your input corpus text folder
+* The second argument is the path where the tagged texts will be written
+* The --model argument selects the SpaCy model (default: en_core_web_trf)
+* The --workers argument sets the number of parallel processes (default: 2)
+
+The directory structure might look something like this:
 
 <pre> 
 ├──LLM/
 |   └── AICorpusEngineering/
-|       └── shell_tests/
-|           ├── hpt_essay_grading_zero_shot.sh
-|           ├── ...
-|           └── ...
-|       ├── ...
-|       └──  README.md
+|       └── src
+|           └──AICorpusEngineering
+|               └── shell_tests/
+|                   ├── hpt_essay_grading_zero_shot.sh
+|                   ├── ...
+|                   └── ...
+|               ├── ...
+|   └──  README.md
 |   ├── llama.cpp/
 |       ├── ...
 |       └── ...
 |   ├── Meta-Llama-3.1-8B-Instruct-Q4_K_M.gguf
 |   ├── Meta-Llama-3.1-8B-Instruct-Q6_K_L.gguf
-|   └── Sample Corpus Texts/
+|   └── Corpus_Texts/
+|       └── text_set1/
+|           ├── text1.txt
+|           ├── text2.txt
+|           ├── text3.txt
+|           ├── ...
+|       └── text_set2
+|           ├── ...
+|           └── ...
+|   └── Corpus_Texts_Tagged/
 |       └── text_set1/
 |           ├── text1.txt
 |           ├── text2.txt
@@ -99,12 +123,6 @@ In the folder pos_tagging is tag_texts.py, a script for running SpaCy parts of s
 |           ├── ...
 |           └── ...
 </pre>
-
-To tag corpus texts, in the command line, navigate to the pos_tagging folder and run the tag_texts.py script from the command line:
-
-`python tag_texts.py ../../sample_texts ../../tagged_sample_texts --model en_core_web_trf --workers 4`
-
-The first argument is the path to where the corpus texts files are located. The second argument is the path to where the tagged corpus text files will be saved. The `--model` argument identifies the model to be used; **the default is en_core_web_trf**. The `--workers` argument identifies the number of text files that will be tagged in parallel; **default value is 2**. Increase the number of workers according to the number of cores available on your system.
 
 ## Broad Design of the LLM-based Tagging System
 The system uses object-oriented patterns to retrieve data, pass data to and from the LLM agents and to keep records of the data.
@@ -127,6 +145,7 @@ A knowledge base is provided for adverbs (and later for other categories) in the
 The agents classes (e.g., BroadGrouperAgents in adverbs_broad_grouper_agents.py) access the knowledge and prepare it for injection into the jinja templates as needed. This allows the knowledge to be stored separately and can be updated independently of the agents.
 
 ### Tag files
-From inside directory AICorpusEngineering:
 
-`python -m main.adverbs <text_file_name.txt> <logger_output.txt> --input_texts_dir <folder_in_root_containing_corpus_files> --output_texts_dir <any_folder_in_root>`
+`run-adverbs file_name.txt output.json --input_texts_dir "Corpus_Texts_Tagged" --output_texts_dir "dir_name"`
+
+
