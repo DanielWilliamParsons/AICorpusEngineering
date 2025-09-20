@@ -105,3 +105,18 @@ To tag corpus texts, in the command line, navigate to the pos_tagging folder and
 `python tag_texts.py ../../sample_texts ../../tagged_sample_texts --model en_core_web_trf --workers 4`
 
 The first argument is the path to where the corpus texts files are located. The second argument is the path to where the tagged corpus text files will be saved. The `--model` argument identifies the model to be used; **the default is en_core_web_trf**. The `--workers` argument identifies the number of text files that will be tagged in parallel; **default value is 2**. Increase the number of workers according to the number of cores available on your system.
+
+## Broad Design of the LLM-based Tagging System
+The system uses object-oriented patterns to retrieve data, pass data to and from the LLM agents and to keep records of the data.
+
+### Adverbs Broad Grouping Agents
+Three agents are designed to identify and verify the broad category to which a selected adverb belongs:
+1. Circumstantial adverb (time, place, manner, etc)
+2. Stance adverb (attitude, evaluation, etc)
+3. Linking adverb (addition, result, etc.)
+4. Discourse adverb (manage interaction, manage flow of discourse)
+
+The three agents are:
+1. A broad grouping agent: uses knowledge-base + few-shot chain-of-thought prompting to identify the category
+2. A verifcation agent: uses knowledge-base + chain-of-thought prompting to verify the decision of the first agent
+3. A voting agent: uses knowledge-base + generated knowledge and chain-of-thought prompting to mediate the first two agents if there is disagreement and reach a final decision
