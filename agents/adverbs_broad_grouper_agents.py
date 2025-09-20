@@ -40,6 +40,7 @@ class BroadGrouperAgents:
 
         # If knowledge already exists in the knowledge_base_cache, send that back
         if self.knowledge_base_cache is not None:
+            print("Knowledge base already exists in cache, so reusing cache.")
             return self.knowledge_base_cache
 
         knowledge_base_path = Path(__file__).resolve().parent.parent / "knowledge_base" / "adverbs.json"
@@ -58,7 +59,7 @@ class BroadGrouperAgents:
             knowledge_base += f"{title}: {description}\n"
 
         self.knowledge_base_cache = knowledge_base # Update the cache
-
+        print(f"Knowledge base prepared:{knowledge_base}")
         return knowledge_base
     
     def analyze_adverb(self, sentence: str, adverb: str):
