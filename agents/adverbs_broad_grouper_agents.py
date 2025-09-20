@@ -30,7 +30,30 @@ class BroadGrouperAgent:
         return response.json()
     
     def analyze_adverb(self, sentence, adverb):
-        print("This method will call the agent that analyzes the adverb.")
+        """
+        Receives a sentence and one of the adverbs from the sentence.
+        Passes the information into the broad-grouper-agent LLM for analysis.
+        The LLM should return a JSON string, but if extra strings are returned these are removed
+        and the JSON string is preserved and transformed into JSON.
+        This is then passed back into to the pipeline.
+        """
+        print("Analyzing with broad-grouper-agent")
+        prompt = json.dumps({"sentence": sentence, "adverb": adverb})
+        
+        # Send the data to the LMM
+        data = self._send_request(prompt, "broad-grouper-agent", temperature=0.0, n_predict=64)
+
+        # Get the data back from the LMM
+        raw = data["choices"][0]["message"]["content"].strip()
+        # Strip anything that is not inside a JSON style string
+        match = re.search(r"\{.*\}", raw, re.S)
+        parsed = json.loads(match.group(0)) if match else {}
+
+        # Append the original sentence and the original adverb to the JSON result from the LLM
+        # for record-keeping, then pass back
+        parsed["sentence"] = sentence
+        parsed["adverb"] = adverb
+        return parsed
 
     def validate(self, category):
         print("This method will call the validation agent.")
