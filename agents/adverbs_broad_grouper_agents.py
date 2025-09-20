@@ -40,7 +40,7 @@ class BroadGrouperAgents:
 
         # If knowledge already exists in the knowledge_base_cache, send that back
         if self.knowledge_base_cache is not None:
-            print("Knowledge base already exists in cache, so reusing cache.")
+            print("Using knowledge-base cache")
             return self.knowledge_base_cache
 
         knowledge_base_path = Path(__file__).resolve().parent.parent / "knowledge_base" / "adverbs.json"
@@ -77,7 +77,7 @@ class BroadGrouperAgents:
             "adverb": "marvelously"
         }
         """
-        print(f"Analyzing {adverb} with broad-grouper-agent")
+        print(f"########Analyzing {adverb} with broad-grouper-agent.########")
         prompt = json.dumps({"sentence": sentence, "adverb": adverb})
 
         knowledge_base = self._retrieve_knowledge_base()
@@ -95,6 +95,7 @@ class BroadGrouperAgents:
         # for record-keeping, then pass back
         parsed["sentence"] = sentence
         parsed["adverb"] = adverb
+        print(f"\nAnalyzed {adverb}:\n{parsed}")
         return parsed
 
     def validate(self, category):
