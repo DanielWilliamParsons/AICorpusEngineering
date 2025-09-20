@@ -29,15 +29,22 @@ class BroadGrouperAgents:
             raise RuntimeError(f"Server error: {response.text}")
         return response.json()
     
-    def analyze_adverb(self, sentence, adverb):
+    def analyze_adverb(self, sentence: str, adverb: str):
         """
         Receives a sentence and one of the adverbs from the sentence.
         Passes the information into the broad-grouper-agent LLM for analysis.
         The LLM should return a JSON string, but if extra strings are returned these are removed
         and the JSON string is preserved and transformed into JSON.
         This is then passed back into to the pipeline.
+        The parsed data that gets returned should look like this:
+        {
+            "category": "CIRCUMSTANCE", 
+            "reason": "The adverb 'marvelously' is an adverb of degree because it makes the adjective wonderful stronger."},
+            "sentence": "What a marvelously wonderful day we are having.",
+            "adverb": "marvelously"
+        }
         """
-        print("Analyzing with broad-grouper-agent")
+        print(f"Analyzing {adverb} with broad-grouper-agent")
         prompt = json.dumps({"sentence": sentence, "adverb": adverb})
         
         # Send the data to the LMM
