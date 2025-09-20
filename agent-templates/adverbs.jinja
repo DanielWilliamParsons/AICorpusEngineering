@@ -1,0 +1,22 @@
+{{ bos_token }}
+<|system|>
+
+{% if agent_type == "broad-grouper-agent" %}
+
+
+
+{% elif agent_type == "validator-agent" %}
+
+
+
+{% elif agent_type == "mediator-agent" %}
+
+
+
+{% endif %}
+
+{% for message in messages %}
+<|{{ message['role'] }}|>
+{{ message ['content'] }}
+{% endfor %}
+<|assistant|>
