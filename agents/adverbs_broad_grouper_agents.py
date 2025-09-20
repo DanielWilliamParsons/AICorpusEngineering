@@ -9,9 +9,10 @@ class BroadGrouperAgents:
     The categorization is validated by a second agent.
     If the second agent disagrees with the first, a third agent is called to make the final decision.
     """
-    def __init__(self, server_url):
+    def __init__(self, server_url, logger: NDJSONLogger):
         self.server_url = server_url
         self.knowledge_base_cache = None
+        self.logger = logger
     
     def _send_request(self, payload, agent_type, knowledge_base, temperature=0.001, n_predict=128):
         response = requests.post(
