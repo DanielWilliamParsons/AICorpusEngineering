@@ -125,5 +125,6 @@ class BroadGrouperAgents:
         return parsed
 
 
-    def correct(self, validated):
-        print("This method will call the correcting agent.")
+    def correct(self, original_result, validated_result):
+        print("\n\n###Mediating the disagreement###")
+        original_result["disagreement"] = validated_result["reason"]

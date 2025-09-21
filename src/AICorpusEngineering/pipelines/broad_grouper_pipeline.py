@@ -25,9 +25,7 @@ class BroadGrouperPipeline:
                     results.append(result)
                     validated_result = self.grouper_agents.validate(result)
                     if validated_result["agree"] == "No":
-                        disagreement = result
-                        disagreement["disagreement"] = validated_result["reason"]
-                        mediated_result = self.grouper_agents.correct(disagreement)
+                        mediated_result = self.grouper_agents.correct(result, validated_result)
             self.logger.log_records(results)
 
 
