@@ -27,8 +27,8 @@ class BroadGrouperPipeline:
                     # TODO
                     # Check that validated_result["agree"] exists first
                     # If it doesn't exist, then there was an error. Log the error
-                    if validated_result["agree"] == "No":
-                        mediated_result = self.grouper_agents.mediate(result, validated_result)
+                    # if validated_result["agree"] == "No":
+                    #     mediated_result = self.grouper_agents.mediate(result, validated_result)
             self.logger.log_records(results)
 
 

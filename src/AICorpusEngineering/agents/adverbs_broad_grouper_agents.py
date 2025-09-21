@@ -117,7 +117,7 @@ class BroadGrouperAgents:
             "adverb": "marvelously"
         }
         """
-        print(f"\n########Analyzing '{adverb}' with broad-grouper-agent.########")
+        print(f"\n########GROUPING '{adverb}' with broad-grouper-agent.########")
         prompt = json.dumps({"sentence": sentence, "adverb": adverb})
 
         knowledge_base = self._retrieve_knowledge_base()
@@ -139,20 +139,18 @@ class BroadGrouperAgents:
         return parsed
 
     def validate(self, analysis_result):
-        print("\n\n###checking result with validator-agent###")
-        prompt = {k: analysis_result[k] for k in ("sentence", "adverb", "category")}
-        adverb = prompt["adverb"]
-        prompt = json.dumps(prompt) # Convert to string for sending to LLM
+        print("\n\n###VALIDATING result with validator-agent###")
+        prompt = f"The sentence is '{analysis_result["sentence"]}' The adverb '{analysis_result["adverb"]}' in the sentence is classified as a {analysis_result["category"]} because {analysis_result["reason"]} Is this correct?"
         knowledge_base = self._retrieve_knowledge_base() # Get the knowledge base (likely cached)
         data = self._send_request(prompt, "validator-agent", knowledge_base = knowledge_base, temperature=0.0, n_predict=128)
         raw = data["choices"][0]["message"]["content"].strip()
-        parsed = self._parse_raw_to_json(raw)
-        print(f"Validated {adverb}: \n{parsed}")
+        parsed = self._parse_CoT_and_json(raw)
+        print(f"Validated {analysis_result["adverb"]}: \n{parsed}")
         return parsed
 
 
     def mediate(self, original_result, validated_result):
-        print("\n\n###Mediating the disagreement###")
+        print("\n\n###MEDIATING the disagreement###")
         original_result["disagreement"] = validated_result["reason"]
         prompt = json.dumps(original_result)
         knowledge_base = self._retrieve_knowledge_base() # Get the knowledge base (likely cached)
