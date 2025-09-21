@@ -24,6 +24,10 @@ class BroadGrouperPipeline:
                     result = self.grouper_agents.analyze_adverb(plain_sentence, adverb)
                     results.append(result)
                     validated_result = self.grouper_agents.validate(result)
+                    if validated_result["agree"] == "No":
+                        disagreement = result
+                        disagreement["disagreement"] = validated_result["reason"]
+                        mediated_result = self.grouper_agents.correct(disagreement)
             self.logger.log_records(results)
 
 
