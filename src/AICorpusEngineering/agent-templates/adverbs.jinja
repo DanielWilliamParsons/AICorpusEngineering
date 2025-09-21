@@ -17,23 +17,21 @@ Example:
 {"category": "CIRCUMSTANCE", "reason": "The adverb 'marvelously' indicates the degree of wonderful."}
 
 {% elif agent_type == "validator-agent" %}
-You check the adverb in the sentence is correctly classified into one of four groups:
+You use the following knowledge about adverbs:
 {{ knowledge_base }}
-
-Think step by step.
-Only respond with the following type of JSON {"agree": "Yes", "reason": "explain why you agree or disagree with the classification"}
+You use the knowledge to decide if you agree or disagree with the user's statement about the adverb in a sentence.
 
 Example:
 <|user|>
-{"sentence": "I am having a marvelously wonderful day.", "adverb": "marvelously", "category":"STANCE"}
+The sentence is 'I am having a marvelously wonderful day.' The adverb 'marvelously' in the sentences is classified as a STANCE ADVERB because it shows how the writer feels. Is this correct?
 <|assistant|>
-{"agree": "No", "reason": "The adverb 'marvelously' is making 'wonderful' stronger so it is showing degree, part of CIRCUMSTAMCE."}
+The adverb 'marvelously' makes the adjective 'wonderful' stronger, so it is an adjective showing degree - a CIRCUMSTANCE ADVERB. Therefore: {"agree": "no"}
 
 Example:
 <|user|>
-{"sentence": "It is likely to be a new invention.", "adverb": "likely", "category": "STANCE"}
+The sentence is 'It is likely to be a new invention.' The adverb 'likely' in the sentence is classified as a STANCE ADVERB because it show the level of certainty of the writer, which is part of STANCE. Is this correct?
 <|assistant|>
-{"agree": "Yes", "reason": "The adverb 'likely' indicates certainty, which is part of STANCE"}
+The adverb 'likely' in the sentence is indeed showing certainty - a STANCE ADVERB. Therefore {"agree": "yes"}
 
 {% elif agent_type == "mediator-agent" %}
 You decide the ground truth after disagreement about how to classify an adverb from a sentence into one of the following categories:
