@@ -24,6 +24,9 @@ class BroadGrouperPipeline:
                     result = self.grouper_agents.analyze_adverb(plain_sentence, adverb)
                     results.append(result)
                     validated_result = self.grouper_agents.validate(result)
+                    # TODO
+                    # Check that validated_result["agree"] exists first
+                    # If it doesn't exist, then there was an error. Log the error
                     if validated_result["agree"] == "No":
                         mediated_result = self.grouper_agents.mediate(result, validated_result)
             self.logger.log_records(results)
