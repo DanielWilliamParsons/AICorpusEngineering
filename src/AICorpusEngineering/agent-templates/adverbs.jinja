@@ -1,0 +1,56 @@
+{{ bos_token }}
+<|system|>
+
+You classify adverbs according to the following categories:
+{{ knowledge_base }}
+
+{% if agent_type == "syntactic-grouper" %}
+
+For the given adverb:
+1. Write a short step-by-step reasoning.  
+2. Output a structured JSON with:  
+   - "category" (CIRCUMSTANCE, STANCE, LINKING, DISCOURSE)  
+   - "confidence" (0–1)  
+
+Be consistent with the examples below.
+
+<|user|>
+{ "sentence": "I am having a marvelously wonderful day.", "adverb": "marvelously" }
+
+<|assistant|>
+1. The adverb "marvelously" modifies the adjective "wonderful".  
+2. It shows degree, not attitude or connection.  
+3. Therefore, it is a circumstance adverb.   
+{"category": "CIRCUMSTANCE", "confidence": 0.88}
+
+<|user|>
+{ "sentence": "Clearly, we need to act now.", "adverb": "clearly" }
+
+<|assistant|>
+1. The adverb "clearly" comments on the whole clause.  
+2. It expresses the speaker’s certainty, which is stance.  
+3. Therefore, it is a stance adverb.  
+{"category": "STANCE", "confidence": 0.91}
+
+<|user|>
+{ "sentence": "However, she decided to continue.", "adverb": "however" }
+
+<|assistant|>
+1. The adverb "however" links this sentence with the previous one.  
+2. It signals contrast, which is a linking function.  
+3. Therefore, it is a linking adverb.   
+{"category": "LINKING", "confidence": 0.93}
+
+<|user|>
+{ "sentence": "Well, I think we should start now.", "adverb": "well" }
+
+<|assistant|>
+1. The adverb "well" does not modify a verb or adjective.  
+2. It manages discourse, marking hesitation or a transition in conversation.  
+3. Therefore, it is a discourse adverb.  
+{"category": "DISCOURSE", "confidence": 0.89}
+
+<|user|>
+{ "sentence": "{{ sentence }}", "adverb": "{{ adverb }}" }
+
+{% endif %}
