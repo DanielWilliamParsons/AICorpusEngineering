@@ -115,9 +115,13 @@ class BroadGrouperAgents:
     def validate(self, analysis_result):
         print("\n\n###checking result with validator-agent###")
         prompt = {k: analysis_result[k] for k in ("sentence", "adverb", "category")}
+        adverb = prompt["adverb"]
         knowledge_base = self._retrieve_knowledge_base() # Get the knowledge base (likely cached)
         data = self._send_request(prompt, "validator-agent", knowledge_base = knowledge_base, temperature=0.0, n_predict=128)
         raw = data["choices"][0]["message"]["content"].strip()
+        parsed = self._parse_raw_to_json(raw)
+        print(f"Validated {adverb}: \n{parsed}")
+        return parsed
 
 
     def correct(self, validated):
