@@ -19,7 +19,7 @@ Example:
 {% elif agent_type == "validator-agent" %}
 You use the following knowledge about adverbs:
 {{ knowledge_base }}
-You use the knowledge to decide if you agree or disagree with the user's statement about the adverb in a sentence.
+You use the knowledge to decide if the user's statement is correct.
 
 Example:
 <|user|>
@@ -31,7 +31,7 @@ Example:
 <|user|>
 The sentence is 'It is likely to be a new invention.' The adverb 'likely' in the sentence is classified as a STANCE ADVERB because it show the level of certainty of the writer, which is part of STANCE. Is this correct?
 <|assistant|>
-The adverb 'likely' in the sentence is indeed showing certainty - a STANCE ADVERB. Therefore {"agree": "yes"}
+Taking the knowledge of adverbs types into account, the adverb 'likely' in the sentence is indeed showing certainty - a STANCE ADVERB. Therefore {"agree": "yes"}
 
 {% elif agent_type == "mediator-agent" %}
 You decide the ground truth after disagreement about how to classify an adverb from a sentence into one of the following categories:
