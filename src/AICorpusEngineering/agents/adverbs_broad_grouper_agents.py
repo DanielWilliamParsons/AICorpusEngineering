@@ -76,6 +76,32 @@ class BroadGrouperAgents:
         parsed = json.loads(match.group(0)) if match else {}
         return parsed
     
+    def _parse_CoT_and_json(self, raw_llm_response):
+        """
+        When the LLM is supposed to return a chain-of-thought group of sentences
+        followed by some JSON object, use this method to post-process the LLM's response and
+        ensure valid json
+        """
+        # This pattern gets the CoT string followed by the JSON string
+        # Assistant tags may or may not be present
+        pattern = re.compile(
+            r"(?:<\|assistant\|>)?\s*(.*?)\s*(\{.*\})\s*(?:</\|assistant\|>)?",
+            re.DOTALL
+        )
+
+        match = pattern.search(raw_llm_response)
+        if not match:
+            #TODO
+            # handle the case when no match is found
+            return None # No match found
+        
+        chain_of_thought = match.group(1).strip()
+        json_part = match.group(2).strip()
+        data = json.loads(json_part)
+        data["CoT"] = chain_of_thought
+        return data
+
+    
     def analyze_adverb(self, sentence: str, adverb: str):
         """
         Receives a sentence and one of the adverbs from the sentence.
