@@ -58,7 +58,7 @@
       }
     },
     "Linking": {
-      "description": "Connect the current clause to prior discourse, showing logical or rhetorical relationships.",
+      "description": "Connect the current clause to prior discourse, showing logical relationships including result, contrast, concession, addition, enumeration, summation and transition",
       "tag": "LINKING",
       "subcategories": {
         "Result": {
