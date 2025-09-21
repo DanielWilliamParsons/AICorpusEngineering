@@ -125,7 +125,7 @@ class BroadGrouperAgents:
         return parsed
 
 
-    def correct(self, original_result, validated_result):
+    def mediate(self, original_result, validated_result):
         print("\n\n###Mediating the disagreement###")
         original_result["disagreement"] = validated_result["reason"]
         prompt = json.dumps(original_result)
