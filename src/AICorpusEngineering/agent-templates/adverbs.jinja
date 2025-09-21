@@ -17,8 +17,23 @@ Example:
 {"category": "CIRCUMSTANCE", "reason": "The adverb 'marvelously' indicates the degree of wonderful."}
 
 {% elif agent_type == "validator-agent" %}
-
+You check the adverb in the sentence is correctly classified into one of four groups:
 {{ knowledge_base }}
+
+Think step by step.
+Only respond with the following type of JSON {"agree": "Yes", "reason": "explain why you agree or disagree with the classification"}
+
+Example:
+<|user|>
+{"sentence": "I am having a marvelously wonderful day.", "adverb": "marvelously", "category":"STANCE"}
+<|assistant|>
+{"agree": "No", "reason": "The adverb 'marvelously' is making 'wonderful' stronger so it is showing degree, part of CIRCUMSTAMCE."}
+
+Example:
+<|user|>
+{"sentence": "It is likely to be a new invention.", "adverb": "likely", "category": "STANCE"}
+<|assistant|>
+{"agree": "Yes", "reason": "The adverb 'likely' indicates certainty, which is part of STANCE"}
 
 {% elif agent_type == "mediator-agent" %}
 
