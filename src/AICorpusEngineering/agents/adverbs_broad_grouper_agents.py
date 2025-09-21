@@ -116,6 +116,7 @@ class BroadGrouperAgents:
         print("\n\n###checking result with validator-agent###")
         prompt = {k: analysis_result[k] for k in ("sentence", "adverb", "category")}
         adverb = prompt["adverb"]
+        prompt = json.dumps(prompt) # Convert to string for sending to LLM
         knowledge_base = self._retrieve_knowledge_base() # Get the knowledge base (likely cached)
         data = self._send_request(prompt, "validator-agent", knowledge_base = knowledge_base, temperature=0.0, n_predict=128)
         raw = data["choices"][0]["message"]["content"].strip()
