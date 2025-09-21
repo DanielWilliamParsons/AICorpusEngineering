@@ -63,6 +63,19 @@ class BroadGrouperAgents:
         print(f"Knowledge base prepared: {knowledge_base}")
         return knowledge_base
     
+    def _parse_raw_to_json(self, raw_llm_response):
+        """
+        When the LLM is supposed to return JSON
+        use this method to post-process the llm's response and
+        ensure valid json
+        """
+        # TODO: add a json validity checker
+        # If the output is not json log it as such and then continue with processing
+        # So add error logging capability
+        match = re.search(r"\{.*\}", raw_llm_response, re.S)
+        parsed = json.loads(match.group(0)) if match else {}
+        return parsed
+    
     def analyze_adverb(self, sentence: str, adverb: str):
         """
         Receives a sentence and one of the adverbs from the sentence.
@@ -89,9 +102,7 @@ class BroadGrouperAgents:
         # Get the data back from the LMM
         raw = data["choices"][0]["message"]["content"].strip()
         # Strip anything that is not inside a JSON style string
-        print(raw)
-        match = re.search(r"\{.*\}", raw, re.S)
-        parsed = json.loads(match.group(0)) if match else {}
+        parsed = self._parse_raw_to_json(raw)
 
         # Append the original sentence and the original adverb to the JSON result from the LLM
         # for record-keeping, then pass back
