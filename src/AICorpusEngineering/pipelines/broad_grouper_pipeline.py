@@ -23,6 +23,7 @@ class BroadGrouperPipeline:
                 for adverb in adverbs:
                     result = self.grouper_agents.analyze_adverb(plain_sentence, adverb)
                     results.append(result)
+                    validated_result = self.grouper_agents.validate(result)
             self.logger.log_records(results)
 
 
