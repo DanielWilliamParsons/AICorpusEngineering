@@ -69,11 +69,27 @@ class BroadGrouperAgents:
         use this method to post-process the llm's response and
         ensure valid json
         """
-        # TODO: add a json validity checker
-        # If the output is not json log it as such and then continue with processing
-        # So add error logging capability
-        match = re.search(r"\{.*\}", raw_llm_response, re.S)
-        parsed = json.loads(match.group(0)) if match else {}
+        print(raw_llm_response)
+        # Cleaned up leaked reserved token like <|reserved_special_token_213|>
+        cleaned = re.sub(r"<\|.*?\|>", "", raw_llm_response)
+
+        # Find the first { ... }
+        match = re.search(r"\{.*?\}", cleaned, re.S)
+        if not match:
+            # TODO: handle this case in logging and method to where this is returned
+            return {}
+        try:
+            parsed = json.loads(match.group(0)) if match else {}
+            # TODO: add a json validity checker
+            # If the output is not json log it as such and then continue with processing
+            # So add error logging capability
+            return parsed
+        except json.JSONDecodeError as e:
+            print(f"JSON Decode Error: {e}")
+            # TODO Handle this case
+            return {}
+
+        
         return parsed
     
     def _parse_CoT_and_json(self, raw_llm_response):
@@ -82,6 +98,7 @@ class BroadGrouperAgents:
         followed by some JSON object, use this method to post-process the LLM's response and
         ensure valid json
         """
+        print(raw_llm_response)
         # This pattern gets the CoT string followed by the JSON string
         # Assistant tags may or may not be present
         pattern = re.compile(
