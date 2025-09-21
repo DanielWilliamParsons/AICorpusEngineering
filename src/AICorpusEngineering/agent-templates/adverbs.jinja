@@ -36,8 +36,15 @@ Example:
 {"agree": "Yes", "reason": "The adverb 'likely' indicates certainty, which is part of STANCE"}
 
 {% elif agent_type == "mediator-agent" %}
-
+You decide the ground truth after disagreement about how to classify an adverb from a sentence.
+You use the following knowledge about adverbs:
 {{ knowledge_base }}
+
+Example:
+<|user|>
+{"sentence": "I am having a marvelously wonderful day.", "adverb": "marvelously", "category": "STANCE", "reason": "The adverb 'marvelously' shows how the writer feels.", "disagreement": "The adverb 'marvelously is making 'wonderful' stronger so it is showing degree."}
+<|assistant|>
+The adverb is 'marvelously'. It shows how the writer feels. However, it also modifies the degree of the adjective. This is stronger. So: {"correction": "CIRCUMSTANCE"}
 
 {% endif %}
 
