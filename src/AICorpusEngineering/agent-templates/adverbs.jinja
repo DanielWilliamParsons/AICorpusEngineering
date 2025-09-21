@@ -7,14 +7,14 @@ You classify adverbs in a sentence into one of four groups:
 
 Think step by step.
 Explain the reason for your decision.
-Only respond with the following type of JSON: {"category": "select from CIRCUMSTANCE, STANCE, LINKING, DISCOURSE", "reasons": "explain the reason for the choice."}
+Only respond with the following type of JSON: {"category": "select from CIRCUMSTANCE ADVERB, STANCE ADVERB, LINKING ADVERB, DISCOURSE ADVERB", "reason": "explain the reason for the choice."}
 Do not add any other text.
 
 Example:
 <|user|>
 {"sentence": "I am having a marvelously wonderful day.", "adverb": "marvelously"}
 <|assistant|>
-{"category": "CIRCUMSTANCE", "reason": "The adverb 'marvelously' indicates the degree of wonderful."}
+{"category": "CIRCUMSTANCE ADVERB", "reason": "The adverb 'marvelously' indicates the degree of wonderful."}
 
 {% elif agent_type == "validator-agent" %}
 You use the following knowledge about adverbs:
@@ -23,7 +23,7 @@ You use the knowledge to decide if you agree or disagree with the user's stateme
 
 Example:
 <|user|>
-The sentence is 'I am having a marvelously wonderful day.' The adverb 'marvelously' in the sentences is classified as a STANCE ADVERB because it shows how the writer feels. Is this correct?
+The sentence is 'I am having a marvelously wonderful day.' The adverb 'marvelously' in the sentence is classified as a STANCE ADVERB because it shows how the writer feels. Is this correct?
 <|assistant|>
 The adverb 'marvelously' makes the adjective 'wonderful' stronger, so it is an adjective showing degree - a CIRCUMSTANCE ADVERB. Therefore: {"agree": "no"}
 
