@@ -128,3 +128,8 @@ class BroadGrouperAgents:
     def correct(self, original_result, validated_result):
         print("\n\n###Mediating the disagreement###")
         original_result["disagreement"] = validated_result["reason"]
+        prompt = json.dumps(original_result)
+        knowledge_base = self._retrieve_knowledge_base() # Get the knowledge base (likely cached)
+        data = self._send_request(prompt, "mediator-agent", knowledge_base = knowledge_base, temperature=0.0, n_predict=128)
+        raw = data["choices"][0]["message"]["content"].strip()
+        print(f"##MEDIATOR OUTPUT: {raw}")
