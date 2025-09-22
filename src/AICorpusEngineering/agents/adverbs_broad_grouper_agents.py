@@ -279,7 +279,7 @@ class BroadGrouperAgents:
         knowledge_base = self._retrieve_knowledge_base()
 
         # Send the data to the LMM
-        data = self._send_request(prompt, "diagnostic-grouper-agent")
+        data = self._send_request(prompt, "diagnostic-grouper-agent", knowledge_base = knowledge_base, sentence = sentence, adverb = adverb, temperature = 0.0, n_predict=256)
 
         # Get the data back from the LMM
         raw = data["choices"][0]["message"]["content"].strip()
