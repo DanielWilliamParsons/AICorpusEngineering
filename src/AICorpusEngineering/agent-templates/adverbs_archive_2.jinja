@@ -1,0 +1,138 @@
+{{ bos_token }}
+<|system|>
+
+{% if agent_type == "syntactic-grouper" %}
+You classify adverbs according to the following categories:
+{{ knowledge_base }}
+
+For the given adverb:
+1. Write a short step-by-step reasoning.  
+2. Write the final answer as just a letter, A, B, C or D.  
+
+Be consistent with the examples below.
+
+<|user|>
+{ "sentence": "I am having a marvelously wonderful day.", "adverb": "marvelously" }
+
+<|assistant|>
+1. The adverb "marvelously" modifies the adjective "wonderful".  
+2. It shows degree, not attitude or connection.  
+3. Therefore, it is a circumstance adverb.   
+Final answer: A
+
+<|user|>
+{ "sentence": "Clearly, we need to act now.", "adverb": "clearly" }
+
+<|assistant|>
+1. The adverb "clearly" comments on the whole clause.  
+2. It expresses the speaker’s certainty, which is stance.  
+3. Therefore, it is a stance adverb.  
+Final answer: B
+
+<|user|>
+{ "sentence": "However, she decided to continue.", "adverb": "however" }
+
+<|assistant|>
+1. The adverb "however" links this sentence with the previous one.  
+2. It signals contrast, which is a linking function.  
+3. Therefore, it is a linking adverb.   
+Final answer: C
+
+<|user|>
+{ "sentence": "Well, I think we should start now.", "adverb": "well" }
+
+<|assistant|>
+1. The adverb "well" does not modify a verb or adjective.  
+2. It manages discourse, marking hesitation or a transition in conversation.  
+3. Therefore, it is a discourse adverb.  
+Final answer: D
+
+<|user|>
+{ "sentence": "{{ sentence }}", "adverb": "{{ adverb }}" }
+
+{% elif agent_type == "circumstance-inspector-agent" %}
+For the given adverb:
+1. Apply a diagnostic question to determine if the adverb is a circumstance adverb
+2. In response to the question decide from
+A. Yes
+B. No
+
+<|user|>
+{ "sentence" : "I am having a marvelously wonderful day.", "adverb": "marvelously" }
+
+<|assistant|>
+1. Does the adverb describe time, place, manner, degree, frequency or duration?
+2. "Marvelously" describes the extent of wonderful.
+3. Therefore it is a circumstance adverb.
+Final answer: A
+
+<|user|>
+{ "sentence": "Clearly we need to act now", "adverb": "clearly" }
+
+<|assistant|>
+1. Does the adverb describe, time, place, manner, degree, frequency or duration?
+2. "Clearly" describes the certainty of the writer.
+3. Therefore, is it NOT a circumstance adverb.
+Final Answer: B
+
+<|user|>
+{ "sentence": "{{ sentence }}", "adverb": "{{ adverb }}" }
+
+{% elif agent_type == "diagnostic-grouper-agent" %}
+
+For the given adverb:
+1. Apply diagnostic questions step by step.  
+2. Explicitly test each category (A, B, C, D) one by one.  
+3. Eliminate the wrong ones.  
+4. Leave only the correct one, and then give the final answer as a single letter.  
+
+Be consistent with the examples below.
+
+<|user|>
+{ "sentence": "I am having a marvelously wonderful day.", "adverb": "marvelously" }
+
+<|assistant|>
+1. Does it describe time, place, manner, degree, frequency or duration? → Yes, "marvelously" describes manner of "wonderful". Candidate: Circumstance (A).  
+2. Does it express certainty, attitude, or truthfulness? → No, it does not show the speaker’s stance. Eliminate Stance (B).  
+3. Does it connect to another clause? → No, it does not show addition or contrast. Eliminate Linking (C).  
+4. Does it manage discourse or conversation flow? → No, it does not signal hesitation or transition. Eliminate Discourse (D).  
+Therefore, the only fitting category is circumstance.  
+Final answer: A
+
+<|user|>
+{ "sentence": "Clearly, we need to act now.", "adverb": "clearly" }
+
+<|assistant|>
+1. Does it describe time, place, manner, degree, frequency or duration? → No, "clearly" does not describe an action’s circumstances. Eliminate Circumstance (A).  
+2. Does it express certainty, attitude, or truthfulness? → Yes, it expresses certainty. Candidate: Stance (B).  
+3. Does it connect to another clause? → No, it does not link with previous content. Eliminate Linking (C).  
+4. Does it manage discourse? → No, it does not signal hesitation or turn-taking. Eliminate Discourse (D).  
+Therefore, the only fitting category is stance.  
+Final answer: B
+
+<|user|>
+{ "sentence": "However, she decided to continue.", "adverb": "however" }
+
+<|assistant|>
+1. Does it describe time, place, manner, degree, frequency or duration? → No, "however" does not describe circumstances. Eliminate Circumstance (A).  
+2. Does it express certainty, attitude, or truthfulness?→ No, it does not show stance. Eliminate Stance (B).  
+3. Does it connect to another clause? → Yes, it signals contrast. Candidate: Linking (C).  
+4. Does it manage discourse? → No, it does not mark hesitation or transition in dialogue. Eliminate Discourse (D).  
+Therefore, the only fitting category is linking.  
+Final answer: C
+
+<|user|>
+{ "sentence": "Well, I think we should start now.", "adverb": "well" }
+
+<|assistant|>
+1. Does it describe time, place, manner, degree, frequency or duration? → No, "well" does not describe circumstances. Eliminate Circumstance (A).  
+2. Does it express certainty, attitude, or truthfulness? → No, it does not show certainty or stance. Eliminate Stance (B).  
+3. Does it connect this clause to a previous one? → No, it does not show contrast or addition. Eliminate Linking (C).  
+4. Does it manage discourse? → Yes, it signals hesitation or a conversational transition. Candidate: Discourse (D).  
+Therefore, the only fitting category is discourse.  
+Final answer: D
+
+<|user|>
+{ "sentence": "{{ sentence }}", "adverb": "{{ adverb }}" }
+
+{% endif %}

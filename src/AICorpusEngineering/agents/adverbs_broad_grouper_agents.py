@@ -275,12 +275,12 @@ class BroadGrouperAgents:
         return parsed
 
     def analyze_by_elimination(self, sentence: str, adverb: str):
-        print("\n\n### Running DIAGNOSTIC-grouper agent###")
+        print("\n\n### Running circumstance-inspector-agent###")
         knowledge_base = self._retrieve_knowledge_base()
         prompt = ""
 
         # Send the data to the LMM
-        data = self._send_request(prompt, "diagnostic-grouper-agent", knowledge_base = knowledge_base, sentence = sentence, adverb = adverb, temperature = 0.0, n_predict=256)
+        data = self._send_request(prompt, "circumstance-inspector-agent", knowledge_base = knowledge_base, sentence = sentence, adverb = adverb, temperature = 0.0, n_predict=256)
 
         # Get the data back from the LMM
         raw = data["choices"][0]["message"]["content"].strip()
@@ -289,7 +289,7 @@ class BroadGrouperAgents:
         answer_probs = self._calculate_final_answer_probs(logprobs)
 
         print("Reasoning perplexity: ", ppl)
-        print("Answer probability distribution: ", answer_probs)
+        #print("Answer probability distribution: ", answer_probs)
         print(raw)
 
         parsed = ""
