@@ -23,7 +23,7 @@ class BroadGrouperPipeline:
                 for adverb in adverbs:
                     result_by_syntax = self.grouper_agents.analyze_by_syntax(plain_sentence, adverb)
                     result_by_elimination = self.grouper_agents.analyze_by_elimination(plain_sentence, adverb)
-                    results.append(result_by_syntax, result_by_elimination)
+                    results.append(result_by_syntax)
                     # validated_result = self.grouper_agents.validate(result)
                     # TODO
                     # Check that validated_result["agree"] exists first

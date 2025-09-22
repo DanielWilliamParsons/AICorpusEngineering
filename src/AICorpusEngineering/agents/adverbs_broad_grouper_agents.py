@@ -74,7 +74,6 @@ class BroadGrouperAgents:
         use this method to post-process the llm's response and
         ensure valid json
         """
-        print(raw_llm_response)
         # Cleaned up leaked reserved token like <|reserved_special_token_213|>
         cleaned = re.sub(r"<\|.*?\|>", "", raw_llm_response)
 
@@ -263,6 +262,7 @@ class BroadGrouperAgents:
 
         print("Reasoning perplexity: ", ppl)
         print("Answer probability distribution: ", answer_probs)
+        print(raw)
         # Strip anything that is not inside a JSON style string
         parsed = self._parse_raw_to_json(raw)
 
@@ -290,6 +290,7 @@ class BroadGrouperAgents:
 
         print("Reasoning perplexity: ", ppl)
         print("Answer probability distribution: ", answer_probs)
+        print(raw)
 
         parsed = ""
         return parsed
