@@ -20,7 +20,7 @@ class BroadGrouperAgents:
             headers={"Content-Type": "application/json"},
             data=json.dumps({
                 "messages": [{"role": "user", "content": payload}],
-                "chat_template_kwargs": {"agent_type": agent_type, "knowledge_base": knowledge_base},
+                "chat_template_kwargs": {"agent_type": agent_type, "knowledge_base": knowledge_base, "sentence": sentence, "adverb": adverb},
                 "n_predict": n_predict,
                 "temperature": temperature,
                 "top_p": 0.85,
@@ -88,9 +88,6 @@ class BroadGrouperAgents:
             print(f"JSON Decode Error: {e}")
             # TODO Handle this case
             return {}
-
-        
-        return parsed
     
     def _parse_CoT_and_json(self, raw_llm_response):
         """
@@ -129,18 +126,16 @@ class BroadGrouperAgents:
         The parsed data that gets returned should look like this:
         {
             "category": "CIRCUMSTANCE", 
-            "reason": "The adverb 'marvelously' is an adverb of degree because it makes the adjective wonderful stronger."},
-            "sentence": "What a marvelously wonderful day we are having.",
-            "adverb": "marvelously"
+            "confidence": "0.85"
         }
         """
         print(f"\n########GROUPING '{adverb}' with broad-grouper-agent.########")
-        prompt = json.dumps({"sentence": sentence, "adverb": adverb})
+        prompt = ""
 
         knowledge_base = self._retrieve_knowledge_base()
         
         # Send the data to the LMM
-        data = self._send_request(prompt, "broad-grouper-agent", knowledge_base = knowledge_base, temperature=0.0, n_predict=128)
+        data = self._send_request(prompt, "syntactic-grouper", knowledge_base = knowledge_base, sentence = sentence, adverb = adverb, temperature=0.0, n_predict=128)
 
         # Get the data back from the LMM
         raw = data["choices"][0]["message"]["content"].strip()
