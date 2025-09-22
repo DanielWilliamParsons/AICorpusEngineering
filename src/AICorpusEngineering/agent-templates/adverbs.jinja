@@ -1,10 +1,9 @@
 {{ bos_token }}
 <|system|>
 
+{% if agent_type == "syntactic-grouper" %}
 You classify adverbs according to the following categories:
 {{ knowledge_base }}
-
-{% if agent_type == "syntactic-grouper" %}
 
 For the given adverb:
 1. Write a short step-by-step reasoning.  
@@ -50,6 +49,31 @@ Final answer: D
 
 <|user|>
 { "sentence": "{{ sentence }}", "adverb": "{{ adverb }}" }
+
+{% elif agent_type == "circumstance-inspector-agent" %}
+For the given adverb:
+1. Apply a diagnostic question to determine if the adverb is a circumstance adverb
+2. In response to the question decide from
+A. Yes
+B. No
+
+<|user|>
+{ "sentence" : "I am having a marvelously wonderful day.", "adverb": "marvelously" }
+
+<|assistant|>
+1. Does the adverb describe time, place, manner, degree, frequency or duration?
+2. "Marvelously" describes the extent of wonderful.
+3. Therefore it is a circumstance adverb.
+Final answer: A
+
+<|user|>
+{ "sentence": "Clearly we need to act now", "adverb": "clearly" }
+
+<|assistant|>
+1. Does the adverb describe, time, place, manner, degree, frequency or duration?
+2. "Clearly" describes the certainty of the writer.
+3. Therefore, is it NOT a circumstance adverb.
+Final Answer: B
 
 {% elif agent_type == "diagnostic-grouper-agent" %}
 
