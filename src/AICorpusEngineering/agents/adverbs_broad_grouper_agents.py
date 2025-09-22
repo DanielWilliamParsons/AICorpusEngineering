@@ -1,6 +1,7 @@
 import requests, json, re
 from pathlib import Path
 from datetime import datetime
+import math
 
 class BroadGrouperAgents:
     """
@@ -24,6 +25,8 @@ class BroadGrouperAgents:
                 "n_predict": n_predict,
                 "temperature": temperature,
                 "top_p": 0.85,
+                "logprobs": 1000,
+                "echo": False,
                 "stop": ["<|user|>", "<|system|>"]
             })
         )
@@ -116,6 +119,26 @@ class BroadGrouperAgents:
         data = json.loads(json_part)
         data["CoT"] = chain_of_thought
         return data
+    
+    def calculate_reasoning_perplexity(self, logprobs):
+        """
+        "logprobs": {
+            "tokens": ["1", ".", " The", ...],
+            "token_logprobs": [-0.05, -0.01, -0.20, ...],
+            "top_logprobs": [
+                {"1": -0.05, "2": -3.2, ...},
+                {".": -0.01, ",": -2.7, ...},
+                {" The": -0.20, " A": -2.8, ...},
+                ...
+            ]
+        }
+        Perplexity calculation extracts the token_logprobs which are the logprobs for the actually token
+        that made up the answer
+        """
+        token_logprobs = logprobs["token_logprobs"][:-1] # Exclude the final answer
+        nll = -sum(token_logprobs) / len(token_logprobs) # Negative log likelihood
+        ppl = math.exp(nll) # perplexity score
+        return ppl
 
     
     def analyze_by_syntax(self, sentence: str, adverb: str):
@@ -141,6 +164,8 @@ class BroadGrouperAgents:
 
         # Get the data back from the LMM
         raw = data["choices"][0]["message"]["content"].strip()
+        logprobs = data["choices"][0]["logprobs"]
+        self.calculate_reasoning_perplexity(logprobs)
         # Strip anything that is not inside a JSON style string
         parsed = self._parse_raw_to_json(raw)
 
