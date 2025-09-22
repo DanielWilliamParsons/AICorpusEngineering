@@ -284,7 +284,7 @@ class BroadGrouperAgents:
 
         # Get the data back from the LMM
         raw = data["choices"][0]["message"]["content"].strip()
-        logprobs = data["choices"][0]["logprops"]
+        logprobs = data["choices"][0]["logprobs"]
         ppl = self._calculate_reasoning_perplexity(logprobs)
         answer_probs = self._calculate_final_answer_probs(logprobs)
 
