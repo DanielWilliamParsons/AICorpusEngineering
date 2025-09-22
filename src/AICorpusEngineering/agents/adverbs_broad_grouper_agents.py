@@ -139,6 +139,31 @@ class BroadGrouperAgents:
         nll = -sum(token_logprobs) / len(token_logprobs) # Negative log likelihood
         ppl = math.exp(nll) # perplexity score
         return ppl
+    
+    def calculate_final_answer_probs(self, logprobs):
+        """
+        "logprobs": {
+            "tokens": ["1", ".", " The", ...],
+            "token_logprobs": [-0.05, -0.01, -0.20, ...],
+            "top_logprobs": [
+                {"1": -0.05, "2": -3.2, ...},
+                {".": -0.01, ",": -2.7, ...},
+                {" The": -0.20, " A": -2.8, ...},
+                ...
+            ]
+        }
+        Takes the last top_logprobs dictionary from the array.
+        Searches for the final answer token in the keys.
+        Converts logits to probabilities with softmax and normalizes
+        """
+        top = logprobs["top_logprobs"][-1]
+        answer_probs = {
+            choice: math.exp(top[choice])
+            for choice in [" A", " B", " C", " D"] if choice in top
+        }
+        normalization_constant = sum(answer_probs.values())
+        answer_probs = {k.strip(): v / normalization_constant for k, v in answer_probs.items()}
+        return answer_probs
 
     
     def analyze_by_syntax(self, sentence: str, adverb: str):
@@ -165,7 +190,11 @@ class BroadGrouperAgents:
         # Get the data back from the LMM
         raw = data["choices"][0]["message"]["content"].strip()
         logprobs = data["choices"][0]["logprobs"]
-        self.calculate_reasoning_perplexity(logprobs)
+        ppl = self.calculate_reasoning_perplexity(logprobs)
+        answer_probs = self.calculate_final_answer_probs(logprobs)
+
+        print("Reasoning perplexity: ", ppl)
+        print("Answer probability distribution: ", answer_probs)
         # Strip anything that is not inside a JSON style string
         parsed = self._parse_raw_to_json(raw)
 
