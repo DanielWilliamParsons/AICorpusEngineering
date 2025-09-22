@@ -14,7 +14,7 @@ class BroadGrouperAgents:
         self.server_url = server_url
         self.knowledge_base_cache = None
     
-    def _send_request(self, payload, agent_type, knowledge_base, temperature=0.001, n_predict=128):
+    def _send_request(self, payload, agent_type, knowledge_base, sentence, adverb, temperature=0.001, n_predict=128):
         response = requests.post(
             f"{self.server_url}/chat/completions",
             headers={"Content-Type": "application/json"},
