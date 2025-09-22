@@ -36,8 +36,8 @@ class BroadGrouperAgents:
         print("Retrieve the knowledge base for the agent")
         # Knowledge base looks like this:
         # KNOWLEDGE ABOUT ADVERB CATEGORIES
-        # - CIRCUMSTANCE ADVERBS provide information about...
-        # - STANCE ADVERBS provide information about ...
+        # A. CIRCUMSTANCE ADVERBS provide information about...
+        # B. STANCE ADVERBS provide information about ...
 
         # If knowledge already exists in the knowledge_base_cache, send that back
         if self.knowledge_base_cache is not None:
@@ -52,9 +52,11 @@ class BroadGrouperAgents:
             raise RuntimeError(f"Knowledge base not found at {knowledge_base_path} at runtime.") from exc
         knowledge_base = "KNOWLEDGE ABOUT ADVERB CATEGORIES:\n\n"
 
-        for category_name, category_info in self.knowledge_base_cache["Adverbials"].items():
+        # Letter choices
+        letter_choices = ["A", "B", "C", "D"]
+        for idx, category_name, category_info in enumerate(self.knowledge_base_cache["Adverbials"].items()):
             description = category_info["description"]
-            title = f"- {category_name.upper()}"
+            title = f"{letter_choices[idx]}. {category_name.upper()}"
             if "adverbs" not in title.lower():
                 title += " ADVERBS"
             knowledge_base += f"{title}: {description}\n"
