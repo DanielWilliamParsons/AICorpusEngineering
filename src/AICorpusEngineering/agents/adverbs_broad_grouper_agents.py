@@ -120,49 +120,117 @@ class BroadGrouperAgents:
         data["CoT"] = chain_of_thought
         return data
     
-    def calculate_reasoning_perplexity(self, logprobs):
+    def _calculate_reasoning_perplexity(self, logprobs):
         """
         "logprobs": {
-            "tokens": ["1", ".", " The", ...],
-            "token_logprobs": [-0.05, -0.01, -0.20, ...],
-            "top_logprobs": [
-                {"1": -0.05, "2": -3.2, ...},
-                {".": -0.01, ",": -2.7, ...},
-                {" The": -0.20, " A": -2.8, ...},
-                ...
+            "content": [
+                {
+                    "id": 27, 
+                    "token": "1",
+                    "bytes": [60],
+                    "logprob": -3.2663880119798705e-05
+                    "top_logprobs": [
+                        {
+                            "id": 27, 
+                            "token": "1",
+                            "bytes": [60],
+                            "logprob": -3.2663880119798705e-05
+                        },
+                        {
+                            "id": 524,
+                            "token": "</",
+                            "bytes": [60, 47]
+                            "logprob": -11.929385768492
+                        },
+                        ...
+                    ]
+                }
             ]
         }
         Perplexity calculation extracts the token_logprobs which are the logprobs for the actually token
         that made up the answer
         """
-        token_logprobs = logprobs["token_logprobs"][:-1] # Exclude the final answer
-        nll = -sum(token_logprobs) / len(token_logprobs) # Negative log likelihood
+        content = logprobs["content"]
+        answer_idx = None
+        for i in range(len(content) - 1, -1, -1):
+            if content[i]["token"].strip() in ("A", "B", "C", "D"):
+                answer_idx = i
+                break
+        token_entries = logprobs["content"][:answer_idx] # Exclude the final answer
+        token_logprobs = [entry["logprob"] for entry in token_entries] #Get the logprobs
+
+        if not token_logprobs:
+            return float("inf")
+        
+        nll = -sum(token_logprobs) / len(token_logprobs) # Negative log likelihood (average)
         ppl = math.exp(nll) # perplexity score
         return ppl
-    
-    def calculate_final_answer_probs(self, logprobs):
+
+    def _calculate_final_answer_probs(self, logprobs):
         """
         "logprobs": {
-            "tokens": ["1", ".", " The", ...],
-            "token_logprobs": [-0.05, -0.01, -0.20, ...],
-            "top_logprobs": [
-                {"1": -0.05, "2": -3.2, ...},
-                {".": -0.01, ",": -2.7, ...},
-                {" The": -0.20, " A": -2.8, ...},
-                ...
+            "content": [
+                {
+                    "id": 27, 
+                    "token": "1",
+                    "bytes": [60],
+                    "logprob": -3.2663880119798705e-05
+                    "top_logprobs": [
+                        {
+                            "id": 27, 
+                            "token": "1",
+                            "bytes": [60],
+                            "logprob": -3.2663880119798705e-05
+                        },
+                        {
+                            "id": 524,
+                            "token": "</",
+                            "bytes": [60, 47]
+                            "logprob": -11.929385768492
+                        },
+                        ...
+                    ]
+                }
             ]
         }
-        Takes the last top_logprobs dictionary from the array.
-        Searches for the final answer token in the keys.
+        Takes the last item in the content as this represents the final answer token.
+        Looks at its "top_logprops" list to find scores for 'A', 'B', 'C', and 'D'
         Converts logits to probabilities with softmax and normalizes
         """
-        top = logprobs["top_logprobs"][-1]
-        answer_probs = {
-            choice: math.exp(top[choice])
-            for choice in [" A", " B", " C", " D"] if choice in top
-        }
-        normalization_constant = sum(answer_probs.values())
-        answer_probs = {k.strip(): v / normalization_constant for k, v in answer_probs.items()}
+        # Find the final answer token:
+        content = logprobs["content"]
+
+        # Walk backwards through the logprobs array to find the decision step: last token that is exactly A/B/C/D ignoring whitespace
+        answer_idx = None
+        for i in range(len(content) - 1, -1, -1):
+            if content[i]["token"].strip() in ("A", "B", "C", "D"):
+                answer_idx = i
+                break
+        
+        if answer_idx is None:
+            # TODO
+            # Handle this situation! What should I have the pipeline do when no probs are found?
+            return {k: 0.0 for k in ["A", "B", "C", "D"]}
+        
+        entry = content[answer_idx]
+        top_entries = entry.get("top_logprobs", []) # extract the top_logprobs for all tokens that could be this token
+        top_dict = {e["token"]: e["logprob"] for e in top_entries} # Create a dictionary of the top_logprobs
+
+        # Build unnormalized probs for A/B/C/D from top_logprobs (handle variants)
+        raw_probs = {}
+        for ch in [" A", " B", " C", " D"]:
+            if ch in top_dict:
+                raw_probs[ch] = math.exp(top_dict[ch])
+            else:
+                raw_probs[ch] = 0.0 # missing from top-k
+
+        # Now normalize the probabilities
+        normalization_constant = sum(raw_probs.values())
+        if normalization_constant > 0:
+            answer_probs = {k.strip(): v / normalization_constant for k, v in raw_probs.items()}
+        else:
+            # Fallback if none of the choices were found
+            answer_probs = {k: 0.0 for k in ["A", "B", "C", "D"]}
         return answer_probs
 
     
@@ -179,7 +247,7 @@ class BroadGrouperAgents:
             "confidence": "0.85"
         }
         """
-        print(f"\n########GROUPING '{adverb}' with broad-grouper-agent.########")
+        print(f"\n########  GROUPING '{adverb}' with syntactic-grouper-agent.  ########")
         prompt = ""
 
         knowledge_base = self._retrieve_knowledge_base()
@@ -190,8 +258,8 @@ class BroadGrouperAgents:
         # Get the data back from the LMM
         raw = data["choices"][0]["message"]["content"].strip()
         logprobs = data["choices"][0]["logprobs"]
-        ppl = self.calculate_reasoning_perplexity(logprobs)
-        answer_probs = self.calculate_final_answer_probs(logprobs)
+        ppl = self._calculate_reasoning_perplexity(logprobs)
+        answer_probs = self._calculate_final_answer_probs(logprobs)
 
         print("Reasoning perplexity: ", ppl)
         print("Answer probability distribution: ", answer_probs)
