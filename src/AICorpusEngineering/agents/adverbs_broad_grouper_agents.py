@@ -116,7 +116,7 @@ class BroadGrouperAgents:
         return data
 
     
-    def analyze_adverb(self, sentence: str, adverb: str):
+    def analyze_by_syntax(self, sentence: str, adverb: str):
         """
         Receives a sentence and one of the adverbs from the sentence.
         Passes the information into the broad-grouper-agent LLM for analysis.

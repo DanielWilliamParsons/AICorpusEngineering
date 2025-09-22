@@ -21,7 +21,7 @@ class BroadGrouperPipeline:
 
                 # Loop through each adverb in adverbs and send to grouper_agents for analysis
                 for adverb in adverbs:
-                    result = self.grouper_agents.analyze_adverb(plain_sentence, adverb)
+                    result = self.grouper_agents.analyze_by_syntax(plain_sentence, adverb)
                     results.append(result)
                     # validated_result = self.grouper_agents.validate(result)
                     # TODO
