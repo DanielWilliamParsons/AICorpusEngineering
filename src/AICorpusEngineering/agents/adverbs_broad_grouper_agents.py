@@ -274,14 +274,23 @@ class BroadGrouperAgents:
         print(f"\nAnalyzed {adverb}:\n{parsed}")
         return parsed
 
-    def validate(self, analysis_result):
-        print("\n\n###VALIDATING result with validator-agent###")
-        prompt = f"""The sentence is '{analysis_result["sentence"]}' The adverb '{analysis_result["adverb"]}' in the sentence is classified as a {analysis_result["category"]} because {analysis_result["reason"]} Is this correct?"""
-        knowledge_base = self._retrieve_knowledge_base() # Get the knowledge base (likely cached)
-        data = self._send_request(prompt, "validator-agent", knowledge_base = knowledge_base, temperature=0.0, n_predict=128)
+    def analyze_by_elimination(self, sentence: str, adverb: str):
+        print("\n\n### Running DIAGNOSTIC-grouper agent###")
+        knowledge_base = self._retrieve_knowledge_base()
+
+        # Send the data to the LMM
+        data = self._send_request(prompt, "diagnostic-grouper-agent")
+
+        # Get the data back from the LMM
         raw = data["choices"][0]["message"]["content"].strip()
-        parsed = self._parse_CoT_and_json(raw)
-        print(f"""Validated {analysis_result["adverb"]}: \n{parsed}""")
+        logprobs = data["choices"][0]["logprops"]
+        ppl = self._calculate_reasoning_perplexity(logprobs)
+        answer_probs = self._calculate_final_answer_probs(logprobs)
+
+        print("Reasoning perplexity: ", ppl)
+        print("Answer probability distribution: ", answer_probs)
+
+        parsed = ""
         return parsed
 
 
