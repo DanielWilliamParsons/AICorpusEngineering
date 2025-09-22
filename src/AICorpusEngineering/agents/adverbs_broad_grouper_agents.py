@@ -277,6 +277,7 @@ class BroadGrouperAgents:
     def analyze_by_elimination(self, sentence: str, adverb: str):
         print("\n\n### Running DIAGNOSTIC-grouper agent###")
         knowledge_base = self._retrieve_knowledge_base()
+        prompt = ""
 
         # Send the data to the LMM
         data = self._send_request(prompt, "diagnostic-grouper-agent", knowledge_base = knowledge_base, sentence = sentence, adverb = adverb, temperature = 0.0, n_predict=256)
