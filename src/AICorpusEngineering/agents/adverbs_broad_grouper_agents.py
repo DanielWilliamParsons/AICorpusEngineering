@@ -54,10 +54,10 @@ class BroadGrouperAgents:
 
         # Letter choices
         letter_choices = ["A", "B", "C", "D"]
-        for idx, category_name, category_info in enumerate(self.knowledge_base_cache["Adverbials"].items()):
+        for idx, (category_name, category_info) in enumerate(self.knowledge_base_cache["Adverbials"].items()):
             description = category_info["description"]
             title = f"{letter_choices[idx]}. {category_name.upper()}"
-            if "adverbs" not in title.lower():
+            if "adverbs" not in category_name.lower():
                 title += " ADVERBS"
             knowledge_base += f"{title}: {description}\n"
 
