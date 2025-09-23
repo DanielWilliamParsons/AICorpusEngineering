@@ -6,6 +6,7 @@ import importlib.resources as resources
 from AICorpusEngineering.llm_server.server_manager import ServerManager
 from AICorpusEngineering.agents.adverbs_broad_grouper_agent import BroadGrouperAgent
 from AICorpusEngineering.pipelines.tagging_pipeline import TaggingPipeline
+from AICorpusEngineering.probabilities.prob_handlers import ProbHandlers
 from AICorpusEngineering.logger.logger import NDJSONLogger
 
 
@@ -73,10 +74,11 @@ def main():
         raise FileNotFoundError(f"Chat template not found at {chat_template}")
 
     server = ServerManager(args.server_bin, args.model, chat_template)
+    prob_handlers = ProbHandlers()
     logger = NDJSONLogger(args.output_txt)
     server.start()
     try:
-        agents = BroadGrouperAgent(args.server_url)
+        agents = BroadGrouperAgent(args.server_url, prob_handlers)
         pipeline = TaggingPipeline(agents, logger)
         pipeline.run(input_txt, output_txt)
     finally:

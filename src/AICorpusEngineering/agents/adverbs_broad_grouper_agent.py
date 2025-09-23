@@ -11,9 +11,10 @@ class BroadGrouperAgent:
     The categorization is validated by a second agent.
     If the second agent disagrees with the first, a third agent is called to make the final decision.
     """
-    def __init__(self, server_url):
+    def __init__(self, server_url, prob_handlers):
         self.server_url = server_url
         self.knowledge_base_cache = None
+        self.prob_handlers = prob_handlers # A ProbHandlers object
     
     def _send_request(self, payload, agent_type, knowledge_base, sentence, adverb, temperature=0.001, n_predict=128):
         response = requests.post(
@@ -257,7 +258,12 @@ class BroadGrouperAgent:
         # Get the data back from the LMM
         raw = data["choices"][0]["message"]["content"].strip()
         logprobs = data["choices"][0]["logprobs"]
-        ppl = self._calculate_reasoning_perplexity(logprobs)
+
+        # Use prob_handlers to calculate reasoning complexity
+        self.prob_handlers.set_logprobs(logprobs)
+        ppl = self.prob_handlers.calculate_reasoning_perplexity()
+        
+        ##ppl = self._calculate_reasoning_perplexity(logprobs)
         answer_probs = self._calculate_final_answer_probs(logprobs)
 
         print("Reasoning perplexity: ", ppl)
