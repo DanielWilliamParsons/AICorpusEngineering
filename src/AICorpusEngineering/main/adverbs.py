@@ -4,8 +4,8 @@ import os
 import importlib.resources as resources
 
 from AICorpusEngineering.llm_server.server_manager import ServerManager
-from AICorpusEngineering.src.AICorpusEngineering.agents.adverbs_broad_grouper_agent import BroadGrouperAgent
-from AICorpusEngineering.src.AICorpusEngineering.pipelines.tagging_pipeline import TaggingPipeline
+from AICorpusEngineering.agents.adverbs_broad_grouper_agent import BroadGrouperAgent
+from AICorpusEngineering.pipelines.tagging_pipeline import TaggingPipeline
 from AICorpusEngineering.logger.logger import NDJSONLogger
 
 
