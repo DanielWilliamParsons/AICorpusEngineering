@@ -47,39 +47,6 @@ class BroadGrouperAgent:
             raise RuntimeError(f"Server error: {response.text}")
         return response.json()
     
-    def _retrieve_knowledge_base(self):
-        print("Retrieve the knowledge base for the agent")
-        # Knowledge base looks like this:
-        # KNOWLEDGE ABOUT ADVERB CATEGORIES
-        # A. CIRCUMSTANCE ADVERBS provide information about...
-        # B. STANCE ADVERBS provide information about ...
-
-        # If knowledge already exists in the knowledge_base_cache, send that back
-        if self.knowledge_base_cache is not None:
-            print("Using knowledge-base cache")
-            return self.knowledge_base_cache
-
-        knowledge_base_path = Path(__file__).resolve().parent.parent / "knowledge_base" / "adverbs.json"
-        try:
-            with knowledge_base_path.open("r", encoding="utf-8") as kb_file:
-                self.knowledge_base_cache = json.load(kb_file)
-        except FileNotFoundError as exc:
-            raise RuntimeError(f"Knowledge base not found at {knowledge_base_path} at runtime.") from exc
-        knowledge_base = "KNOWLEDGE ABOUT ADVERB CATEGORIES:\n\n"
-
-        # Letter choices
-        letter_choices = ["A", "B", "C", "D"]
-        for idx, (category_name, category_info) in enumerate(self.knowledge_base_cache["Adverbials"].items()):
-            description = category_info["description"]
-            title = f"{letter_choices[idx]}. {category_name.upper()}"
-            if "adverbs" not in category_name.lower():
-                title += " ADVERBS"
-            knowledge_base += f"{title}: {description}\n"
-
-        self.knowledge_base_cache = knowledge_base # Update the cache
-        print(f"Knowledge base prepared: {knowledge_base}")
-        return knowledge_base
-    
     def _parse_raw_to_json(self, raw_llm_response):
         """
         When the LLM is supposed to return JSON
@@ -182,7 +149,6 @@ class BroadGrouperAgent:
         choice_selections = [" A", " B", " C", " D"] #Notice that these are written with a space to account for tokenization in the model (in this case llama)
         answer_probs = self.prob_handler.calculate_prob_distribution(choice_selections)
 
-
         ### Parse data for return ###
         parsed = {}
         # Add the sentence and adverb to the data to send back to the pipeline
@@ -202,8 +168,8 @@ class BroadGrouperAgent:
         parsed["final_answer"] =  logprobs["content"][final_answer_token_index]["token"].strip()
 
         # Add the category answer
-        # TODO: Use a knowledge base class to do this based on mappings
-        parsed["category"] = "TODO PLEASE USING KNOWLEDGE BASE CLASS!"
+        kb_mappings = self.knowledge_base.get_knowledge_base_mappings()
+        parsed["category"] = self.knowledge_base.get_knowledge_base_mappings()[parsed["final_answer"]]
 
         # Add the perplexity to the output
         parsed["ppl"] = ppl

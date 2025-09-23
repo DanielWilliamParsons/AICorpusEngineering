@@ -28,7 +28,7 @@ class KnowledgeBase:
         """
 
         knowledge_base_path = Path(__file__).resolve().parent / "adverbs.json"
-        knowledge_data
+        knowledge_data = None
         # Get the knowledge data from the data source
         try:
             with knowledge_base_path.open("r", encoding="utf-8") as kb_file:
@@ -47,7 +47,7 @@ class KnowledgeBase:
             if "adverbs" not in category_name.lower():
                 title += " ADVERBS"
             self.knowledge_base += f"{title}: {description}\n"
-            self.knowledge_base_mappings[letter_choices[idx]] = {category_name.upper()}
+            self.knowledge_base_mappings[letter_choices[idx]] = category_name.upper()
 
         print(f"Knowledge base prepared: {self.knowledge_base}")
     
