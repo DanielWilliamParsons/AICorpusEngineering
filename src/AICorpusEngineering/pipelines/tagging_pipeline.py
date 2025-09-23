@@ -1,5 +1,6 @@
 import json
 from AICorpusEngineering.logger.logger import NDJSONLogger
+from AICorpusEngineering.error_handler.error_handler import error_handler
 
 class TaggingPipeline:
     def __init__(self, grouper_agents, logger: NDJSONLogger):
