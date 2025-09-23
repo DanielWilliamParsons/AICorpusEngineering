@@ -119,52 +119,6 @@ class BroadGrouperAgent:
         data = json.loads(json_part)
         data["CoT"] = chain_of_thought
         return data
-    
-    def _calculate_reasoning_perplexity(self, logprobs):
-        """
-        "logprobs": {
-            "content": [
-                {
-                    "id": 27, 
-                    "token": "1",
-                    "bytes": [60],
-                    "logprob": -3.2663880119798705e-05
-                    "top_logprobs": [
-                        {
-                            "id": 27, 
-                            "token": "1",
-                            "bytes": [60],
-                            "logprob": -3.2663880119798705e-05
-                        },
-                        {
-                            "id": 524,
-                            "token": "</",
-                            "bytes": [60, 47]
-                            "logprob": -11.929385768492
-                        },
-                        ...
-                    ]
-                }
-            ]
-        }
-        Perplexity calculation extracts the token_logprobs which are the logprobs for the actually token
-        that made up the answer
-        """
-        content = logprobs["content"]
-        answer_idx = None
-        for i in range(len(content) - 1, -1, -1):
-            if content[i]["token"].strip() in ("A", "B", "C", "D"):
-                answer_idx = i
-                break
-        token_entries = logprobs["content"][:answer_idx] # Exclude the final answer
-        token_logprobs = [entry["logprob"] for entry in token_entries] #Get the logprobs
-
-        if not token_logprobs:
-            return float("inf")
-        
-        nll = -sum(token_logprobs) / len(token_logprobs) # Negative log likelihood (average)
-        ppl = math.exp(nll) # perplexity score
-        return ppl
 
     def _calculate_final_answer_probs(self, logprobs):
         """
@@ -263,8 +217,9 @@ class BroadGrouperAgent:
         self.prob_handlers.set_logprobs(logprobs)
         ppl = self.prob_handlers.calculate_reasoning_perplexity()
         
-        ##ppl = self._calculate_reasoning_perplexity(logprobs)
-        answer_probs = self._calculate_final_answer_probs(logprobs)
+        # Use prob_handlers class to calculate the probability distribution of the answer
+        choice_selections = [" A", " B", " C", " D"]
+        answer_probs = self.prob_handlers.calculate_prob_distribution(choice_selections)
 
         print("Reasoning perplexity: ", ppl)
         print("Answer probability distribution: ", answer_probs)
