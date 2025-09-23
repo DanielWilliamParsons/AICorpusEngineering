@@ -119,74 +119,6 @@ class BroadGrouperAgent:
         data = json.loads(json_part)
         data["CoT"] = chain_of_thought
         return data
-
-    def _calculate_final_answer_probs(self, logprobs):
-        """
-        "logprobs": {
-            "content": [
-                {
-                    "id": 27, 
-                    "token": "1",
-                    "bytes": [60],
-                    "logprob": -3.2663880119798705e-05
-                    "top_logprobs": [
-                        {
-                            "id": 27, 
-                            "token": "1",
-                            "bytes": [60],
-                            "logprob": -3.2663880119798705e-05
-                        },
-                        {
-                            "id": 524,
-                            "token": "</",
-                            "bytes": [60, 47]
-                            "logprob": -11.929385768492
-                        },
-                        ...
-                    ]
-                }
-            ]
-        }
-        Takes the last item in the content as this represents the final answer token.
-        Looks at its "top_logprops" list to find scores for 'A', 'B', 'C', and 'D'
-        Converts logits to probabilities with softmax and normalizes
-        """
-        # Find the final answer token:
-        content = logprobs["content"]
-
-        # Walk backwards through the logprobs array to find the decision step: last token that is exactly A/B/C/D ignoring whitespace
-        answer_idx = None
-        for i in range(len(content) - 1, -1, -1):
-            if content[i]["token"].strip() in ("A", "B", "C", "D"):
-                answer_idx = i
-                break
-        
-        if answer_idx is None:
-            # TODO
-            # Handle this situation! What should I have the pipeline do when no probs are found?
-            return {k: 0.0 for k in ["A", "B", "C", "D"]}
-        
-        entry = content[answer_idx]
-        top_entries = entry.get("top_logprobs", []) # extract the top_logprobs for all tokens that could be this token
-        top_dict = {e["token"]: e["logprob"] for e in top_entries} # Create a dictionary of the top_logprobs
-
-        # Build unnormalized probs for A/B/C/D from top_logprobs (handle variants)
-        raw_probs = {}
-        for ch in [" A", " B", " C", " D"]:
-            if ch in top_dict:
-                raw_probs[ch] = math.exp(top_dict[ch])
-            else:
-                raw_probs[ch] = 0.0 # missing from top-k
-
-        # Now normalize the probabilities
-        normalization_constant = sum(raw_probs.values())
-        if normalization_constant > 0:
-            answer_probs = {k.strip(): v / normalization_constant for k, v in raw_probs.items()}
-        else:
-            # Fallback if none of the choices were found
-            answer_probs = {k: 0.0 for k in ["A", "B", "C", "D"]}
-        return answer_probs
-
     
     def analyze_by_syntax(self, sentence: str, adverb: str):
         """
@@ -218,7 +150,7 @@ class BroadGrouperAgent:
         ppl = self.prob_handlers.calculate_reasoning_perplexity()
         
         # Use prob_handlers class to calculate the probability distribution of the answer
-        choice_selections = [" A", " B", " C", " D"]
+        choice_selections = [" A", " B", " C", " D"] #Notice that these are written with a space to account for tokenization in the model (in this case llama)
         answer_probs = self.prob_handlers.calculate_prob_distribution(choice_selections)
 
         print("Reasoning perplexity: ", ppl)
