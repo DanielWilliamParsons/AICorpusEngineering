@@ -1,5 +1,6 @@
 import traceback
 import sys
+from AICorpusEngineering.logger.logger_registry import get_logger
 
 class ErrorHandler:
     """
@@ -11,7 +12,7 @@ class ErrorHandler:
         logger: an optional logger (NDJSONLogger)
         fatal_exceptions: a tuple of exceptions that should stop the program
         """
-        self.logger = logger
+        self.logger = get_logger # Get the global instance of the logger
         self.fatal_exceptions = fatal_exceptions or (RuntimeError,)
 
     def handle(self, exc: Exception, context: dict = None, fatal: bool = False):
@@ -26,7 +27,7 @@ class ErrorHandler:
         }
 
         if self.logger:
-            self.logger.log_records([{"error": error_info}])
+            self.logger.log_error([{"error": error_info}])
         else:
             print("ERROR: ", error_info, file=sys.stderr)
 

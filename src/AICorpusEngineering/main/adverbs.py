@@ -55,10 +55,17 @@ def main():
     # Logging
 
     parser.add_argument(
-        "--log-file",
+        "--error_logs",
         type=Path,
         default=None,
-        help="Path to the log file (default: inside output_dir with timestamped name)"
+        help="Path to the error logs file (default: inside output_dir with timestamped name)"
+    )
+
+    parser.add_argument(
+        "--data_logs",
+        type=Path,
+        default=None,
+        help="Path to the data logs file (default: inside output_dir with timestamped name)"
     )
 
     parser.add_argument(
@@ -93,7 +100,7 @@ def main():
     output_dir.mkdir(parents=True, exist_ok=True)
 
     # Create the logger
-    logger = NDJSONLogger(args.log_file, output_dir)
+    logger = NDJSONLogger(args.data_logs, args.error_logs, args.output_dir)
     set_logger(logger) # Register a global instance of the logger, now available anywhere.
 
     # input_txt = (args.input_texts_dir / args.input_txt).resolve()

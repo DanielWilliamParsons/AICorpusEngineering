@@ -1,11 +1,12 @@
 import json
 from AICorpusEngineering.logger.logger import NDJSONLogger
 from AICorpusEngineering.error_handler.error_handler import error_handler
+from AICorpusEngineering.logger.logger_registry import get_logger
 
 class TaggingPipeline:
     def __init__(self, grouper_agents, logger: NDJSONLogger):
         self.grouper_agents = grouper_agents
-        self.logger = logger
+        self.logger = get_logger() # Get the global instance of the logger
 
     def run(self, input_txt, output_txt):
         results = []
@@ -29,7 +30,7 @@ class TaggingPipeline:
                     except Exception as e:
                         if error_handler:
                             # TODO: add file name to the context
-                            error_handler.handle(e, context={"line": i, "sentence": plain_sentence, "adverb": adverb})
+                            error_handler.handle(e, context={"line": i, "sentence": plain_sentence, "adverb": adverb}) # Logging of the error is handled by the error_handler so no need to log
             self.logger.log_records(results)
 
 

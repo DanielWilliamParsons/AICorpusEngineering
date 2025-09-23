@@ -9,34 +9,50 @@ class NDJSONLogger:
     Append-only logger that writes each record as one JSON object per line (NDJSON format).
     """
 
-    def __init__(self, log_file: Path | None, output_dir: Path):
+    def __init__(self, data_logs: Path | None, error_logs: Path | None, output_dir: Path):
         """
         log_file: user-supplied path (can be None, a file path, or a directory)
         output_dir: the run's output directory (used for default logs)
         """
 
-        if log_file is None:
+        if error_logs is None:
             # Default: put a timestamped log file inside output_dir
-            log_file = output_dir / f"errors_{datetime.now().strftime('%Y%m%d-%H%M%S')}.ndjson"
+            error_logs = output_dir / f"errors_{datetime.now().strftime('%Y%m%d-%H%M%S')}.ndjson"
         else:
-            log_file = Path(log_file).expanduser().resolve()
+            error_logs = Path(error_logs).expanduser().resolve()
 
-            if log_file.suffix == "":
+            if error_logs.suffix == "":
                 # User passed a directory -> put a timestamped log file inside it
-                log_file.mkdir(parents=True, exist_ok=True)
-                log_file = log_file / f"errors_{datetime.now().strftime('%Y%m%d-%H%M%S')}.ndjson"
+                error_logs.mkdir(parents=True, exist_ok=True)
+                error_logs = error_logs / f"errors_{datetime.now().strftime('%Y%m%d-%H%M%S')}.ndjson"
             else:
                 # User passed a file path -> ensure its parent exists
-                log_file.parent.mkdir(parent=True, exist_ok=True)
+                error_logs.parent.mkdir(parent=True, exist_ok=True)
 
-        self.log_file = log_file
+        self.error_logs = error_logs
+
+        if data_logs is None:
+            # Default: put a timestamped log file inside output_dir
+            data_logs = output_dir / f"data_{datetime.now().strftime('%Y%m%d-%H%M%S')}.ndjson"
+        else:
+            data_logs = Path(error_logs).expanduser().resolve()
+
+            if data_logs.suffix == "":
+                # User passed a directory -> put a timestamped log file inside it
+                data_logs.mkdir(parents=True, exist_ok=True)
+                data_logs = data_logs / f"data_{datetime.now().strftime('%Y%m%d-%H%M%S')}.ndjson"
+            else:
+                # User passed a file path -> ensure its parent exists
+                data_logs.parent.mkdir(parent=True, exist_ok=True)
+
+        self.data_logs = data_logs
 
     def log_error(self, error_record):
         """
-        Append a record to the log file as NDJSON.
+        Append an error record to the log file, located in the global logger instance
         """
-        with self.log_file.open("a", encoding="utf-8") as f:
-            f.write(json.dumps(record, ensure_ascii=False) + "\n")
+        with self.error_logs.open("a", encoding="utf-8") as f:
+            f.write(json.dumps(error_record, ensure_ascii=False) + "\n")
 
     def log_record(self, record: Dict[str, Any]) -> None:
         """
