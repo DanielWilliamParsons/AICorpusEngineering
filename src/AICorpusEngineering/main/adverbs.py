@@ -4,7 +4,7 @@ import os
 import importlib.resources as resources
 
 from AICorpusEngineering.llm_server.server_manager import ServerManager
-from AICorpusEngineering.agents.adverbs_broad_grouper_agents import BroadGrouperAgents
+from AICorpusEngineering.src.AICorpusEngineering.agents.adverbs_broad_grouper_agent import BroadGrouperAgent
 from AICorpusEngineering.src.AICorpusEngineering.pipelines.tagging_pipeline import TaggingPipeline
 from AICorpusEngineering.logger.logger import NDJSONLogger
 
@@ -76,7 +76,7 @@ def main():
     logger = NDJSONLogger(args.output_txt)
     server.start()
     try:
-        agents = BroadGrouperAgents(args.server_url)
+        agents = BroadGrouperAgent(args.server_url)
         pipeline = TaggingPipeline(agents, logger)
         pipeline.run(input_txt, output_txt)
     finally:
