@@ -13,10 +13,19 @@ class KnowledgeBase:
 
     
     def create_broad_adverb_knowledge_base(self):
-        # Knowledge base looks like this:
-        # KNOWLEDGE ABOUT ADVERB CATEGORIES
-        # A. CIRCUMSTANCE ADVERBS provide information about...
-        # B. STANCE ADVERBS provide information about ...
+        """
+        Knowledge base looks like this:
+        KNOWLEDGE ABOUT ADVERB CATEGORIES
+        A. CIRCUMSTANCE ADVERBS provide information about...
+        B. STANCE ADVERBS provide information about ...
+
+        Mappings dictionary is also created
+        {
+            "A": "CIRCUMSTANCE",
+            "B": "STANCE",
+            ...
+        }
+        """
 
         knowledge_base_path = Path(__file__).resolve().parent / "adverbs.json"
         knowledge_data
@@ -41,4 +50,22 @@ class KnowledgeBase:
             self.knowledge_base_mappings[letter_choices[idx]] = {category_name.upper()}
 
         print(f"Knowledge base prepared: {self.knowledge_base}")
+    
+    def get_knowledge_base(self):
+        """
+        Returns the string containing the created knowledge base.
+        If the knowledge base has not been created yet, it will return ""
+        """
         return self.knowledge_base
+    
+    def get_knowledge_base_mappings(self):
+        """
+        Returns a dictionary containing the mappings of answer keys to categories:
+        e.g.,
+        {
+            "A": "CIRCUMSTANCE",
+            "B": "STANCE"
+            ...
+        }
+        """
+        return self.knowledge_base_mappings
