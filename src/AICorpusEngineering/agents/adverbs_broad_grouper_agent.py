@@ -1,6 +1,8 @@
 import requests, json, re
 from pathlib import Path
 from datetime import datetime
+from AICorpusEngineering.probabilities.prob_handlers import MCQProbHandler
+from AICorpusEngineering.knowledge_base.knowledge_base import KnowledgeBase
 import math
 
 class BroadGrouperAgent:
@@ -14,11 +16,16 @@ class BroadGrouperAgent:
     C. LINKING
     D. DISCOURSE
     """
-    def __init__(self, server_url, prob_handler, knowledge_base):
-        self.server_url = server_url
-        self.knowledge_base_cache = None
-        self.prob_handler = prob_handler # A ProbHandlers object
-        self.knowledge_base = knowledge_base
+    def __init__(
+            self, 
+            server_url, 
+            prob_handler: MCQProbHandler, 
+            knowledge_base: KnowledgeBase
+        ):
+            self.server_url = server_url
+            self.knowledge_base_cache = None
+            self.prob_handler = prob_handler
+            self.knowledge_base = knowledge_base
     
     def _send_request(self, payload, agent_type, knowledge_base, sentence, adverb, temperature=0.001, n_predict=128):
         response = requests.post(
@@ -145,10 +152,22 @@ class BroadGrouperAgent:
         print(f"\n########  GROUPING '{adverb}' with syntactic-grouper-agent.  ########")
         prompt = ""
 
-        knowledge_base = self._retrieve_knowledge_base()
+        #knowledge_base = self._retrieve_knowledge_base()
+        # Construct the knowledge base if we do not already have it in cache
+        if self.knowledge_base_cache is None:
+            self.knowledge_base.create_broad_adverb_knowledge_base()
+            self.knowledge_base_cache = self.knowledge_base.get_knowledge_base()
+
         
         # Send the data to the LMM
-        data = self._send_request(prompt, "syntactic-grouper", knowledge_base = knowledge_base, sentence = sentence, adverb = adverb, temperature=0.0, n_predict=128)
+        data = self._send_request(prompt, 
+                                  "syntactic-grouper", 
+                                  knowledge_base = self.knowledge_base_cache, 
+                                  sentence = sentence, 
+                                  adverb = adverb, 
+                                  temperature=0.0,
+                                  n_predict=128
+                                )
 
         # Get the data back from the LMM
         raw = data["choices"][0]["message"]["content"].strip()
