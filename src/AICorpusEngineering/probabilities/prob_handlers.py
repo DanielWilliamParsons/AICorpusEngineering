@@ -1,6 +1,6 @@
 import math
 
-class MCQProbHandlers:
+class MCQProbHandler:
     def __init__(self, logprobs = None):
         """
         This class handles calculating probabilities of answers to multiple choice questions

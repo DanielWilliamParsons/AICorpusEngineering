@@ -11,10 +11,10 @@ class BroadGrouperAgent:
     The categorization is validated by a second agent.
     If the second agent disagrees with the first, a third agent is called to make the final decision.
     """
-    def __init__(self, server_url, prob_handlers):
+    def __init__(self, server_url, prob_handler):
         self.server_url = server_url
         self.knowledge_base_cache = None
-        self.prob_handlers = prob_handlers # A ProbHandlers object
+        self.prob_handler = prob_handler # A ProbHandlers object
     
     def _send_request(self, payload, agent_type, knowledge_base, sentence, adverb, temperature=0.001, n_predict=128):
         response = requests.post(
@@ -145,13 +145,17 @@ class BroadGrouperAgent:
         raw = data["choices"][0]["message"]["content"].strip()
         logprobs = data["choices"][0]["logprobs"]
 
+        ### Handle probabilities ###
+
         # Use prob_handlers to calculate reasoning complexity
-        self.prob_handlers.set_logprobs(logprobs)
-        ppl = self.prob_handlers.calculate_reasoning_perplexity()
+        self.prob_handler.set_logprobs(logprobs)
+        ppl = self.prob_handler.calculate_reasoning_perplexity()
         
         # Use prob_handlers class to calculate the probability distribution of the answer
         choice_selections = [" A", " B", " C", " D"] #Notice that these are written with a space to account for tokenization in the model (in this case llama)
-        answer_probs = self.prob_handlers.calculate_prob_distribution(choice_selections)
+        answer_probs = self.prob_handler.calculate_prob_distribution(choice_selections)
+
+        ### Parse data for return ###
 
         print("Reasoning perplexity: ", ppl)
         print("Answer probability distribution: ", answer_probs)
