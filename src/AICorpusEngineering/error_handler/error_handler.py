@@ -38,4 +38,5 @@ class ErrorHandler:
         return None
 
 # Initialize a singleton that can be imported by any class
+# TODO: add the logger
 error_handler = ErrorHandler()

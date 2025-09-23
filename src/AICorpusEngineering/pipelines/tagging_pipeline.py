@@ -22,14 +22,14 @@ class TaggingPipeline:
 
                 # Loop through each adverb in adverbs and send to grouper_agents for analysis
                 for adverb in adverbs:
-                    result_by_syntax = self.grouper_agents.analyze_by_syntax(plain_sentence, adverb)
-                    results.append(result_by_syntax)
-                    # validated_result = self.grouper_agents.validate(result)
-                    # TODO
-                    # Check that validated_result["agree"] exists first
-                    # If it doesn't exist, then there was an error. Log the error
-                    # if validated_result["agree"] == "No":
-                    #     mediated_result = self.grouper_agents.mediate(result, validated_result)
+                    try:
+                        result_by_syntax = self.grouper_agents.analyze_by_syntax(plain_sentence, adverb)
+                        if result_by_syntax:
+                            results.append(result_by_syntax)
+                    except Exception as e:
+                        if error_handler:
+                            # TODO: add file name to the context
+                            error_handler.handle(e, context={"line": i, "sentence": plain_sentence, "adverb": adverb})
             self.logger.log_records(results)
 
 
