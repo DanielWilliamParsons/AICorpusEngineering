@@ -2,6 +2,7 @@ from pathlib import Path
 import argparse
 import os
 import importlib.resources as resources
+from datetime import datetime
 
 from AICorpusEngineering.llm_server.server_manager import ServerManager
 from AICorpusEngineering.agents.adverbs_broad_grouper_agent import BroadGrouperAgent
@@ -9,6 +10,7 @@ from AICorpusEngineering.pipelines.tagging_pipeline import TaggingPipeline
 from AICorpusEngineering.probabilities.prob_handlers import MCQProbHandler
 from AICorpusEngineering.knowledge_base.knowledge_base import KnowledgeBase
 from AICorpusEngineering.logger.logger import NDJSONLogger
+from AICorpusEngineering.logger.logger_registry import set_logger
 
 
 def repo_root() -> Path:
@@ -27,22 +29,38 @@ def resolve_repo_path(path_str: str) -> Path:
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Run the Adverbs Broad Grouper pipeline")
-    parser.add_argument("input_txt", type=Path, help="Input TXT file with POS-tagged sentences")
-    parser.add_argument("output_txt", type=Path, help="Output TXT file with JSON results")
+    parser = argparse.ArgumentParser(description="Run the tagging pipeline for adverbs")
+    # User should supply an input folder which contains texts
+    # User should supply an output folder where results and logs will be stored, including error logs
+
+    parser.add_argument("input_dir", type=Path, help="Input the name of the directory where your texts are stored.")
+    parser.add_argument("output_dir", type=Path, help="Input the name of the directory where results and error logs will be saved.")
+
+    # parser.add_argument("input_txt", type=Path, help="Input TXT file with POS-tagged sentences")
+    # parser.add_argument("output_txt", type=Path, help="Output TXT file with JSON results")
+
+    # parser.add_argument(
+    #     "--input_texts_dir",
+    #     type=Path,
+    #     default=resolve_repo_path("tagged_sample_texts"),
+    #     help="Path to the folder with the input text files (default: Tagged Corpus Texts)",
+    # )
+    # parser.add_argument(
+    #     "--output_texts_dir",
+    #     type=Path,
+    #     default=resolve_repo_path("output_texts"),
+    #     help="Path to the folder for output text files (default: output_texts)",
+    # )
+
+    # Logging
 
     parser.add_argument(
-        "--input_texts_dir",
+        "--log-file",
         type=Path,
-        default=resolve_repo_path("tagged_sample_texts"),
-        help="Path to the folder with the input text files (default: Tagged Corpus Texts)",
+        default=None,
+        help="Path to the log file (default: inside output_dir with timestamped name)"
     )
-    parser.add_argument(
-        "--output_texts_dir",
-        type=Path,
-        default=resolve_repo_path("output_texts"),
-        help="Path to the folder for output text files (default: output_texts)",
-    )
+
     parser.add_argument(
         "--server_bin",
         type=Path,
@@ -67,18 +85,33 @@ def main():
 
     args = parser.parse_args()
 
-    input_txt = (args.input_texts_dir / args.input_txt).resolve()
-    output_txt = (args.output_texts_dir / args.output_txt).resolve()
+    input_dir = args.input_dir.expanduser().resolve() # expanduser deals with ~ and resolve deals with relative paths
+    output_dir = args.input_dir.expanduser().resolve()
+
+    if not input_dir.exists() or not input_dir.is_dir():
+        raise FileNotFoundError(f"Input directory not found: {input_dir}")
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    # Create the logger
+    logger = NDJSONLogger(args.log_file, output_dir)
+    set_logger(logger) # Register a global instance of the logger, now available anywhere.
+
+    # input_txt = (args.input_texts_dir / args.input_txt).resolve()
+    # output_txt = (args.output_texts_dir / args.output_txt).resolve()
     chat_template = get_chat_template_path()
 
     if not chat_template.exists():
         raise FileNotFoundError(f"Chat template not found at {chat_template}")
+    
 
+    # Prepare all the necessary objects
     server = ServerManager(args.server_bin, args.model, chat_template)
     prob_handler = MCQProbHandler()
     knowledge_base = KnowledgeBase()
     logger = NDJSONLogger(args.output_txt)
     server.start()
+
+    # Try the tagging process
     try:
         agents = BroadGrouperAgent(args.server_url, prob_handler, knowledge_base)
         pipeline = TaggingPipeline(agents, logger)

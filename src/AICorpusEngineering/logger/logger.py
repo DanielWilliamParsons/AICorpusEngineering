@@ -1,4 +1,6 @@
 import json
+from pathlib import Path
+from datetime import datetime
 from typing import Dict, Any, List
 
 
@@ -7,8 +9,34 @@ class NDJSONLogger:
     Append-only logger that writes each record as one JSON object per line (NDJSON format).
     """
 
-    def __init__(self, filepath: str):
-        self.filepath = filepath
+    def __init__(self, log_file: Path | None, output_dir: Path):
+        """
+        log_file: user-supplied path (can be None, a file path, or a directory)
+        output_dir: the run's output directory (used for default logs)
+        """
+
+        if log_file is None:
+            # Default: put a timestamped log file inside output_dir
+            log_file = output_dir / f"errors_{datetime.now().strftime('%Y%m%d-%H%M%S')}.ndjson"
+        else:
+            log_file = Path(log_file).expanduser().resolve()
+
+            if log_file.suffix == "":
+                # User passed a directory -> put a timestamped log file inside it
+                log_file.mkdir(parents=True, exist_ok=True)
+                log_file = log_file / f"errors_{datetime.now().strftime('%Y%m%d-%H%M%S')}.ndjson"
+            else:
+                # User passed a file path -> ensure its parent exists
+                log_file.parent.mkdir(parent=True, exist_ok=True)
+
+        self.log_file = log_file
+
+    def log_error(self, error_record):
+        """
+        Append a record to the log file as NDJSON.
+        """
+        with self.log_file.open("a", encoding="utf-8") as f:
+            f.write(json.dumps(record, ensure_ascii=False) + "\n")
 
     def log_record(self, record: Dict[str, Any]) -> None:
         """
