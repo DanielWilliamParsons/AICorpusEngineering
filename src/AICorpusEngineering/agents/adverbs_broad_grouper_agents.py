@@ -273,34 +273,3 @@ class BroadGrouperAgents:
         parsed["time"] = datetime.now().isoformat()
         print(f"\nAnalyzed {adverb}:\n{parsed}")
         return parsed
-
-    def analyze_by_elimination(self, sentence: str, adverb: str):
-        print("\n\n### Running circumstance-inspector-agent###")
-        knowledge_base = self._retrieve_knowledge_base()
-        prompt = ""
-
-        # Send the data to the LMM
-        data = self._send_request(prompt, "circumstance-inspector-agent", knowledge_base = knowledge_base, sentence = sentence, adverb = adverb, temperature = 0.0, n_predict=256)
-
-        # Get the data back from the LMM
-        raw = data["choices"][0]["message"]["content"].strip()
-        logprobs = data["choices"][0]["logprobs"]
-        ppl = self._calculate_reasoning_perplexity(logprobs)
-        answer_probs = self._calculate_final_answer_probs(logprobs)
-
-        print("Reasoning perplexity: ", ppl)
-        #print("Answer probability distribution: ", answer_probs)
-        print(raw)
-
-        parsed = ""
-        return parsed
-
-
-    def mediate(self, original_result, validated_result):
-        print("\n\n###MEDIATING the disagreement###")
-        original_result["disagreement"] = validated_result["reason"]
-        prompt = json.dumps(original_result)
-        knowledge_base = self._retrieve_knowledge_base() # Get the knowledge base (likely cached)
-        data = self._send_request(prompt, "mediator-agent", knowledge_base = knowledge_base, temperature=0.0, n_predict=256)
-        raw = data["choices"][0]["message"]["content"].strip()
-        print(f"##MEDIATOR OUTPUT: {raw}")

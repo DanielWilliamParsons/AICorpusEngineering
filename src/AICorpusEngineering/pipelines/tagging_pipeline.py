@@ -1,7 +1,7 @@
 import json
 from AICorpusEngineering.logger.logger import NDJSONLogger
 
-class BroadGrouperPipeline:
+class TaggingPipeline:
     def __init__(self, grouper_agents, logger: NDJSONLogger):
         self.grouper_agents = grouper_agents
         self.logger = logger
@@ -22,7 +22,6 @@ class BroadGrouperPipeline:
                 # Loop through each adverb in adverbs and send to grouper_agents for analysis
                 for adverb in adverbs:
                     result_by_syntax = self.grouper_agents.analyze_by_syntax(plain_sentence, adverb)
-                    result_by_elimination = self.grouper_agents.analyze_by_elimination(plain_sentence, adverb)
                     results.append(result_by_syntax)
                     # validated_result = self.grouper_agents.validate(result)
                     # TODO
