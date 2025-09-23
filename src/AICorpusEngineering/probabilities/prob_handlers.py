@@ -56,6 +56,9 @@ class MCQProbHandler:
             if content[i]["token"].strip() in ("A", "B", "C", "D", "E", "F", "G", "H", "I", 'J'):
                 self.final_answer_token_index = i
                 break
+
+    def return_final_answer_token_index(self):
+        return self.final_answer_token_index
         
 
     def calculate_reasoning_perplexity(self):

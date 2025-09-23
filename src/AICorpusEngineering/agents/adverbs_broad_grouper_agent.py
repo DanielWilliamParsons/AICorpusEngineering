@@ -5,11 +5,14 @@ import math
 
 class BroadGrouperAgent:
     """
-    This class contains calls to three LLM agents.
-    The first agent attempts to categorize the adverb according to one of four super categories of adverb:
-    Circumstantial, Stance, Linking and Discursive.
-    The categorization is validated by a second agent.
-    If the second agent disagrees with the first, a third agent is called to make the final decision.
+    This class calls the syntactic-grouper large language model
+    which classifies an adverb using an injected knowledge base, Chain of Thought reasoning about syntax
+    and few shot examples about the classification.
+    Classifications are:
+    A. CIRCUMSTANCE
+    B. STANCE
+    C. LINKING
+    D. DISCOURSE
     """
     def __init__(self, server_url, prob_handler):
         self.server_url = server_url
@@ -129,8 +132,13 @@ class BroadGrouperAgent:
         This is then passed back into to the pipeline.
         The parsed data that gets returned should look like this:
         {
-            "category": "CIRCUMSTANCE", 
-            "confidence": "0.85"
+            "sentence": "the sentence passed in",
+            "adverb": "the original adverb passed in",
+            "category": "CIRCUMSTANCE, STANCE, LINKING, DISCOURSE - one of these categories determined by the LLM",
+            "final_answer": "A, B, C, D - one of these associated with the category, given by the LLM",
+            "CoT": "The chain of thought reasoning output carried out by the LLM",
+            "ppl": float - perplexity of the chain of thought tokens, calculated by the MCQProbHandler object prob_handler
+            "probdist": { "A": float, "B": float, "C": float, "D": float} - the normalized probability distribution of the answers selectable by the LLM when selecting the final answer
         }
         """
         print(f"\n########  GROUPING '{adverb}' with syntactic-grouper-agent.  ########")
@@ -146,7 +154,6 @@ class BroadGrouperAgent:
         logprobs = data["choices"][0]["logprobs"]
 
         ### Handle probabilities ###
-
         # Use prob_handlers to calculate reasoning complexity
         self.prob_handler.set_logprobs(logprobs)
         ppl = self.prob_handler.calculate_reasoning_perplexity()
@@ -155,18 +162,36 @@ class BroadGrouperAgent:
         choice_selections = [" A", " B", " C", " D"] #Notice that these are written with a space to account for tokenization in the model (in this case llama)
         answer_probs = self.prob_handler.calculate_prob_distribution(choice_selections)
 
+
         ### Parse data for return ###
-
-        print("Reasoning perplexity: ", ppl)
-        print("Answer probability distribution: ", answer_probs)
-        print(raw)
-        # Strip anything that is not inside a JSON style string
-        parsed = self._parse_raw_to_json(raw)
-
-        # Append the original sentence and the original adverb to the JSON result from the LLM
-        # for record-keeping, then pass back
+        parsed = {}
+        # Add the sentence and adverb to the data to send back to the pipeline
         parsed["sentence"] = sentence
         parsed["adverb"] = adverb
+        
+        # Get the chain of thought from the LLM
+        match = re.search(r"<\|assistant\|>(.*?)Final Answer", raw, re.DOTALL | re.IGNORECASE) # This assumes the output always starts with <|assistant|> and ends with Final Answer: 
+        if match:
+            parsed["CoT"] = match.group(1).strip()
+        else:
+            parsed["CoT"] = raw # If the output was different, just put the raw LLM output into the parsed object
+
+        # Add the final answer token
+        # First, get the final answer index token from the prob_handler because this class can find it
+        final_answer_token_index = self.prob_handler.return_final_answer_token_index()
+        parsed["final_answer"] =  logprobs["content"][final_answer_token_index]["token"].strip()
+
+        # Add the category answer
+        # TODO: Use a knowledge base class to do this based on mappings
+        parsed["category"] = "TODO PLEASE USING KNOWLEDGE BASE CLASS!"
+
+        # Add the perplexity to the output
+        parsed["ppl"] = ppl
+
+        # Add the answer probability distribution to the output
+        parsed["probdist"] = answer_probs
+
+        # Ad the time
         parsed["time"] = datetime.now().isoformat()
         print(f"\nAnalyzed {adverb}:\n{parsed}")
         return parsed
