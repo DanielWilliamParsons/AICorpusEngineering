@@ -7,6 +7,7 @@ from AICorpusEngineering.llm_server.server_manager import ServerManager
 from AICorpusEngineering.agents.adverbs_broad_grouper_agent import BroadGrouperAgent
 from AICorpusEngineering.pipelines.tagging_pipeline import TaggingPipeline
 from AICorpusEngineering.probabilities.prob_handlers import MCQProbHandler
+from AICorpusEngineering.knowledge_base.knowledge_base import KnowledgeBase
 from AICorpusEngineering.logger.logger import NDJSONLogger
 
 
@@ -75,10 +76,11 @@ def main():
 
     server = ServerManager(args.server_bin, args.model, chat_template)
     prob_handler = MCQProbHandler()
+    knowledge_base = KnowledgeBase()
     logger = NDJSONLogger(args.output_txt)
     server.start()
     try:
-        agents = BroadGrouperAgent(args.server_url, prob_handler)
+        agents = BroadGrouperAgent(args.server_url, prob_handler, knowledge_base)
         pipeline = TaggingPipeline(agents, logger)
         pipeline.run(input_txt, output_txt)
     finally:

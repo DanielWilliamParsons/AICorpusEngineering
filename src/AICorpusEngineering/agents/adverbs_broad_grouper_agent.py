@@ -14,10 +14,11 @@ class BroadGrouperAgent:
     C. LINKING
     D. DISCOURSE
     """
-    def __init__(self, server_url, prob_handler):
+    def __init__(self, server_url, prob_handler, knowledge_base):
         self.server_url = server_url
         self.knowledge_base_cache = None
         self.prob_handler = prob_handler # A ProbHandlers object
+        self.knowledge_base = knowledge_base
     
     def _send_request(self, payload, agent_type, knowledge_base, sentence, adverb, temperature=0.001, n_predict=128):
         response = requests.post(
