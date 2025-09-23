@@ -93,7 +93,7 @@ def main():
     args = parser.parse_args()
 
     input_dir = args.input_dir.expanduser().resolve() # expanduser deals with ~ and resolve deals with relative paths
-    output_dir = args.input_dir.expanduser().resolve()
+    output_dir = args.output_dir.expanduser().resolve()
 
     if not input_dir.exists() or not input_dir.is_dir():
         raise FileNotFoundError(f"Input directory not found: {input_dir}")
@@ -115,14 +115,13 @@ def main():
     server = ServerManager(args.server_bin, args.model, chat_template)
     prob_handler = MCQProbHandler()
     knowledge_base = KnowledgeBase()
-    logger = NDJSONLogger(args.output_txt)
     server.start()
 
     # Try the tagging process
     try:
         agents = BroadGrouperAgent(args.server_url, prob_handler, knowledge_base)
         pipeline = TaggingPipeline(agents, logger)
-        pipeline.run(input_txt, output_txt)
+        pipeline.run(input_dir, output_dir)
     finally:
         server.stop()
 

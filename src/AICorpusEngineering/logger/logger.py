@@ -11,7 +11,8 @@ class NDJSONLogger:
 
     def __init__(self, data_logs: Path | None, error_logs: Path | None, output_dir: Path):
         """
-        log_file: user-supplied path (can be None, a file path, or a directory)
+        data_logs: user-supplied path (can be None, a file path, or a directory) for storing LLM output data
+        error_logs: user-suppled path (can be None, a file path, or a directory) for storing errors while processing LLM output data
         output_dir: the run's output directory (used for default logs)
         """
 
@@ -54,11 +55,11 @@ class NDJSONLogger:
         with self.error_logs.open("a", encoding="utf-8") as f:
             f.write(json.dumps(error_record, ensure_ascii=False) + "\n")
 
-    def log_record(self, record: Dict[str, Any]) -> None:
+    def log_record(self, record) -> None:
         """
         Append a single record to the log file as a JSON line.
         """
-        with open(self.filepath, "a", encoding="utf-8") as f:
+        with self.data_logs.open("a", encoding="utf-8") as f:
             f.write(json.dumps(record, ensure_ascii=False) + "\n")
 
     def log_records(self, records: List[Dict[str, Any]]) -> None:
