@@ -103,8 +103,6 @@ def main():
     logger = NDJSONLogger(args.data_logs, args.error_logs, args.output_dir)
     set_logger(logger) # Register a global instance of the logger, now available anywhere.
 
-    # input_txt = (args.input_texts_dir / args.input_txt).resolve()
-    # output_txt = (args.output_texts_dir / args.output_txt).resolve()
     chat_template = get_chat_template_path()
 
     if not chat_template.exists():
@@ -115,13 +113,18 @@ def main():
     server = ServerManager(args.server_bin, args.model, chat_template)
     prob_handler = MCQProbHandler()
     knowledge_base = KnowledgeBase()
+    data_logs = args.data_logs
+    if args.data_logs is None:
+        data_logs = output_dir
+
+    # Start the LLM server
     server.start()
 
     # Try the tagging process
     try:
         agents = BroadGrouperAgent(args.server_url, prob_handler, knowledge_base)
         pipeline = TaggingPipeline(agents, logger)
-        pipeline.run(input_dir, output_dir)
+        pipeline.run(input_dir, output_dir, data_logs)
     finally:
         server.stop()
 
