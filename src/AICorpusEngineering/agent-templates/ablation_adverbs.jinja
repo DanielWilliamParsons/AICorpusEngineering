@@ -1,5 +1,6 @@
 {{ bos_token }}
 {% if agent_type == "base_study" %}
+<|system|>
 You classify adverbs according to the following categories:
 {{ knowledge_base }}
 
@@ -49,3 +50,145 @@ Final answer: D
 { "sentence": "{{ sentence }}", "adverb": "{{ adverb }}" }
 
 {% endif %}
+
+
+
+{% elif agent_type == "kb_oneshot_cot" %}
+<|system|>
+You classify adverbs according to the following categories:
+{{ knowledge_base }}
+
+For the given adverb:
+1. Write a short step-by-step reasoning.  
+2. Write the final answer as just a letter, A, B, C or D.  
+
+Be consistent with the example below.
+
+<|user|>
+{ "sentence": "I am having a marvelously wonderful day.", "adverb": "marvelously" }
+
+<|assistant|>
+1. The adverb "marvelously" modifies the adjective "wonderful".  
+2. It shows degree, not attitude or connection.  
+3. Therefore, it is a circumstance adverb.   
+Final answer: A
+
+<|user|>
+{ "sentence": "{{ sentence }}", "adverb": "{{ adverb }}" }
+
+{% endif %}
+
+
+
+{% elif agent_type == "kb_zeroshot" %}
+<|system|>
+You classify adverbs according to the following categories:
+{{ knowledge_base }}
+
+For the given adverb from the given sentence write only the final answer as just a letter, A, B, C or D.
+Return only the final answer and do not add any extra text.
+
+<|user|>
+{ "sentence": "{{ sentence }}", "adverb": "{{ adverb }}" }
+{% endif %}
+
+
+
+{% elif agent_type == "zero_shot" %}
+<|system|>
+You classify adverbs according to the following categories:
+A. CIRCUMSTANCE
+B. STANCE
+C. LINKING
+D. DISCOURSE
+
+For the given adverb from the given sentence write only the final answer as just a letter, A, B, C or D.
+Return only the final answer and do not add any extra text.
+
+<|user|>
+{ "sentence": "{{ sentence }}", "adverb": "{{ adverb }}" }
+
+
+
+{% elif agent_type == "oneshot_cot" %}
+<|system|>
+You classify adverbs according to the following categories:
+A. CIRCUMSTANCE
+B. STANCE
+C. LINKING
+D. DISCOURSE
+
+For the given adverb:
+1. Write a short step-by-step reasoning.  
+2. Write the final answer as just a letter, A, B, C or D.  
+
+Be consistent with the example below.
+
+<|user|>
+{ "sentence": "I am having a marvelously wonderful day.", "adverb": "marvelously" }
+
+<|assistant|>
+1. The adverb "marvelously" modifies the adjective "wonderful".  
+2. It shows degree, not attitude or connection.  
+3. Therefore, it is a circumstance adverb.   
+Final answer: A
+
+<|user|>
+{ "sentence": "{{ sentence }}", "adverb": "{{ adverb }}" }
+
+{% endif %}
+
+
+
+{% elif agent_type == "fewshot_cot" %}
+<|system|>
+You classify adverbs according to the following categories:
+A. CIRCUMSTANCE
+B. STANCE
+C. LINKING
+D. DISCOURSE
+
+For the given adverb:
+1. Write a short step-by-step reasoning.  
+2. Write the final answer as just a letter, A, B, C or D.  
+
+Be consistent with the examples below.
+
+<|user|>
+{ "sentence": "I am having a marvelously wonderful day.", "adverb": "marvelously" }
+
+<|assistant|>
+1. The adverb "marvelously" modifies the adjective "wonderful".  
+2. It shows degree, not attitude or connection.  
+3. Therefore, it is a circumstance adverb.   
+Final answer: A
+
+<|user|>
+{ "sentence": "Clearly, we need to act now.", "adverb": "clearly" }
+
+<|assistant|>
+1. The adverb "clearly" comments on the whole clause.  
+2. It expresses the speaker’s certainty, which is stance.  
+3. Therefore, it is a stance adverb.  
+Final answer: B
+
+<|user|>
+{ "sentence": "However, she decided to continue.", "adverb": "however" }
+
+<|assistant|>
+1. The adverb "however" links this sentence with the previous one.  
+2. It signals contrast, which is a linking function.  
+3. Therefore, it is a linking adverb.   
+Final answer: C
+
+<|user|>
+{ "sentence": "Well, I think we should start now.", "adverb": "well" }
+
+<|assistant|>
+1. The adverb "well" does not modify a verb or adjective.  
+2. It manages discourse, marking hesitation or a transition in conversation.  
+3. Therefore, it is a discourse adverb.  
+Final answer: D
+
+<|user|>
+{ "sentence": "{{ sentence }}", "adverb": "{{ adverb }}" }
