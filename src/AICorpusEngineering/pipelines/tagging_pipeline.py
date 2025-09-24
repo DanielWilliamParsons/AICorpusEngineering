@@ -11,7 +11,6 @@ class TaggingPipeline:
     def run(self, input_dir, output_dir):
         # Loop through all the files in the input_dir
         for input_file in input_dir.glob("*.txt"):
-            results = []
             filename = input_file.name
             with open(input_file, "r", encoding="utf-8") as infile:
                 for i, line in enumerate(infile, start=1):
@@ -35,6 +34,7 @@ class TaggingPipeline:
                             if error_handler:
                                 # TODO: add file name to the context
                                 error_handler.handle(e, context={"filename": filename, "line": i, "sentence": plain_sentence, "adverb": adverb}) # Logging of the error is handled by the error_handler so no need to log
-
+            completion_log = {"filepath": input_file}
+            self.logger.log_completion(completion_log)
 
         print(f"Done! Enhanced sentences saved to {output_dir}")
