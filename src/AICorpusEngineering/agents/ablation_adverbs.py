@@ -287,7 +287,7 @@ class AdverbsAblationStudy:
         # ----------
         raw = data["choices"][0]["message"]["content"].strip()
         logprobs =data["choices"][0]["logprobs"]
-        parsed = self.process_data(raw, logprobs, sentence, adverb, False) # Does not have chain of thought
+        parsed = self.process_data(raw, logprobs, sentence, adverb, True) # Has chain of thought
 
         # ----------
         # Send processed data back to the pipeline
@@ -302,13 +302,64 @@ class AdverbsAblationStudy:
         In this study, we offer examples for each category with
         reasoning chains and instructions, but no knowledge base.
         """
+        print(f"\n------ Ablation Study: Beginning Ablation 5 - Few shot + CoT for {adverb} ------")
 
+        # ----------
+        # Prepare the prompt
+        # ----------
+        prompt = "" # No extra instructions in the study
+
+        # ----------
+        # Prepare the knowledge base 
+        # In this study the knowledge base is just the category names
+        # These are currently hard-coded into the jinja template
+        # ----------
+        # if self.knowledge_base_cache is None:
+        #     self.knowledge_base.create_broad_adverb_knowledge_base()
+        #     self.knowledge_base_cache = self.knowledge_base.get_knowledge_base()
+
+        # ----------
+        # Send the data to the LLM
+        # ----------
+        data = self._send_request(
+            prompt,
+            "fewshot_cot",
+            knowledge_base = "",
+            sentence = sentence,
+            adverb = adverb,
+            temperature = 0.0,
+            n_predict = 128
+        )
+
+        # ----------
+        # Get the data back from the LLM and process the data
+        # ----------
+        raw = data["choices"][0]["message"]["content"].strip()
+        logprobs =data["choices"][0]["logprobs"]
+        parsed = self.process_data(raw, logprobs, sentence, adverb, True) # Has chain of thought
+
+        # ----------
+        # Send processed data back to the pipeline
+        # ----------
+        print(f"\n------ Ablation study 5 for adverb '{adverb}': \n {parsed}")
+        return parsed
+
+    # ----------
+    # Clear the knowledge base cache
+    # This method can be called outside this class
+    # so that the knowledge base cache can be cleared to allow a new knowledge base
+    # to created if necessary
+    # ----------
     def clear_knowledge_base_cache(self):
         """
         Necessary for reformulating the knowledge base for different studies
         """
         self.knowledge_base_cache = None
 
+    # ----------
+    # Process data retrieved back from the LLM
+    # This utility method is called by all studies
+    # ----------
     def process_data(self, raw_llm_output, logprobs, sentence: str, adverb: str, has_CoT: bool):
         """
         Data processing from the LLM is the same for each study
