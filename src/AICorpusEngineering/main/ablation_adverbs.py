@@ -20,7 +20,7 @@ def repo_root() -> Path:
 
 def get_chat_template_path() -> Path:
     """Return the installed path to the adverbs.jinja template."""
-    return resources.files("AICorpusEngineering.agent-templates").joinpath("adverbs.jinja")
+    return resources.files("AICorpusEngineering.agent-templates").joinpath("ablation_adverbs.jinja")
 
 
 def resolve_repo_path(path_str: str) -> Path:
@@ -37,7 +37,7 @@ def main():
     parser.add_argument("input_dir", type=Path, help="Input the name of the directory where your texts are stored.")
 
     # ----------
-    # Logging
+    # Error and Data Logging
     # ----------
     parser.add_argument(
         "--error_logs",
@@ -98,29 +98,28 @@ def main():
     logger = NDJSONLogger(args.data_logs, args.error_logs, args.output_dir)
     set_logger(logger) # Register a global instance of the logger, now available anywhere.
 
+    # ----------
+    # Prepare the agent template
+    # ----------
     chat_template = get_chat_template_path()
-
     if not chat_template.exists():
         raise FileNotFoundError(f"Chat template not found at {chat_template}")
     
-
-    # Prepare all the necessary objects
+    # ----------
+    # Prepare objects for ablation study and start server
+    # ----------
     server = ServerManager(args.server_bin, args.model, chat_template)
     prob_handler = MCQProbHandler()
     knowledge_base = KnowledgeBase()
-    data_logs = args.data_logs
-    if args.data_logs is None:
-        data_logs = output_dir
-
-    print(f"In adverbs.py the data_logs are: {data_logs}")
-    # Start the LLM server
     server.start()
 
-    # Try the tagging process
+    # ----------
+    # Begin the ablation studies
+    # ----------
     try:
         agents = AdverbsAblationStudy(args.server_url, prob_handler, knowledge_base)
         pipeline = AblationPipeline(agents, logger)
-        pipeline.run(input_dir, output_dir, data_logs)
+        pipeline.run(input_dir, output_dir)
     finally:
         server.stop()
 
