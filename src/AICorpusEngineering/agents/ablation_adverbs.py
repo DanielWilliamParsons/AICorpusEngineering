@@ -72,7 +72,7 @@ class AdverbsAblationStudy:
         # ----------
         # Prepare the prompt
         # ----------
-        prompt = ""
+        prompt = "" # No extra instructions in the study
 
         # ----------
         # Prepare the knowledge base
@@ -95,49 +95,15 @@ class AdverbsAblationStudy:
         )
 
         # ----------
-        # Get the data back fromt he LLM
+        # Get the data back from the LLM and process the data
         # ----------
         raw = data["choices"][0]["message"]["content"].strip()
         logprobs =data["choices"][0]["logprobs"]
+        parsed = self.process_data(raw, logprobs, sentence, adverb, True) # Has chain of thought
 
         # ----------
-        # Handle the probabilities
+        # Send processed data back to the pipeline
         # ----------
-        self.prob_handler.set_logprobs(logprobs)
-        ppl = self.prob_handler.calculate_reasoning_perplexity()
-        choice_selections = [" A", " B", " C", " D"]
-        answer_probs = self.prob_handler.calculate_prob_distribution(choice_selections)
-
-        # ----------
-        # Parse data for returning to the pipeline
-        # ----------
-        parsed = {}
-        parsed["sentence"] = sentence
-        parsed["adverb"] = adverb
-
-        # Get the chain of thought from the LLM
-        match = re.search(r"<\|assistant\|>(.*?)Final Answer", raw, re.DOTALL | re.IGNORECASE) # This assumes the output always starts with <|assistant|> and ends with Final Answer: 
-        if match:
-            parsed["CoT"] = match.group(1).strip()
-        else:
-            parsed["CoT"] = raw # If the output was different, just put the raw LLM output into the parsed object
-
-        # Add the final answer token
-        final_answer_token_index = self.prob_handler.return_final_answer_token_index()
-        parsed["final_answer"] = logprobs["content"][final_answer_token_index]["token"].strip()
-
-        # Add the category answer
-        parsed["category"] = self.knowledge_base.get_knowledge_base_mappings()[parsed["final_answer"]]
-
-        # Add the perplexity to the output
-        parsed["ppl"] = ppl
-
-        # Add the answer probability distribution to the output
-        parsed["probdist"] = answer_probs
-
-        # Add the time
-        parsed["time"] = datetime.now().isoformat()
-
         print(f"\n------ Base Study for adverb '{adverb}': \n {parsed}")
         return parsed
 
@@ -182,3 +148,47 @@ class AdverbsAblationStudy:
         Necessary for reformulating the knowledge base for different studies
         """
         self.knowledge_base_cache = None
+
+    def process_data(self, raw_llm_output, logprobs, sentence: str, adverb: str, has_CoT: bool):
+        """
+        Data processing from the LLM is the same for each study
+        """
+        # ----------
+        # Handle the probabilities
+        # ----------
+        self.prob_handler.set_logprobs(logprobs)
+        ppl = self.prob_handler.calculate_reasoning_perplexity()
+        choice_selections = [" A", " B", " C", " D"]
+        answer_probs = self.prob_handler.calculate_prob_distribution(choice_selections)
+
+        # ----------
+        # Parse data for returning to the pipeline
+        # ----------
+        parsed = {}
+        parsed["sentence"] = sentence
+        parsed["adverb"] = adverb
+
+        if has_CoT:
+            # Get the chain of thought from the LLM
+            match = re.search(r"<\|assistant\|>(.*?)Final Answer", raw_llm_output, re.DOTALL | re.IGNORECASE) # This assumes the output always starts with <|assistant|> and ends with Final Answer: 
+            if match:
+                parsed["CoT"] = match.group(1).strip()
+            else:
+                parsed["CoT"] = raw_llm_output # If the output was different, just put the raw LLM output into the parsed object
+
+        # Add the final answer token
+        final_answer_token_index = self.prob_handler.return_final_answer_token_index()
+        parsed["final_answer"] = logprobs["content"][final_answer_token_index]["token"].strip()
+
+        # Add the category answer
+        parsed["category"] = self.knowledge_base.get_knowledge_base_mappings()[parsed["final_answer"]]
+
+        # Add the perplexity to the output
+        parsed["ppl"] = ppl
+
+        # Add the answer probability distribution to the output
+        parsed["probdist"] = answer_probs
+
+        # Add the time
+        parsed["time"] = datetime.now().isoformat()
+        return parsed
