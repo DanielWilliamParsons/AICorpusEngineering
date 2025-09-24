@@ -16,16 +16,18 @@ class NDJSONLogger:
         output_dir: the run's output directory (used for default logs)
         """
 
+        timestamp = datetime.now().strftime('%Y%m%d-%H%M%S')
+
         if error_logs is None:
             # Default: put a timestamped log file inside output_dir
-            error_logs = output_dir / f"errors_{datetime.now().strftime('%Y%m%d-%H%M%S')}.ndjson"
+            error_logs = output_dir / f"_errors_{timestamp}.ndjson"
         else:
             error_logs = Path(error_logs).expanduser().resolve()
 
             if error_logs.suffix == "":
                 # User passed a directory -> put a timestamped log file inside it
                 error_logs.mkdir(parents=True, exist_ok=True)
-                error_logs = error_logs / f"errors_{datetime.now().strftime('%Y%m%d-%H%M%S')}.ndjson"
+                error_logs = error_logs / f"_errors_{timestamp}.ndjson"
             else:
                 # User passed a file path -> ensure its parent exists
                 error_logs.parent.mkdir(parent=True, exist_ok=True)
@@ -34,19 +36,23 @@ class NDJSONLogger:
 
         if data_logs is None:
             # Default: put a timestamped log file inside output_dir
-            data_logs = output_dir / f"data_{datetime.now().strftime('%Y%m%d-%H%M%S')}.ndjson"
+            data_logs = output_dir / f"_data_{timestamp}.ndjson"
+            run_completion_logs = output_dir / f"_run_completion_{timestamp}.ndjson"
         else:
             data_logs = Path(error_logs).expanduser().resolve()
 
             if data_logs.suffix == "":
                 # User passed a directory -> put a timestamped log file inside it
                 data_logs.mkdir(parents=True, exist_ok=True)
-                data_logs = data_logs / f"data_{datetime.now().strftime('%Y%m%d-%H%M%S')}.ndjson"
+                data_logs = data_logs / f"_data_{timestamp}.ndjson"
+                run_completion_logs = output_dir / f"_run_completion_{timestamp}.ndjson"
             else:
                 # User passed a file path -> ensure its parent exists
                 data_logs.parent.mkdir(parent=True, exist_ok=True)
+                run_completion_logs = data_logs.parent / f"_run_completion_{timestamp}.ndjson"
 
         self.data_logs = data_logs
+        self.run_completion_logs = run_completion_logs
 
     def log_error(self, error_record):
         """
