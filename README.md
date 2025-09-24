@@ -68,7 +68,7 @@ First install the package in editable mode
 This makes the command-line entry points available globally in your environment.
 
 ## Preparing texts for parts of speech tagging
-**SpaCy models for tagging text**
+**SpaCy models for Parts of Speech tagging of texts**
 
 To use SpaCy for parts of speech tagging, download the relevant models. For example:
 
@@ -76,15 +76,15 @@ To use SpaCy for parts of speech tagging, download the relevant models. For exam
 
 `python3 -m spacy download en_core_wen_sm` and `python3 -m spacy download en_core_web_md` and `python3 -m spacy download en_core_web_lg` are other alternatives with _sm being the fastest, though least accurate.
 
-**Tagging**
+**Parts of Speech Tagging**
 Once installed, you can now tag corpus texts diretly using the tag_texts command:
 
 `tag_texts Corpus_Texts Corpus_Texts_Tagged --model en_core_web_trf --workers 4`
 
 * The first argument is the path to your input corpus text folder
 * The second argument is the path where the tagged texts will be written
-* The --model argument selects the SpaCy model (default: en_core_web_trf)
-* The --workers argument sets the number of parallel processes (default: 2)
+* The --model flag selects the SpaCy model (default: en_core_web_trf)
+* The --workers flag sets the number of parallel processes (default: 2)
 
 The directory structure might look something like this:
 
@@ -143,7 +143,7 @@ The agents classes (e.g., BroadGrouperAgents in adverbs_broad_grouper_agents.py)
 
 ### Tag files
 
-`run-adverbs pos_tagged_corpus_dir output_dir --data_logs="path/to/datafile.ndjson" --error_logs="path/to/errorfile.ndjson" --server_bin="path/to/server/binary --server_url="url_to_server" -- model="path/to/llm.gguf"`
+`run-adverbs pos_tagged_corpus_dir output_dir --data_logs="path/to/datafile.ndjson" --error_logs="path/to/errorfile.ndjson" --server_bin="path/to/server/binary --server_url="url_to_server" --model="path/to/llm.gguf"`
 
 #### --data_logs flag
 Your parts of speech tagged corpus is processed one file at a time. For each file, the adverbs in an individual sentence are found, and for each adverb, a query is made to the LLM. The response from the LLM is the data that is output to the data_logs
@@ -154,5 +154,3 @@ Your parts of speech tagged corpus is processed one file at a time. For each fil
 4. Pass just a file name: `run-adverbs pos_tagged_corpus_dir, output_dir, --data_logs=mydata.ndjson` then this file will be created in your current working directory, and completion logs will also be created in your current working directory.
 
 Indicating a file name like in options 3 and 4 will create just a single file in which all data will be appended from one run to another. Options 1 and 2 in which you provide no file name will write new `_data_{timestamp}.ndjson` files each time you start a new run.
-
-
