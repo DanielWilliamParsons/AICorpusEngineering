@@ -12,7 +12,7 @@ class ErrorHandler:
         logger: an optional logger (NDJSONLogger)
         fatal_exceptions: a tuple of exceptions that should stop the program
         """
-        self.logger = get_logger # Get the global instance of the logger
+        self.logger = get_logger() # Get the global instance of the logger
         self.fatal_exceptions = fatal_exceptions or (RuntimeError,)
 
     def handle(self, exc: Exception, context: dict = None, fatal: bool = False):
