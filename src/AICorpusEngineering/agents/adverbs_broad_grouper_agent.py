@@ -3,7 +3,6 @@ from pathlib import Path
 from datetime import datetime
 from AICorpusEngineering.probabilities.prob_handlers import MCQProbHandler
 from AICorpusEngineering.knowledge_base.knowledge_base import KnowledgeBase
-import math
 
 class BroadGrouperAgent:
     """

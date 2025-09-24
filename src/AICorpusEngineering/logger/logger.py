@@ -9,7 +9,7 @@ class NDJSONLogger:
     Append-only logger that writes each record as one JSON object per line (NDJSON format).
     """
 
-    def __init__(self, data_logs: Path | None, error_logs: Path | None, output_dir: Path):
+    def __init__(self, data_logs: Path | None, error_logs: Path | None, output_dir: Path | None):
         """
         data_logs: user-supplied path (can be None, a file path, or a directory) for storing LLM output data
         error_logs: user-suppled path (can be None, a file path, or a directory) for storing errors while processing LLM output data
@@ -18,6 +18,18 @@ class NDJSONLogger:
 
         timestamp = datetime.now().strftime('%Y%m%d-%H%M%S')
 
+        # --- Determine the effective base directory ---
+        # If neither data_logs nor error_logs are provided, we need an output dir
+        if output_dir is None and data_logs is None and error_logs is None:
+            output_dir = Path("output").resolve()
+            output_dir.mkdir(parents=True, exist_ok=True)
+        elif output_dir is not None:
+            output_dir = Path(output_dir).expanduser().resolve()
+            output_dir.mkdir(parents=True, exist_ok=True)
+
+        # -----------
+        # Error logs
+        # -----------
         if error_logs is None:
             # Default: put a timestamped log file inside output_dir
             error_logs = output_dir / f"_errors_{timestamp}.ndjson"
@@ -34,6 +46,9 @@ class NDJSONLogger:
 
         self.error_logs = error_logs
 
+        # ----------
+        # Data logs and run completion logs
+        # ----------
         if data_logs is None:
             # Default: put a timestamped log file inside output_dir
             data_logs = output_dir / f"_data_{timestamp}.ndjson"
