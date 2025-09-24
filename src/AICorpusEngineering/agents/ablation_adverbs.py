@@ -67,7 +67,7 @@ class AdverbsAblationStudy:
         We use a knowledge base, and examples for each category
         which contain reasoning chains
         """
-        print(f"\n------ Ablation Study: Beginning Base Study ------")
+        print(f"\n------ Ablation Study: Beginning Base Study for {adverb} ------")
 
         # ----------
         # Prepare the prompt
@@ -112,6 +112,45 @@ class AdverbsAblationStudy:
         Knowledge base + one-shot + CoT
         This is ablation study 1
         """
+        print(f"\n------ Ablation Study: Beginning Ablation 1: Knowledge base + one-shot + CoT for {adverb} ------")
+
+        # ----------
+        # Prepare the prompt
+        # ----------
+        prompt = "" # No extra instructions in the study
+
+        # ----------
+        # Prepare the knowledge base
+        # ----------
+        if self.knowledge_base_cache is None:
+            self.knowledge_base.create_broad_adverb_knowledge_base()
+            self.knowledge_base_cache = self.knowledge_base.get_knowledge_base()
+
+        # ----------
+        # Send the data to the LLM
+        # ----------
+        data = self._send_request(
+            prompt,
+            "base_study",
+            knowledge_base = self.knowledge_base_cache,
+            sentence = sentence,
+            adverb = adverb,
+            temperature = 0.0,
+            n_predict = 128
+        )
+
+        # ----------
+        # Get the data back from the LLM and process the data
+        # ----------
+        raw = data["choices"][0]["message"]["content"].strip()
+        logprobs =data["choices"][0]["logprobs"]
+        parsed = self.process_data(raw, logprobs, sentence, adverb, True) # Has chain of thought
+
+        # ----------
+        # Send processed data back to the pipeline
+        # ----------
+        print(f"\n------ Base Study for adverb '{adverb}': \n {parsed}")
+        return parsed
     
     def kb_zeroshot(self, sentence: str, adverb: str):
         """
