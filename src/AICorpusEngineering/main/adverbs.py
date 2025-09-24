@@ -125,7 +125,7 @@ def main():
     try:
         agents = BroadGrouperAgent(args.server_url, prob_handler, knowledge_base)
         pipeline = TaggingPipeline(agents, logger)
-        pipeline.run(input_dir, output_dir, data_logs)
+        pipeline.run(input_dir, output_dir)
     finally:
         server.stop()
 

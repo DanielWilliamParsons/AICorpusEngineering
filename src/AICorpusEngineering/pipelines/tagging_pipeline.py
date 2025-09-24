@@ -9,17 +9,13 @@ class TaggingPipeline:
         self.grouper_agents = grouper_agents
         self.logger = get_logger() # Get the global instance of the logger
 
-    def run(self, input_dir, output_dir, data_logs: Path):
+    def run(self, input_dir, output_dir):
         # Find the _run_completion logs to know which files should be excluded
         # They might be in a user defined directory
         completed_files = []
-        data_logs_path = data_logs.expanduser().resolve()
-        if data_logs_path.is_file():
-            data_logs_path = data_logs_path.parent
+        logs_dir = self.logger.logs_dir # This is set when initializing the logger and indicates where the data can be stored
 
-        print(f"In pipeline, data logs are: {data_logs_path}")
-
-        for run_completion in data_logs_path.glob("_run_completion_*.ndjson"):
+        for run_completion in logs_dir.glob("_run_completion_*.ndjson"):
             with open(run_completion, "r", encoding="utf-8") as infile:
                 for i, line in enumerate(infile, start=1):
                     json_line = json.loads(line.strip())

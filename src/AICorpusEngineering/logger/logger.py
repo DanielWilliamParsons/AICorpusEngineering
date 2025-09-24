@@ -68,6 +68,7 @@ class NDJSONLogger:
 
         self.data_logs = data_logs
         self.run_completion_logs = run_completion_logs
+        self.logs_dir = self.data_logs.parent # Logger now knows the correct directory regardless of user configuration at the endpoint.
 
     def log_error(self, error_record):
         """
