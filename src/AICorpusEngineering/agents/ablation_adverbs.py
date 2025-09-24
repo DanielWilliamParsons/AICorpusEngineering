@@ -69,6 +69,77 @@ class AdverbsAblationStudy:
         """
         print(f"\n------ Ablation Study: Beginning Base Study ------")
 
+        # ----------
+        # Prepare the prompt
+        # ----------
+        prompt = ""
+
+        # ----------
+        # Prepare the knowledge base
+        # ----------
+        if self.knowledge_base_cache is None:
+            self.knowledge_base.create_broad_adverb_knowledge_base()
+            self.knowledge_base_cache = self.knowledge_base.get_knowledge_base()
+
+        # ----------
+        # Send the data to the LLM
+        # ----------
+        data = self._send_request(
+            prompt,
+            "base_study",
+            knowledge_base = self.knowledge_base_cache,
+            sentence = sentence,
+            adverb = adverb,
+            temperature = 0.0,
+            n_predict = 128
+        )
+
+        # ----------
+        # Get the data back fromt he LLM
+        # ----------
+        raw = data["choices"][0]["message"]["content"].strip()
+        logprobs =data["choices"][0]["logprobs"]
+
+        # ----------
+        # Handle the probabilities
+        # ----------
+        self.prob_handler.set_logprobs(logprobs)
+        ppl = self.prob_handler.calculate_reasoning_perplexity()
+        choice_selections = [" A", " B", " C", " D"]
+        answer_probs = self.prob_handler.calculate_prob_distribution(choice_selections)
+
+        # ----------
+        # Parse data for returning to the pipeline
+        # ----------
+        parsed = {}
+        parsed["sentence"] = sentence
+        parsed["adverb"] = adverb
+
+        # Get the chain of thought from the LLM
+        match = re.search(r"<\|assistant\|>(.*?)Final Answer", raw, re.DOTALL | re.IGNORECASE) # This assumes the output always starts with <|assistant|> and ends with Final Answer: 
+        if match:
+            parsed["CoT"] = match.group(1).strip()
+        else:
+            parsed["CoT"] = raw # If the output was different, just put the raw LLM output into the parsed object
+
+        # Add the final answer token
+        final_answer_token_index = self.prob_handler.return_final_answer_token_index()
+        parsed["final_answer"] = logprobs["content"][final_answer_token_index]["token"].strip()
+
+        # Add the category answer
+        parsed["category"] = self.knowledge_base.get_knowledge_base_mappings()[parsed["final_answer"]]
+
+        # Add the perplexity to the output
+        parsed["ppl"] = ppl
+
+        # Add the answer probability distribution to the output
+        parsed["probdist"] = answer_probs
+
+        # Add the time
+        parsed["time"] = datetime.now().isoformat()
+
+        print(f"\n------ Base Study for adverb '{adverb}': \n {parsed}")
+        return parsed
 
     def kb_oneshot_cot(self, sentence: str, adverb: str):
         """
