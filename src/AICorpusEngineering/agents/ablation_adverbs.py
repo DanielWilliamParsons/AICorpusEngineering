@@ -112,7 +112,7 @@ class AdverbsAblationStudy:
         Knowledge base + one-shot + CoT
         This is ablation study 1
         """
-        print(f"\n------ Ablation Study: Beginning Ablation 1: Knowledge base + one-shot + CoT for {adverb} ------")
+        print(f"\n------ Ablation Study: Beginning Ablation 1 - Knowledge base + one-shot + CoT for {adverb} ------")
 
         # ----------
         # Prepare the prompt
@@ -204,6 +204,47 @@ class AdverbsAblationStudy:
         This is ablation study 3
         In this study, we offer no examples, just instructions
         """
+        print(f"\n------ Ablation Study: Beginning Ablation 3 - Zero shot for {adverb} ------")
+
+        # ----------
+        # Prepare the prompt
+        # ----------
+        prompt = "" # No extra instructions in the study
+
+        # ----------
+        # Prepare the knowledge base 
+        # In this study the knowledge base is just the category names
+        # These are currently hard-coded into the jinja template
+        # ----------
+        # if self.knowledge_base_cache is None:
+        #     self.knowledge_base.create_broad_adverb_knowledge_base()
+        #     self.knowledge_base_cache = self.knowledge_base.get_knowledge_base()
+
+        # ----------
+        # Send the data to the LLM
+        # ----------
+        data = self._send_request(
+            prompt,
+            "zeroshot",
+            knowledge_base = "",
+            sentence = sentence,
+            adverb = adverb,
+            temperature = 0.0,
+            n_predict = 128
+        )
+
+        # ----------
+        # Get the data back from the LLM and process the data
+        # ----------
+        raw = data["choices"][0]["message"]["content"].strip()
+        logprobs =data["choices"][0]["logprobs"]
+        parsed = self.process_data(raw, logprobs, sentence, adverb, False) # Does not have chain of thought
+
+        # ----------
+        # Send processed data back to the pipeline
+        # ----------
+        print(f"\n------ Ablation study 3 for adverb '{adverb}': \n {parsed}")
+        return parsed
 
     def oneshot_cot(self, sentence: str, adverb: str):
         """
@@ -212,6 +253,47 @@ class AdverbsAblationStudy:
         In this study, we offer one example with a reasoning
         chain and instructions
         """
+        print(f"\n------ Ablation Study: Beginning Ablation 4 - One shot + CoT for {adverb} ------")
+
+        # ----------
+        # Prepare the prompt
+        # ----------
+        prompt = "" # No extra instructions in the study
+
+        # ----------
+        # Prepare the knowledge base 
+        # In this study the knowledge base is just the category names
+        # These are currently hard-coded into the jinja template
+        # ----------
+        # if self.knowledge_base_cache is None:
+        #     self.knowledge_base.create_broad_adverb_knowledge_base()
+        #     self.knowledge_base_cache = self.knowledge_base.get_knowledge_base()
+
+        # ----------
+        # Send the data to the LLM
+        # ----------
+        data = self._send_request(
+            prompt,
+            "oneshot_cot",
+            knowledge_base = "",
+            sentence = sentence,
+            adverb = adverb,
+            temperature = 0.0,
+            n_predict = 128
+        )
+
+        # ----------
+        # Get the data back from the LLM and process the data
+        # ----------
+        raw = data["choices"][0]["message"]["content"].strip()
+        logprobs =data["choices"][0]["logprobs"]
+        parsed = self.process_data(raw, logprobs, sentence, adverb, False) # Does not have chain of thought
+
+        # ----------
+        # Send processed data back to the pipeline
+        # ----------
+        print(f"\n------ Ablation study 4 for adverb '{adverb}': \n {parsed}")
+        return parsed
 
     def fewshot_cot(self, sentence: str, adverb: str):
         """
