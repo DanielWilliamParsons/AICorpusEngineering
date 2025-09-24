@@ -56,17 +56,24 @@ class NDJSONLogger:
 
     def log_error(self, error_record):
         """
-        Append an error record to the log file, located in the global logger instance
+        Append an error record to the error log file, located in the global logger instance
         """
         with self.error_logs.open("a", encoding="utf-8") as f:
             f.write(json.dumps(error_record, ensure_ascii=False) + "\n")
 
     def log_record(self, record) -> None:
         """
-        Append a single record to the log file as a JSON line.
+        Append a single record to the data log file as a JSON line.
         """
         with self.data_logs.open("a", encoding="utf-8") as f:
             f.write(json.dumps(record, ensure_ascii=False) + "\n")
+
+    def log_completion(self, completion_data) -> None:
+        """
+        Append a single record to the completion run log file as a JSON line
+        """
+        with self.run_completion_logs.open("a", encoding="utf-8") as f:
+            f.write(json.dumps(completion_data, ensure_ascii=False) + "\n")
 
     def log_records(self, records: List[Dict[str, Any]]) -> None:
         """
