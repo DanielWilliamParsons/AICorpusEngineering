@@ -131,7 +131,7 @@ class AdverbsAblationStudy:
         # ----------
         data = self._send_request(
             prompt,
-            "base_study",
+            "kb_oneshot_cot",
             knowledge_base = self.knowledge_base_cache,
             sentence = sentence,
             adverb = adverb,
@@ -149,7 +149,7 @@ class AdverbsAblationStudy:
         # ----------
         # Send processed data back to the pipeline
         # ----------
-        print(f"\n------ Base Study for adverb '{adverb}': \n {parsed}")
+        print(f"\n------ Ablation study 1 for adverb '{adverb}': \n {parsed}")
         return parsed
     
     def kb_zeroshot(self, sentence: str, adverb: str):
@@ -158,6 +158,45 @@ class AdverbsAblationStudy:
         This is ablation study 2
         In this study, we keep the knowledge base but use no examples
         """
+        print(f"\n------ Ablation Study: Beginning Ablation 2 - Knowledge base + zero shot for {adverb} ------")
+
+        # ----------
+        # Prepare the prompt
+        # ----------
+        prompt = "" # No extra instructions in the study
+
+        # ----------
+        # Prepare the knowledge base
+        # ----------
+        if self.knowledge_base_cache is None:
+            self.knowledge_base.create_broad_adverb_knowledge_base()
+            self.knowledge_base_cache = self.knowledge_base.get_knowledge_base()
+
+        # ----------
+        # Send the data to the LLM
+        # ----------
+        data = self._send_request(
+            prompt,
+            "kb_zeroshot",
+            knowledge_base = self.knowledge_base_cache,
+            sentence = sentence,
+            adverb = adverb,
+            temperature = 0.0,
+            n_predict = 128
+        )
+
+        # ----------
+        # Get the data back from the LLM and process the data
+        # ----------
+        raw = data["choices"][0]["message"]["content"].strip()
+        logprobs =data["choices"][0]["logprobs"]
+        parsed = self.process_data(raw, logprobs, sentence, adverb, False) # Does not have chain of thought
+
+        # ----------
+        # Send processed data back to the pipeline
+        # ----------
+        print(f"\n------ Ablation study 2 for adverb '{adverb}': \n {parsed}")
+        return parsed
 
     def zeroshot(self, sentence: str, adverb: str):
         """
