@@ -134,10 +134,7 @@ Three agents are designed to identify and verify the broad category to which a s
 3. Linking adverb (addition, result, etc.)
 4. Discourse adverb (manage interaction, manage flow of discourse)
 
-The three agents are:
-1. A broad grouping agent: uses knowledge-base + few-shot chain-of-thought prompting to identify the category
-2. A verifcation agent: uses knowledge-base + chain-of-thought prompting to verify the decision of the first agent
-3. A voting agent: uses knowledge-base + generated knowledge and chain-of-thought prompting to mediate the first two agents if there is disagreement and reach a final decision
+A single agent, called syntactic-grouper will determine which group to classify the adverb into the appropriate category and save the data to file.
 
 ### Knowledge base
 A knowledge base is provided for adverbs (and later for other categories) in the knowledge_base folder.
