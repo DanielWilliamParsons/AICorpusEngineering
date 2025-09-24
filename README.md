@@ -146,6 +146,16 @@ The agents classes (e.g., BroadGrouperAgents in adverbs_broad_grouper_agents.py)
 
 ### Tag files
 
-`run-adverbs file_name.txt output.json --input_texts_dir "Corpus_Texts_Tagged" --output_texts_dir "dir_name"`
+`run-adverbs pos_tagged_corpus_dir output_dir --data_logs `
+
+#### --data_logs flag
+Your parts of speech tagged corpus is processed one file at a time. For each file, the adverbs in an individual sentence are found, and for each adverb, a query is made to the LLM. The response from the LLM is the data that is output to the data_logs
+
+1. Omit this flag and both a `_data_{timestamp}.ndjson` and `_run_completion_{timestamp}.ndjson` will be created in the output_dir.
+2. Pass a directory path: `run-adverbs pos_tagged_corpus_dir output_dir --data_logs=data/` then a new directory called data will be created and `_data_{timestamp}.ndjson` and `_run_completion_{timestamp}.ndjson` will be created in the new data directory.
+3. Pass a file path: `run-adverbs pos_tagged_corpus_dir output_dir --data_logs=data/my_data.ndjson` and all data will be saved into `my_data.ndjson` with a `_run_completion_{timestamp}.ndjson` written next to it.
+4. Pass just a file name: `run-adverbs pos_tagged_corpus_dir, output_dir, --data_logs=mydata.ndjson` then this file will be created in your current working directory, and completion logs will also be created in your current working directory.
+
+Indicating a file name like in options 3 and 4 will create just a single file in which all data will be appended from one run to another. Options 1 and 2 in which you provide no file name will write new `_data_{timestamp}.ndjson` files each time you start a new run.
 
 
