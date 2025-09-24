@@ -49,57 +49,65 @@ class AdverbsAblationStudy:
                 raise RuntimeError(f"Server error: {response.status_code} with body: {response.text[:200]}")
             return response.json()
         except Exception as e:
-             # Delegate all error handling to the error_handler
-             return error_handler.handle(
-                  e,
-                  context = {
-                       "server_url": self.server_url,
-                       "agent_type": agent_type,
-                       "sentence": sentence,
-                       "adverb": adverb
-                  }
-             )
+            # Delegate all error handling to the error_handler
+            return error_handler.handle(
+                e,
+                context = {
+                    "server_url": self.server_url,
+                    "agent_type": agent_type,
+                    "sentence": sentence,
+                    "adverb": adverb
+                }
+            )
     
     def base_study(self, sentence: str, adverb: str):
-         """
-         Knowledge base + few-shot + CoT
-         This is the baseline study.
-         We use a knowledge base, and examples for each category
-         which contain reasoning chains
-         """
+        """
+        Knowledge base + few-shot + CoT
+        This is the baseline study.
+        We use a knowledge base, and examples for each category
+        which contain reasoning chains
+        """
+        print(f"\n------ Ablation Study: Beginning Base Study ------")
+
 
     def kb_oneshot_cot(self, sentence: str, adverb: str):
-         """
-         Knowledge base + one-shot + CoT
-         This is ablation study 1
-         """
+        """
+        Knowledge base + one-shot + CoT
+        This is ablation study 1
+        """
     
     def kb_zeroshot(self, sentence: str, adverb: str):
-         """
-         Knowledge base + zero shot
-         This is ablation study 2
-         In this study, we keep the knowledge base but use no examples
-         """
+        """
+        Knowledge base + zero shot
+        This is ablation study 2
+        In this study, we keep the knowledge base but use no examples
+        """
 
     def zeroshot(self, sentence: str, adverb: str):
-         """
-         Zero shot only
-         This is ablation study 3
-         In this study, we offer no examples, just instructions
-         """
+        """
+        Zero shot only
+        This is ablation study 3
+        In this study, we offer no examples, just instructions
+        """
 
     def oneshot_cot(self, sentence: str, adverb: str):
-         """
-         One shot only
-         This is ablation study 4
-         In this study, we offer one example with a reasoning
-         chain and instructions
-         """
+        """
+        One shot only
+        This is ablation study 4
+        In this study, we offer one example with a reasoning
+        chain and instructions
+        """
 
     def fewshot_cot(self, sentence: str, adverb: str):
-         """
-         Few shot and chain of thought.
-         This is ablation study 5.
-         In this study, we offer examples for each category with
-         reasoning chains and instructions, but no knowledge base.
-         """
+        """
+        Few shot and chain of thought.
+        This is ablation study 5.
+        In this study, we offer examples for each category with
+        reasoning chains and instructions, but no knowledge base.
+        """
+
+    def clear_knowledge_base_cache(self):
+        """
+        Necessary for reformulating the knowledge base for different studies
+        """
+        self.knowledge_base_cache = None
