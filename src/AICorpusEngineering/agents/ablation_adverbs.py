@@ -60,3 +60,46 @@ class AdverbsAblationStudy:
                   }
              )
     
+    def base_study(self, sentence: str, adverb: str):
+         """
+         Knowledge base + few-shot + CoT
+         This is the baseline study.
+         We use a knowledge base, and examples for each category
+         which contain reasoning chains
+         """
+
+    def kb_oneshot_cot(self, sentence: str, adverb: str):
+         """
+         Knowledge base + one-shot + CoT
+         This is ablation study 1
+         """
+    
+    def kb_zeroshot(self, sentence: str, adverb: str):
+         """
+         Knowledge base + zero shot
+         This is ablation study 2
+         In this study, we keep the knowledge base but use no examples
+         """
+
+    def zeroshot(self, sentence: str, adverb: str):
+         """
+         Zero shot only
+         This is ablation study 3
+         In this study, we offer no examples, just instructions
+         """
+
+    def oneshot_cot(self, sentence: str, adverb: str):
+         """
+         One shot only
+         This is ablation study 4
+         In this study, we offer one example with a reasoning
+         chain and instructions
+         """
+
+    def fewshot_cot(self, sentence: str, adverb: str):
+         """
+         Few shot and chain of thought.
+         This is ablation study 5.
+         In this study, we offer examples for each category with
+         reasoning chains and instructions, but no knowledge base.
+         """
