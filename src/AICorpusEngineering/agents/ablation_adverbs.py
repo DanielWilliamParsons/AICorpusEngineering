@@ -98,7 +98,7 @@ class AdverbsAblationStudy:
         # Get the data back from the LLM and process the data
         # ----------
         raw = data["choices"][0]["message"]["content"].strip()
-        logprobs =data["choices"][0]["logprobs"]
+        logprobs = data["choices"][0]["logprobs"]
         parsed = self.process_data(raw, logprobs, sentence, adverb, True) # Has chain of thought
 
         # ----------
@@ -143,7 +143,7 @@ class AdverbsAblationStudy:
         # Get the data back from the LLM and process the data
         # ----------
         raw = data["choices"][0]["message"]["content"].strip()
-        logprobs =data["choices"][0]["logprobs"]
+        logprobs = data["choices"][0]["logprobs"]
         parsed = self.process_data(raw, logprobs, sentence, adverb, True) # Has chain of thought
 
         # ----------
@@ -189,7 +189,7 @@ class AdverbsAblationStudy:
         # Get the data back from the LLM and process the data
         # ----------
         raw = data["choices"][0]["message"]["content"].strip()
-        logprobs =data["choices"][0]["logprobs"]
+        logprobs = data["choices"][0]["logprobs"]
         parsed = self.process_data(raw, logprobs, sentence, adverb, False) # Does not have chain of thought
 
         # ----------
@@ -237,7 +237,7 @@ class AdverbsAblationStudy:
         # Get the data back from the LLM and process the data
         # ----------
         raw = data["choices"][0]["message"]["content"].strip()
-        logprobs =data["choices"][0]["logprobs"]
+        logprobs = data["choices"][0]["logprobs"]
         parsed = self.process_data(raw, logprobs, sentence, adverb, False) # Does not have chain of thought
 
         # ----------
@@ -286,7 +286,7 @@ class AdverbsAblationStudy:
         # Get the data back from the LLM and process the data
         # ----------
         raw = data["choices"][0]["message"]["content"].strip()
-        logprobs =data["choices"][0]["logprobs"]
+        logprobs = data["choices"][0]["logprobs"]
         parsed = self.process_data(raw, logprobs, sentence, adverb, True) # Has chain of thought
 
         # ----------
@@ -335,7 +335,7 @@ class AdverbsAblationStudy:
         # Get the data back from the LLM and process the data
         # ----------
         raw = data["choices"][0]["message"]["content"].strip()
-        logprobs =data["choices"][0]["logprobs"]
+        logprobs = data["choices"][0]["logprobs"]
         parsed = self.process_data(raw, logprobs, sentence, adverb, True) # Has chain of thought
 
         # ----------
