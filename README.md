@@ -143,7 +143,7 @@ The agents classes (e.g., BroadGrouperAgents in adverbs_broad_grouper_agents.py)
 
 ### Tag files
 
-`run-adverbs pos_tagged_corpus_dir output_dir --data_logs `
+`run-adverbs pos_tagged_corpus_dir output_dir --data_logs="path/to/datafile.ndjson" --error_logs="path/to/errorfile.ndjson" --server_bin="path/to/server/binary --server_url="url_to_server" -- model="path/to/llm.gguf"`
 
 #### --data_logs flag
 Your parts of speech tagged corpus is processed one file at a time. For each file, the adverbs in an individual sentence are found, and for each adverb, a query is made to the LLM. The response from the LLM is the data that is output to the data_logs
