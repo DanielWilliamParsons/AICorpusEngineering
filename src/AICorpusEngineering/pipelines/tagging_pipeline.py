@@ -14,19 +14,25 @@ class TaggingPipeline:
         # They might be in a user defined directory
         completed_files = []
         data_logs_path = data_logs.expanduser().resolve()
+        if data_logs_path.is_file():
+            data_logs_path = data_logs_path.parent
+
+        print(f"In pipeline, data logs are: {data_logs_path}")
+
         for run_completion in data_logs_path.glob("_run_completion_*.ndjson"):
             with open(run_completion, "r", encoding="utf-8") as infile:
                 for i, line in enumerate(infile, start=1):
                     json_line = json.loads(line.strip())
                     completed_files.append(json_line["filepath"])
-
+        print(f"The completed files are {completed_files}")
 
         # Loop through all the files in the input_dir
         for input_file in input_dir.glob("*.txt"):
-
+            results = []
             # First make sure the file has not already been processed, and skip if it has.
             filename = input_file.name
-            if filename in completed_files:
+            print(f"The filename being explored is: {str(input_file)}")
+            if str(input_file) in completed_files:
                 continue
 
             with open(input_file, "r", encoding="utf-8") as infile:
@@ -46,12 +52,19 @@ class TaggingPipeline:
                             result_by_syntax = self.grouper_agents.analyze_by_syntax(plain_sentence, adverb)
                             if result_by_syntax:
                                 result = {"filename": filename, "result": result_by_syntax}
-                                self.logger.log_record(result)
+                                # Store the result in an array
+                                results.append(result)
                         except Exception as e:
                             if error_handler:
                                 # TODO: add file name to the context
                                 error_handler.handle(e, context={"filename": filename, "line": i, "sentence": plain_sentence, "adverb": adverb}) # Logging of the error is handled by the error_handler so no need to log
             completion_log = {"filepath": str(input_file)}
+            
+            # Log all the results from this file's run
+            for result in results:
+                self.logger.log_record(result)
+            
+            # Log the completion of the run
             self.logger.log_completion(completion_log)
 
         print(f"Done! Enhanced sentences saved to {output_dir}")

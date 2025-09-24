@@ -117,6 +117,7 @@ def main():
     if args.data_logs is None:
         data_logs = output_dir
 
+    print(f"In adverbs.py the data_logs are: {data_logs}")
     # Start the LLM server
     server.start()
 

@@ -30,7 +30,7 @@ class NDJSONLogger:
                 error_logs = error_logs / f"_errors_{timestamp}.ndjson"
             else:
                 # User passed a file path -> ensure its parent exists
-                error_logs.parent.mkdir(parent=True, exist_ok=True)
+                error_logs.parent.mkdir(parents=True, exist_ok=True)
 
         self.error_logs = error_logs
 
@@ -39,7 +39,7 @@ class NDJSONLogger:
             data_logs = output_dir / f"_data_{timestamp}.ndjson"
             run_completion_logs = output_dir / f"_run_completion_{timestamp}.ndjson"
         else:
-            data_logs = Path(error_logs).expanduser().resolve()
+            data_logs = Path(data_logs).expanduser().resolve()
 
             if data_logs.suffix == "":
                 # User passed a directory -> put a timestamped log file inside it
@@ -48,7 +48,7 @@ class NDJSONLogger:
                 run_completion_logs = output_dir / f"_run_completion_{timestamp}.ndjson"
             else:
                 # User passed a file path -> ensure its parent exists
-                data_logs.parent.mkdir(parent=True, exist_ok=True)
+                data_logs.parent.mkdir(parents=True, exist_ok=True)
                 run_completion_logs = data_logs.parent / f"_run_completion_{timestamp}.ndjson"
 
         self.data_logs = data_logs
@@ -75,22 +75,22 @@ class NDJSONLogger:
         with self.run_completion_logs.open("a", encoding="utf-8") as f:
             f.write(json.dumps(completion_data, ensure_ascii=False) + "\n")
 
-    def log_records(self, records: List[Dict[str, Any]]) -> None:
-        """
-        Append multiple records (list of dicts) to the log file.
-        """
-        with open(self.filepath, "a", encoding="utf-8") as f:
-            for record in records:
-                f.write(json.dumps(record, ensure_ascii=False) + "\n")
+    # def log_records(self, records: List[Dict[str, Any]]) -> None:
+    #     """
+    #     Append multiple records (list of dicts) to the log file.
+    #     """
+    #     with open(self.filepath, "a", encoding="utf-8") as f:
+    #         for record in records:
+    #             f.write(json.dumps(record, ensure_ascii=False) + "\n")
 
-    def load_all(self) -> List[Dict[str, Any]]:
-        """
-        Load all records from the log file into memory as a list of dicts.
-        """
-        results = []
-        with open(self.filepath, "r", encoding="utf-8") as f:
-            for line in f:
-                line = line.strip()
-                if line:  # skip empty lines
-                    results.append(json.loads(line))
-        return results
+    # def load_all(self) -> List[Dict[str, Any]]:
+    #     """
+    #     Load all records from the log file into memory as a list of dicts.
+    #     """
+    #     results = []
+    #     with open(self.filepath, "r", encoding="utf-8") as f:
+    #         for line in f:
+    #             line = line.strip()
+    #             if line:  # skip empty lines
+    #                 results.append(json.loads(line))
+    #     return results
