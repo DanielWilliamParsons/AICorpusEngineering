@@ -5,7 +5,7 @@ import math
 import json
 import pandas as pd
 from collections import defaultdict, Counter
-from tag_map import TagMapper
+from AICorpusEngineering.text_proc.tag_map import TagMapper
 from pathlib import Path
 
 class TextProc:
@@ -35,10 +35,11 @@ class TextProc:
         Assumes a tagged text file contains one tagged sentence per line with line breaks for paragraphs
         TODO: Later introduce a flag to indicate this format, e.g., otspl = true / false
         """
+        print("Beginning processing.")
         self.tag = tag # Set the tag to be available to other methods
         results_file_path = self.results_dir / self.results_file_name
         records = [] # Will be a list of dictionaries: {lang, file, line, sentence}
-        tag_pattern = re.compile(r'(\b\w+)\s*{tag}\b', re.IGNORECASE)
+        tag_pattern = re.compile(rf'(\b\w+)\s*{tag}\b', re.IGNORECASE)
 
         # Can we parallelize this process?
         run_count = 0
@@ -62,6 +63,7 @@ class TextProc:
                                 with results_file_path.open("w", encoding="utf-8") as f:
                                     for record in records:
                                         f.write(json.dumps(record, ensure_ascii=False) + "\n")
+                                        print(record)
                                 records = [] # reset the records array to empty
                                 run_count = 0 # reset the run counter to 0
         # Store these records on disk for access later
@@ -84,13 +86,25 @@ class TextProc:
 
         records = []
         if self.tag is not None:
-            counts = Counter()
+            counts = defaultdict(int)
             files = defaultdict(set)
             with results_file_path.open("r", encoding = "utf-8") as f:
                 for line in f:
-                    records.append(line)
+                    records.append(json.loads(line))
             
             # Count the number of times
             for rec in records:
-                counts[rec[self.tag]] += 1
-                files[rec[self.tag]].add(rec["file"])
+                key = self.tag_map.map_tag(self.tag)
+                counts[rec[key]] += 1
+                files[rec[key]].add(rec["file"])
+
+            # Entropy-based spread: how evenly the part of speech is distributed across files
+            spread_scores = {}
+            for word, count in counts.items():
+                file_dist = [sum(1 for r in records if r["adverb"] == word and r["file"] == f)
+                             for f in files[word]]
+                total = sum(file_dist)
+                probs = [c / total for c in file_dist]
+                entropy = -sum(p * math.log(p + 1e-10) for p in probs) # Shannon Entropy
+                spread_scores[word] = entropy
+            print(spread_scores)

@@ -32,7 +32,8 @@ AICorpusEngineering = [
 [project.scripts]
 tag-texts = "AICorpusEngineering.pos_tagging.tag_texts:main"
 run-adverbs = "AICorpusEngineering.main.adverbs:main"
-run-adverbs-ablation = "AICorpusEngineering.main.ablation_adverbs:main
+run-adverbs-ablation = "AICorpusEngineering.main.ablation_adverbs:main"
+process-corpus = "AICorpusEngineering.main.gold:main"
 
 [tool.setuptools]
 package-dir = {"" = "src"}
