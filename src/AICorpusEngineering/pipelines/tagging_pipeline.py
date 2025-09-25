@@ -52,7 +52,6 @@ class TaggingPipeline:
                                 results.append(result)
                         except Exception as e:
                             if error_handler:
-                                # TODO: add file name to the context
                                 error_handler.handle(e, context={"filename": filename, "line": i, "sentence": plain_sentence, "adverb": adverb}) # Logging of the error is handled by the error_handler so no need to log
             completion_log = {"filepath": str(input_file)}
             

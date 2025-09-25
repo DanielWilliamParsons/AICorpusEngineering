@@ -1,0 +1,16 @@
+import os
+import re
+import random
+import math
+import pandas as pd
+from collections import defaultdict, Counter
+
+
+class TextProc:
+    def __init__(self):
+        print("Initialize text processor")
+
+# ----------
+# Loop through corpus texts and extract language
+# ----------
+
