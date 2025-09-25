@@ -3,6 +3,7 @@ import re
 import random
 import math
 import json
+import pickle
 import pandas as pd
 from collections import defaultdict, Counter
 from AICorpusEngineering.text_proc.tag_map import TagMapper
@@ -98,13 +99,32 @@ class TextProc:
                 counts[rec[key]] += 1
                 files[rec[key]].add(rec["file"])
 
+            results_file_path_counts = results_file_path.with_name(results_file_path.stem + f"_{key}_counts").with_suffix(".pkl")
+            results_file_path_files = results_file_path.with_name(results_file_path.stem + f"_{key}_files").with_suffix(".pkl")
+
+
             # Entropy-based spread: how evenly the part of speech is distributed across files
             spread_scores = {}
             for word, count in counts.items():
-                file_dist = [sum(1 for r in records if r["adverb"] == word and r["file"] == f)
+                file_dist = [sum(1 for r in records if r[key] == word and r["file"] == f)
                              for f in files[word]]
                 total = sum(file_dist)
                 probs = [c / total for c in file_dist]
                 entropy = -sum(p * math.log(p + 1e-10) for p in probs) # Shannon Entropy
                 spread_scores[word] = entropy
             print(spread_scores)
+
+            df = pd.DataFrame({
+                key: list(counts.keys()),
+                "total_count": list(counts.values()),
+                "file_count": [len(files[word]) for word in counts],
+                "spread_score": [spread_scores[word] for word in counts]
+            })
+            results_file_path_df = results_file_path.with_name(results_file_path.stem + f"_{key}_df").with_suffix(".pkl")
+
+            with open(results_file_path_df, "wb") as f:
+                pickle.dump(df, f)
+            with open(results_file_path_counts, "wb") as f:
+                pickle.dump(df, f)
+            with open(results_file_path_files, "wb") as f:
+                pickle.dump(df, f)
