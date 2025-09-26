@@ -79,7 +79,7 @@ To use SpaCy for parts of speech tagging, download the relevant models. For exam
 **Parts of Speech Tagging**
 Once installed, you can now tag corpus texts diretly using the tag_texts command:
 
-`tag_texts Corpus_Texts Corpus_Texts_Tagged --model en_core_web_trf --workers 4`
+`tag-texts Corpus_Texts Corpus_Texts_Tagged --model en_core_web_trf --workers 4`
 
 * The first argument is the path to your input corpus text folder
 * The second argument is the path where the tagged texts will be written
@@ -154,3 +154,10 @@ Your parts of speech tagged corpus is processed one file at a time. For each fil
 4. Pass just a file name: `run-adverbs pos_tagged_corpus_dir, output_dir, --data_logs=mydata.ndjson` then this file will be created in your current working directory, and completion logs will also be created in your current working directory.
 
 Indicating a file name like in options 3 and 4 will create just a single file in which all data will be appended from one run to another. Options 1 and 2 in which you provide no file name will write new `_data_{timestamp}.ndjson` files each time you start a new run.
+
+### Gold Standard Sentence Sampler
+`process-corpus pos_tagged_corpus_dir gold_standard_results_dir results.ndjson`
+
+1. The pos_tagged_corpus_dir refers to the root directory where your corpus text files are located
+2. gold_standard_results_dir refers to the location where you will store the results of sampling sentences to build the gold standard
+3. results.ndjson: you can change the name; this will collect all sentences containing the word of interest, such as all sentences containing adverbs.
