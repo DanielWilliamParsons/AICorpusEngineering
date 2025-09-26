@@ -128,3 +128,13 @@ class TextProc:
                 pickle.dump(df, f)
             with open(results_file_path_files, "wb") as f:
                 pickle.dump(df, f)
+
+    # ----------
+    # Sample ~100 words uniformly across measures
+    # ----------
+
+    def sample_words(df, n=100):
+        """
+        Samples around 100 words uniformly based on the
+        measures during aggregation
+        """
