@@ -25,6 +25,14 @@ class TextProc:
         self.results_dir.mkdir(parents=True, exist_ok=True) # Make sure the result directory exists
         self.results_file_name = results_file_name
 
+        # ----------
+        # Data cache variables
+        # Useful for small corpora, but will need updating for large corpora
+        # ----------
+        self.spread_scores_df = None # Stores the entropy spread in the words used across documents in a pandas dataframe
+        self.counts = None # Counts of the words of interest
+        self.files = None # Number of files a word of interest appears in
+
     # ----------
     # Loop through corpus texts and extract language
     # ----------
@@ -84,6 +92,7 @@ class TextProc:
         results_file_path = self.results_dir / self.results_file_name
         if not results_file_path.exists():
             print(f"The file {results_file_path} does not exist. Try running collect_lang first where it will be created.")
+            return
 
         records = []
         if self.tag is not None:
@@ -93,15 +102,15 @@ class TextProc:
                 for line in f:
                     records.append(json.loads(line))
             
-            # Count the number of times
+            # ----------
+            # Data aggregation
+            # ----------
+            # Count the number of times a word appears
+            # and the record the files it appears in
             for rec in records:
                 key = self.tag_map.map_tag(self.tag)
                 counts[rec[key]] += 1
                 files[rec[key]].add(rec["file"])
-
-            results_file_path_counts = results_file_path.with_name(results_file_path.stem + f"_{key}_counts").with_suffix(".pkl")
-            results_file_path_files = results_file_path.with_name(results_file_path.stem + f"_{key}_files").with_suffix(".pkl")
-
 
             # Entropy-based spread: how evenly the part of speech is distributed across files
             spread_scores = {}
@@ -112,14 +121,26 @@ class TextProc:
                 probs = [c / total for c in file_dist]
                 entropy = -sum(p * math.log(p + 1e-10) for p in probs) # Shannon Entropy
                 spread_scores[word] = entropy
-            print(spread_scores)
-
+            
             df = pd.DataFrame({
                 key: list(counts.keys()),
                 "total_count": list(counts.values()),
                 "file_count": [len(files[word]) for word in counts],
                 "spread_score": [spread_scores[word] for word in counts]
             })
+
+            # ----------
+            # Cache the aggregated data
+            # ----------
+            self.counts = counts
+            self.files = files
+            self.spread_scores_df = df
+
+            # ----------
+            # Save to disk
+            # ----------
+            results_file_path_counts = results_file_path.with_name(results_file_path.stem + f"_{key}_counts").with_suffix(".pkl")
+            results_file_path_files = results_file_path.with_name(results_file_path.stem + f"_{key}_files").with_suffix(".pkl")
             results_file_path_df = results_file_path.with_name(results_file_path.stem + f"_{key}_df").with_suffix(".pkl")
 
             with open(results_file_path_df, "wb") as f:
@@ -132,9 +153,16 @@ class TextProc:
     # ----------
     # Sample ~100 words uniformly across measures
     # ----------
-
-    def sample_words(df, n=100):
+    def sample_words(self, df, n=100):
         """
         Samples around 100 words uniformly based on the
         measures during aggregation
         """
+
+        # ----------
+        # Retrieve results saved to disk
+        # ----------
+        results_file_path = self.results_dir / self.results_file_name
+        results_file_path_counts = results_file_path.with_name(results_file_path.stem + f"_{key}_counts").with_suffix(".pkl")
+        results_file_path_files = results_file_path.with_name(results_file_path.stem + f"_{key}_files").with_suffix(".pkl")
+        results_file_path_df = results_file_path.with_name(results_file_path.stem + f"_{key}_df").with_suffix(".pkl")
