@@ -11,27 +11,35 @@ from pathlib import Path
 
 class TextProc:
     """
-    User must supplt a directory where the corpus text files are stored,
+    User must supply a directory where the corpus text files are stored,
     a directory name relative to the current working directory to store the results,
     and a file name in which the store the results of the extraction.
     """
 
     def __init__(self, root_dir: Path, results_dir: Path, results_file_name: str):
         print("Initialize text processor")
-        self.root_dir = root_dir.expanduser().resolve() # Root directory of the corpus of POS tagged texts
+        # ----------
+        # Type of word to extract and sample
+        # ----------
         self.tag_map = TagMapper()
         self.tag = None
+
+        # ----------
+        # PATHS
+        # ----------
+        self.root_dir = root_dir.expanduser().resolve() # Root directory of the corpus of POS tagged texts
         self.results_dir = results_dir.expanduser().resolve() # Location where text processing will be stored.
         self.results_dir.mkdir(parents=True, exist_ok=True) # Make sure the result directory exists
         self.results_file_name = results_file_name
 
         # ----------
-        # Data cache variables
+        # DATA CACHE VARIABLES
         # Useful for small corpora, but will need updating for large corpora
         # ----------
         self.spread_scores_df = None # Stores the entropy spread in the words used across documents in a pandas dataframe
         self.counts = None # Counts of the words of interest
         self.files = None # Number of files a word of interest appears in
+        self.word_samples = None # Samples of the words should be stored as an array
 
     # ----------
     # Loop through corpus texts and extract language
@@ -158,12 +166,12 @@ class TextProc:
         Samples around 100 words uniformly based on the
         measures during aggregation
         """
+        key = self.tag_map.map_tag(self.tag)
 
         # ----------
         # If aggregated data is not in cache, retrieve from disk and cache
         # ----------
         if self.spread_scores_df is None:
-            key = self.tag_map.map_tag(self.tag)
             results_file_path = self.results_dir / self.results_file_name
             results_file_path_df = results_file_path.with_name(results_file_path.stem + f"_{key}_df").with_suffix(".pkl")
             with open(results_file_path_df, "rb") as f:
@@ -182,12 +190,53 @@ class TextProc:
         )
 
         # Sample uniformly across the categories
-        samples = []
+        self.word_samples = []
         for cat, group in self.spread_scores_df.groupby("category"):
             k = max(1, int(n / len(self.spread_scores_df["category"].unique())))
-            samples.extend(group.sample(n=min(k, len(group)), random_state=42).to_dict("records"))
-
-        print(pd.DataFrame(samples))
-        print(samples)
-
+            self.word_samples.extend(group.sample(n=min(k, len(group)), random_state=42).to_dict("records"))
         
+        # Convert to a dataframe
+        self.word_samples = pd.DataFrame(self.word_samples)
+
+        # Save the sampled words to disk
+        results_file_path = self.results_dir / self.results_file_name
+        results_file_path_word_samples = results_file_path.with_name(results_file_path.stem + f"_{key}_word_samples").with_suffix(".pkl")
+        with open(results_file_path_word_samples, "wb") as f:
+            pickle.dump(self.word_samples, f)
+
+    # ----------
+    # Sample sentences
+    # ----------
+    def sample_sentences(self):
+        key = self.tag_map.map_tag(self.tag)
+        results_file_path = self.results_dir / self.results_file_name
+        
+        # ----------
+        # Retrieve word samples if not in cache
+        # ----------
+        if self.word_samples is None:
+            results_file_path_word_samples = results_file_path.with_name(results_file_path.stem + f"_{key}_word_samples").with_suffix(".pkl")
+            with open(results_file_path_word_samples, "wb") as f:
+                self.word_samples = pickle.load(self.word_samples, f)
+
+        # ----------
+        # Load records saved during collect_lang method
+        # ----------
+        records = []
+        with results_file_path.open("r", encoding = "utf-8") as f:
+            for line in f:
+                records.append(json.loads(line))
+
+        final_samples = []
+        print(self.word_samples)
+        word_set = set(self.word_samples[key])
+        for word in word_set:
+            word_recs = [r for r in records if r[key] == word]
+            chosen = random.sample(word_recs, min(2, len(word_recs))) # 1 - 2 sentences
+            final_samples.extend(chosen)
+        
+        # Save data to disk as ndjson
+        sentences_results_path = results_file_path.with_name(results_file_path.stem + f"_{key}_sentence_samples").with_suffix(".ndjson")
+        with sentences_results_path.open("w", encoding="utf-8") as f:
+            for final_sample in final_samples:
+                f.write(json.dumps(final_sample, ensure_ascii=False) + "\n")
