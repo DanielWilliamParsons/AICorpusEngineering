@@ -8,6 +8,7 @@ import pandas as pd
 from collections import defaultdict, Counter
 from AICorpusEngineering.text_proc.tag_map import TagMapper
 from pathlib import Path
+from concurrent.futures import ProcessPoolExecutor, as_completed
 
 class TextProc:
     """
@@ -60,6 +61,7 @@ class TextProc:
 
         # Can we parallelize this process?
         run_count = 0
+        key = self.tag_map.map_tag(tag)
         for dirpath, _, filenames in os.walk(self.root_dir):
             for fname in filenames:
                 file_path = os.path.join(dirpath, fname)
@@ -68,7 +70,6 @@ class TextProc:
                         sentence = line.strip()
                         for match in tag_pattern.finditer(sentence):
                             pos = match.group(1)
-                            key = self.tag_map.map_tag(tag)
                             records.append({
                                 key: pos.lower(),
                                 "file": fname,
@@ -182,23 +183,28 @@ class TextProc:
         self.spread_scores_df["rank_spread"] = self.spread_scores_df["spread_score"].rank(method="dense", ascending=False)
 
         print(self.spread_scores_df)
-        # Normalize ranks into categories (high, mid, low)
+        
+        # ----------
+        # Normalize category into high, mid low ranks
+        # ----------
         self.spread_scores_df["category"] = pd.cut(
             self.spread_scores_df["rank_spread"],
             bins = 3,
             labels = ["low", "mid", "high"]
         )
 
+        # ----------
         # Sample uniformly across the categories
+        # ----------
         self.word_samples = []
         for cat, group in self.spread_scores_df.groupby("category"):
             k = max(1, int(n / len(self.spread_scores_df["category"].unique())))
             self.word_samples.extend(group.sample(n=min(k, len(group)), random_state=42).to_dict("records"))
-        
-        # Convert to a dataframe
         self.word_samples = pd.DataFrame(self.word_samples)
 
+        # ----------
         # Save the sampled words to disk
+        # ----------
         results_file_path = self.results_dir / self.results_file_name
         results_file_path_word_samples = results_file_path.with_name(results_file_path.stem + f"_{key}_word_samples").with_suffix(".pkl")
         with open(results_file_path_word_samples, "wb") as f:
@@ -235,7 +241,9 @@ class TextProc:
             chosen = random.sample(word_recs, min(2, len(word_recs))) # 1 - 2 sentences
             final_samples.extend(chosen)
         
+        # ----------
         # Save data to disk as ndjson
+        # ----------
         sentences_results_path = results_file_path.with_name(results_file_path.stem + f"_{key}_sentence_samples").with_suffix(".ndjson")
         with sentences_results_path.open("w", encoding="utf-8") as f:
             for final_sample in final_samples:
