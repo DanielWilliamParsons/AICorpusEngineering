@@ -19,7 +19,7 @@ def main():
     results_dir.mkdir(parents=True, exist_ok=True)
 
     process = TextProc(root_dir, results_dir, args.results_file)
-    process.collect_all_lang_records("_ADV")
+    process.collect_lang("_ADV")
     process.aggregate()
     process.sample_words(n=5)
     process.sample_sentences()
