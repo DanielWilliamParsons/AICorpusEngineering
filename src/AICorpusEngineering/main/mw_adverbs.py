@@ -4,8 +4,8 @@ import os
 import importlib.resources as resources
 
 from AICorpusEngineering.llm_server.server_manager import ServerManager
-from AICorpusEngineering.agents.adverbs_multiword_tagger import AdverbMWT
-# Import pipeline
+from AICorpusEngineering.agents.multiword_adverbs_tagger import MWAdverbs
+from AICorpusEngineering.pipelines.mw_adverb_pipeline import MWAdverbsPipeline
 
 def repo_root() -> Path:
     """Return the repository root."""
@@ -55,8 +55,8 @@ def main():
 
     server = ServerManager(args.server_bin, args.model, chat_template)
     try:
-        agents = AdverbMWT(args.server_url)
-        pipeline = AdverbMWPipeline(agents)
+        agents = MWAdverbs(args.server_url)
+        pipeline = MWAdverbsPipeline(agents)
         pipeline.run(input_dir)
     finally:
         server.stop()

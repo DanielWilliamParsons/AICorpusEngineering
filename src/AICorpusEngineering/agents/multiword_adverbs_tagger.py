@@ -2,7 +2,7 @@ from pathlib import Path
 from datetime import datetime
 import requests, json
 
-class AdverbMWT:
+class MWAdverbs:
     """
     Thus class interfaces with the multiword adverb tagging large language model
     to look for multi-word adverbs in sentences.
