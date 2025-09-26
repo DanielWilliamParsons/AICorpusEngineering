@@ -153,16 +153,41 @@ class TextProc:
     # ----------
     # Sample ~100 words uniformly across measures
     # ----------
-    def sample_words(self, df, n=100):
+    def sample_words(self, n=100):
         """
         Samples around 100 words uniformly based on the
         measures during aggregation
         """
 
         # ----------
-        # Retrieve results saved to disk
+        # If aggregated data is not in cache, retrieve from disk and cache
         # ----------
-        results_file_path = self.results_dir / self.results_file_name
-        results_file_path_counts = results_file_path.with_name(results_file_path.stem + f"_{key}_counts").with_suffix(".pkl")
-        results_file_path_files = results_file_path.with_name(results_file_path.stem + f"_{key}_files").with_suffix(".pkl")
-        results_file_path_df = results_file_path.with_name(results_file_path.stem + f"_{key}_df").with_suffix(".pkl")
+        if self.spread_scores_df is None:
+            key = self.tag_map.map_tag(self.tag)
+            results_file_path = self.results_dir / self.results_file_name
+            results_file_path_df = results_file_path.with_name(results_file_path.stem + f"_{key}_df").with_suffix(".pkl")
+            with open(results_file_path_df, "rb") as f:
+                self.spread_scores_df = pickle.load(f)
+
+        self.spread_scores_df["rank_count"] = self.spread_scores_df["total_count"].rank(method="dense", ascending=False)
+        self.spread_scores_df["rank_files"] = self.spread_scores_df["file_count"].rank(method="dense", ascending=False)
+        self.spread_scores_df["rank_spread"] = self.spread_scores_df["spread_score"].rank(method="dense", ascending=False)
+
+        print(self.spread_scores_df)
+        # Normalize ranks into categories (high, mid, low)
+        self.spread_scores_df["category"] = pd.cut(
+            self.spread_scores_df["rank_spread"],
+            bins = 3,
+            labels = ["low", "mid", "high"]
+        )
+
+        # Sample uniformly across the categories
+        samples = []
+        for cat, group in self.spread_scores_df.groupby("category"):
+            k = max(1, int(n / len(self.spread_scores_df["category"].unique())))
+            samples.extend(group.sample(n=min(k, len(group)), random_state=42).to_dict("records"))
+
+        print(pd.DataFrame(samples))
+        print(samples)
+
+        
