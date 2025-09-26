@@ -9,6 +9,9 @@ from collections import defaultdict, Counter
 from AICorpusEngineering.text_proc.tag_map import TagMapper
 from pathlib import Path
 from concurrent.futures import ProcessPoolExecutor, as_completed
+import threading
+import time
+import sys
 
 class TextProc:
     """
@@ -18,7 +21,11 @@ class TextProc:
     """
 
     def __init__(self, root_dir: Path, results_dir: Path, results_file_name: str):
-        print("Initialize text processor")
+        print("Initializing text processor")
+
+        # for dot printer
+        self._stop_event = threading.Event()
+
         # ----------
         # Type of word to extract and sample
         # ----------
@@ -43,8 +50,34 @@ class TextProc:
         self.word_samples = None # Samples of the words should be stored as an array
 
     # ----------
+    # For signalling to user that all is well
+    # ----------
+    def with_dots(label):
+        def decorator(func):
+            def wrapper(self, *args, **kwargs):
+                print(f"{label} ", end="", flush=True)
+                self._stop_event.clear()
+                t = threading.Thread(target=self._dot_printer)
+                t.daemon = True
+                t.start()
+                try:
+                    return func(self, *args, **kwargs)
+                finally:
+                    self._stop_event.set()
+                    t.join()
+            return wrapper
+        return decorator
+    
+    def _dot_printer(self):
+        while not self._stop_event.is_set():
+            sys.stdout.write(".")
+            sys.stdout.flush()
+            time.sleep(1)
+
+    # ----------
     # Loop through corpus texts and extract language
     # ----------
+    @with_dots("Collecting language")
     def collect_lang(self, tag: str):
         """
         Extracts sentences which contain language tagged with a specified tag value
@@ -53,7 +86,7 @@ class TextProc:
         Assumes a tagged text file contains one tagged sentence per line with line breaks for paragraphs
         TODO: Later introduce a flag to indicate this format, e.g., otspl = true / false
         """
-        print("Beginning processing.")
+        print("Beginning sampling process.")
         self.tag = tag # Set the tag to be available to other methods
         results_file_path = self.results_dir / self.results_file_name
         records = [] # Will be a list of dictionaries: {lang, file, line, sentence}
@@ -64,7 +97,10 @@ class TextProc:
         key = self.tag_map.map_tag(tag)
         for dirpath, _, filenames in os.walk(self.root_dir):
             for fname in filenames:
+                if not fname.endswith(".txt"):
+                    continue
                 file_path = os.path.join(dirpath, fname)
+                print(file_path)
                 with open(file_path, "r", encoding="utf-8") as f:
                     for line_num, line in enumerate(f, 1):
                         sentence = line.strip()
@@ -78,10 +114,9 @@ class TextProc:
                             })
                             run_count += 1
                             if run_count == 100:
-                                with results_file_path.open("w", encoding="utf-8") as f:
+                                with results_file_path.open("a", encoding="utf-8") as f:
                                     for record in records:
                                         f.write(json.dumps(record, ensure_ascii=False) + "\n")
-                                        print(record)
                                 records = [] # reset the records array to empty
                                 run_count = 0 # reset the run counter to 0
         # Store these records on disk for access later
@@ -89,7 +124,7 @@ class TextProc:
         # and storing in memory would burden the computer
         if run_count > 0:
             # Save the remaining records to file
-            with results_file_path.open("w", encoding="utf-8") as f:
+            with results_file_path.open("a", encoding="utf-8") as f:
                 for record in records:
                     f.write(json.dumps(record, ensure_ascii=False) + "\n")
 
@@ -97,6 +132,7 @@ class TextProc:
     # ----------
     # Aggregrate the tags of interest
     # ----------
+    @with_dots("Aggregating language data")
     def aggregate(self):
         results_file_path = self.results_dir / self.results_file_name
         if not results_file_path.exists():
@@ -110,6 +146,7 @@ class TextProc:
             with results_file_path.open("r", encoding = "utf-8") as f:
                 for line in f:
                     records.append(json.loads(line))
+        
             
             # ----------
             # Data aggregation
@@ -162,6 +199,7 @@ class TextProc:
     # ----------
     # Sample ~100 words uniformly across measures
     # ----------
+    @with_dots("Sampling words")
     def sample_words(self, n=100):
         """
         Samples around 100 words uniformly based on the
@@ -181,8 +219,6 @@ class TextProc:
         self.spread_scores_df["rank_count"] = self.spread_scores_df["total_count"].rank(method="dense", ascending=False)
         self.spread_scores_df["rank_files"] = self.spread_scores_df["file_count"].rank(method="dense", ascending=False)
         self.spread_scores_df["rank_spread"] = self.spread_scores_df["spread_score"].rank(method="dense", ascending=False)
-
-        print(self.spread_scores_df)
         
         # ----------
         # Normalize category into high, mid low ranks
@@ -213,6 +249,7 @@ class TextProc:
     # ----------
     # Sample sentences
     # ----------
+    @with_dots("Sampling sentences")
     def sample_sentences(self):
         key = self.tag_map.map_tag(self.tag)
         results_file_path = self.results_dir / self.results_file_name
@@ -222,8 +259,8 @@ class TextProc:
         # ----------
         if self.word_samples is None:
             results_file_path_word_samples = results_file_path.with_name(results_file_path.stem + f"_{key}_word_samples").with_suffix(".pkl")
-            with open(results_file_path_word_samples, "wb") as f:
-                self.word_samples = pickle.load(self.word_samples, f)
+            with open(results_file_path_word_samples, "rb") as f:
+                self.word_samples = pickle.load(f)
 
         # ----------
         # Load records saved during collect_lang method
@@ -234,7 +271,6 @@ class TextProc:
                 records.append(json.loads(line))
 
         final_samples = []
-        print(self.word_samples)
         word_set = set(self.word_samples[key])
         for word in word_set:
             word_recs = [r for r in records if r[key] == word]
@@ -245,6 +281,8 @@ class TextProc:
         # Save data to disk as ndjson
         # ----------
         sentences_results_path = results_file_path.with_name(results_file_path.stem + f"_{key}_sentence_samples").with_suffix(".ndjson")
-        with sentences_results_path.open("w", encoding="utf-8") as f:
+        with sentences_results_path.open("a", encoding="utf-8") as f:
             for final_sample in final_samples:
                 f.write(json.dumps(final_sample, ensure_ascii=False) + "\n")
+        
+        print(f"Process complete. Please check {sentences_results_path} for your sample sentences.")

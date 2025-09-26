@@ -21,5 +21,5 @@ def main():
     process = TextProc(root_dir, results_dir, args.results_file)
     process.collect_lang("_ADV")
     process.aggregate()
-    process.sample_words(n=5)
+    process.sample_words(n=100)
     process.sample_sentences()
