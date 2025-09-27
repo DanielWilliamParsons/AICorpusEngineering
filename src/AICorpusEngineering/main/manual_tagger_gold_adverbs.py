@@ -91,7 +91,8 @@ def stance():
     print("\nB: ATTITUDE")
     print("\nC: INFERENCE")
     print("\nD: STYLE")
-    choice = input("\nChoose A, B, C or D: ")
+    print("\nE: NECESSITY")
+    choice = input("\nChoose A, B, C, D or E: ")
     if choice == "A":
         return "EPISTEMIC"
     if choice == "B":
@@ -100,6 +101,8 @@ def stance():
         return "INFERENCE"
     if choice == "D":
         return "STYLE"
+    if choice == "E":
+        return "NECESSITY"
     
 def focus():
     print("\nA: ADDITIVE")
