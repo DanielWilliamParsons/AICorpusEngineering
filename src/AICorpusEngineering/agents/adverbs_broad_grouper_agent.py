@@ -12,8 +12,9 @@ class BroadGrouperAgent:
     Classifications are:
     A. CIRCUMSTANCE
     B. STANCE
-    C. LINKING
-    D. DISCOURSE
+    C. FOCUS
+    D. LINKING
+    E. DISCOURSE
     """
     def __init__(
             self, 
@@ -109,10 +110,10 @@ class BroadGrouperAgent:
             "sentence": "the sentence passed in",
             "adverb": "the original adverb passed in",
             "category": "CIRCUMSTANCE, STANCE, LINKING, DISCOURSE - one of these categories determined by the LLM",
-            "final_answer": "A, B, C, D - one of these associated with the category, given by the LLM",
+            "final_answer": "A, B, C, D, E - one of these associated with the category, given by the LLM",
             "CoT": "The chain of thought reasoning output carried out by the LLM",
             "ppl": float - perplexity of the chain of thought tokens, calculated by the MCQProbHandler object prob_handler
-            "probdist": { "A": float, "B": float, "C": float, "D": float} - the normalized probability distribution of the answers selectable by the LLM when selecting the final answer
+            "probdist": { "A": float, "B": float, "C": float, "D": float, "E": float} - the normalized probability distribution of the answers selectable by the LLM when selecting the final answer
         }
         """
         print(f"\n########  GROUPING '{adverb}' with syntactic-grouper-agent.  ########")
@@ -145,7 +146,7 @@ class BroadGrouperAgent:
         ppl = self.prob_handler.calculate_reasoning_perplexity()
         
         # Use prob_handlers class to calculate the probability distribution of the answer
-        choice_selections = [" A", " B", " C", " D"] #Notice that these are written with a space to account for tokenization in the model (in this case llama)
+        choice_selections = [" A", " B", " C", " D", " E"] #Notice that these are written with a space to account for tokenization in the model (in this case llama)
         answer_probs = self.prob_handler.calculate_prob_distribution(choice_selections)
 
         ### Parse data for return ###
