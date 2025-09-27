@@ -22,6 +22,7 @@
         "Degree": {
           "description": "Express intensity or completeness of the action.",
           "tag": "DEGREE",
+          "examples": ["absolutely", "totally", "utterly", "slightly", "somewhat", "partly"],
           "subcategories": {
             "Intensifier": {
               "description": "Boost intensity or strength of the proposition.",
@@ -30,12 +31,12 @@
             },
             "Downtoner": {
               "description": "Reduce intensity or strength of the proposition.",
-              "examples": ["slightly", "somewhat", "a bit"],
+              "examples": ["slightly", "somewhat", "partly"],
               "tag": "DOWNTONER"
             }
           }
         },
-        "Quantity/Extent": {
+        "Quantity_Extent": {
           "description": "Indicate extent or proportion of truth of a proposition.",
           "examples": ["mostly", "largely", "entirely", "almost", "nearly"],
           "tag": "QUANTITY"
@@ -82,7 +83,7 @@
           "examples": ["also", "too", "as well", "either"],
           "tag": "FOCUS_ADDITIVE"
         },
-        "Restrictive/Exclusive": {
+        "Restrictive_Exclusive": {
           "description": "Limit the proposition to a restricted scope or exclusivity.",
           "examples": ["only", "just", "merely", "purely", "mainly", "simply"],
           "tag": "FOCUS_EXCLUSIVE"
@@ -143,6 +144,11 @@
           "description": "Frame the interpersonal relationship between speaker and hearer.",
           "examples": ["actually", "so", "you know"],
           "tag": "INTERPERSONAL"
+        },
+        "Text-Deictic": {
+          "description": "Refer to locations within the text or discourse, not physical space.",
+          "examples": ["above", "below", "herein", "therein", "aforementioned"],
+          "tag": "TEXT_DEIXIS"
         }
       }
     }
