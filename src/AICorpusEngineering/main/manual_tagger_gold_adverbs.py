@@ -30,10 +30,11 @@ def manually_tag(path_to_data, path_to_save_data):
         print(f"\nCHOICES:")
         print(f"\nA: Circumstance Adverb")
         print(f"\nB: Stance Adverb")
-        print(f"\nC: Linking Adverb")
-        print(f"\nD: Discourse Adverb")
+        print(f"\nC: Focus Adverb")
+        print(f"\nD: Linking Adverb")
+        print(f"\nE: Discourse Adverb")
 
-        choice = input("\nChoose A, B, C or D: ").strip()
+        choice = input("\nChoose A, B, C, D or E: ").strip()
         result = sentence_data
         if choice == "A":
             result["main_tag"] = "CIRCUMSTANCE"
@@ -44,11 +45,17 @@ def manually_tag(path_to_data, path_to_save_data):
             print("\nChoose from the stance adverbs:")
             result["sub_tag"] = stance()
         if choice == "C":
+            result["main_tag"] = "FOCUS"
+            print("\nChoose from the FOCUS adverbs: ")
+            result["sub_tag"] = focus()
+        if choice == "D":
             result["main_tag"] = "LINKING"
             print("\nChoose from the linking adverbs:")
             result["sub_tag"] = linking()
-        if choice == "D":
+        if choice == "E":
             result["sub_tag"] = "DISCOURSE"
+            print("\nChoose from the discourse adverbs: ")
+            result["sub_tag"] = discourse()
 
         results_data.append(result)
         print(result)
@@ -60,9 +67,9 @@ def circumstance():
     print("\nB: PLACE")
     print("\nC: MANNER")
     print("\nD: DEGREE")
-    print("\nE: FREQUENCY")
-    print("\nF: DURATION")
-    print("\nF: RESTRICTION_FOCUS")
+    print("\nE: QUANTITY_EXTENT")
+    print("\nF: FREQUENCY")
+    print("\nG: DURATION")
     choice = input("\n Choose A, B, C, D, E, F, G: ")
     if choice == "A":
         return "TIME"
@@ -73,11 +80,11 @@ def circumstance():
     if choice == "D":
         return "DEGREE"
     if choice == "E":
-        return "FREQUENCY"
+        return "QUANTITY_EXTENT"
     if choice == "F":
-        return "DURATION"
+        return "FREQUENCY"
     if choice == "G":
-        return "RESTRICTION_FOCUS"
+        return "DURATION"
 
 def stance():
     print("\nA: EPISTEMIC")
@@ -90,15 +97,28 @@ def stance():
         return "ATTITUDE"
     if choice == "C":
         return "STYLE"
+    
+def focus():
+    print("\nA: ADDITIVE")
+    print("\nB: FOCUS_EXCLUSIVE")
+    print("\nC: FOCUS_PARTICULAR")
+    choice = input("\nChoose A, B, or C: ")
+    if choice == "A":
+        return "ADDITIVE"
+    if choice == "B":
+        return "FOCUS_EXCLUSIVE"
+    if choice == "C":
+        return "FOCUS_PARTICULAR"
 
 
 def linking():
     print("\nA: RESULT")
     print("\nB: CONTRAST_CONCESSION")
     print("\nC: ADDITION")
-    print("\nD: ORGANIZATION")
-    print("\nE: TRANSITION")
-    choice = input("\nChoose A, B, C, D, or E: ")
+    print("\nD: ENUMERATION")
+    print("\nE: SUMMATION")
+    print("\nF: TRANSITION")
+    choice = input("\nChoose A, B, C, D, E or F: ")
     if choice == "A":
         return "RESULT"
     if choice == "B":
@@ -106,9 +126,20 @@ def linking():
     if choice == "C":
         return "ADDITION"
     if choice == "D":
-        return "ORGANIZATION"
+        return "ENUMERATION"
     if choice == "E":
+        return "SUMMATION"
+    if choice == "F":
         return "TRANSITION"
+    
+def discourse():
+    print("\nA: DISCOURSE_ORGANIZER")
+    print("\nB: INTERPERSONAL")
+    choice = input("\nChoose A or B: ")
+    if choice == "A":
+        return "DISCOURSE_ORGANIZER"
+    if choice == "B":
+        return "INTERPERSONAL"
 
 
 def main():
