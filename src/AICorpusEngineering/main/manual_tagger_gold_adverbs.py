@@ -62,7 +62,8 @@ def circumstance():
     print("\nD: DEGREE")
     print("\nE: FREQUENCY")
     print("\nF: DURATION")
-    choice = input("\n Choose A, B, C, D, E, F: ")
+    print("\nF: RESTRICTION_FOCUS")
+    choice = input("\n Choose A, B, C, D, E, F, G: ")
     if choice == "A":
         return "TIME"
     if choice == "B":
@@ -75,6 +76,8 @@ def circumstance():
         return "FREQUENCY"
     if choice == "F":
         return "DURATION"
+    if choice == "G":
+        return "RESTRICTION_FOCUS"
 
 def stance():
     print("\nA: EPISTEMIC")

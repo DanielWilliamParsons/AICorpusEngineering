@@ -1,7 +1,7 @@
 {
   "Adverbials": {
     "Circumstance": {
-      "description": "Provide information about the situation of the clause, including time, place, manner, degree, frequency, duration, extent.",
+      "description": "Provide information about the situation of the clause, including time, place, manner, degree, frequency, duration",
       "tag": "CIRCUMSTANCE",
       "subcategories": {
         "Time": {
@@ -20,25 +20,9 @@
           "tag": "MANNER"
         },
         "Degree": {
-          "description": "Express intensity or completeness of the action.",
-          "tag": "DEGREE",
-          "subcategories": {
-            "Intensifier": {
-              "description": "Boost intensity or strength of the proposition.",
-              "examples": ["absolutely", "totally", "utterly"],
-              "tag": "INTENSIFIER"
-            },
-            "Downtoner": {
-              "description": "Reduce intensity or strength of the proposition.",
-              "examples": ["slightly", "somewhat", "a bit"],
-              "tag": "DOWNTONER"
-            }
-          }
-        },
-        "Quantity/Extent": {
-          "description": "Indicate extent or proportion of truth of a proposition.",
-          "examples": ["mostly", "largely", "entirely", "almost", "nearly"],
-          "tag": "QUANTITY"
+          "description": "Express the intensity, extent, or completeness of the action.",
+          "examples": ["completely", "partly", "a lot", "rather"],
+          "tag": "DEGREE"
         },
         "Frequency": {
           "description": "Express how often the action occurs.",
@@ -49,6 +33,11 @@
           "description": "Express how long the action lasts.",
           "examples": ["briefly", "permanently", "forever"],
           "tag": "DURATION"
+        },
+        "Restriction_Focus": {
+          "description": "Limit or restrict the scope of the clause to certain conditions, or highlight exclusivity.",
+          "examples": ["only", "merely", "just", "simply", "purely", "exclusively"],
+          "tag": "RESTRICTION_FOCUS"
         }
       }
     },
@@ -73,29 +62,8 @@
         }
       }
     },
-    "Focus": {
-      "description": "Limit, restrict, or highlight the scope of the clause, or add to what has been said.",
-      "tag": "FOCUS",
-      "subcategories": {
-        "Additive": {
-          "description": "Add to information already given.",
-          "examples": ["also", "too", "as well", "either"],
-          "tag": "FOCUS_ADDITIVE"
-        },
-        "Restrictive/Exclusive": {
-          "description": "Limit the proposition to a restricted scope or exclusivity.",
-          "examples": ["only", "just", "merely", "purely", "mainly", "simply"],
-          "tag": "FOCUS_EXCLUSIVE"
-        },
-        "Particularizer": {
-          "description": "Highlight or single out a specific part of the proposition.",
-          "examples": ["especially", "particularly", "in particular"],
-          "tag": "FOCUS_PARTICULAR"
-        }
-      }
-    },
     "Linking": {
-      "description": "Connect the current clause to prior discourse, showing logical relationships including result, contrast, concession, addition, enumeration, summation and transition.",
+      "description": "Connect the current clause to prior discourse, showing logical relationships including result, contrast, concession, addition, enumeration, summation and transition",
       "tag": "LINKING",
       "subcategories": {
         "Result": {
@@ -113,15 +81,10 @@
           "examples": ["furthermore", "moreover", "also", "besides"],
           "tag": "ADDITION"
         },
-        "Enumeration": {
-          "description": "Organize discourse by listing points in order.",
-          "examples": ["first", "second", "next"],
-          "tag": "ENUMERATION"
-        },
-        "Summation": {
-          "description": "Summarize or conclude preceding information.",
-          "examples": ["in conclusion", "overall", "to sum up"],
-          "tag": "SUMMATION"
+        "Enumeration/Summation": {
+          "description": "Organize discourse by listing or summarizing points.",
+          "examples": ["first", "next", "finally", "in conclusion"],
+          "tag": "ORGANIZATION"
         },
         "Transition": {
           "description": "Mark a shift in topic or provide a digression.",
@@ -132,19 +95,8 @@
     },
     "Discourse": {
       "description": "Manage or frame interaction with the reader or speaker in the discourse.",
-      "tag": "DISCOURSE",
-      "subcategories": {
-        "Organizers": {
-          "description": "Mark discourse boundaries or manage the flow of conversation.",
-          "examples": ["well", "now", "anyway"],
-          "tag": "DISCOURSE_ORGANIZER"
-        },
-        "Interpersonal markers": {
-          "description": "Frame the interpersonal relationship between speaker and hearer.",
-          "examples": ["actually", "so", "you know"],
-          "tag": "INTERPERSONAL"
-        }
-      }
+      "examples": ["well", "now", "anyway", "actually", "so"],
+      "tag": "DISCOURSE"
     }
   }
 }
