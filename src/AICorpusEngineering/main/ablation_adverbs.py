@@ -35,6 +35,8 @@ def main():
     # Necessary user inputs
     # ----------
     parser.add_argument("input_dir", type=Path, help="Input the name of the directory where your texts are stored.")
+    parser.add_argument("filename", help="Input the name of the file containing the tagged gold standard sentences.")
+    parser.add_argument("output_dir", type=Path, help="Register an output directory to store results and data log files.")
 
     # ----------
     # Error and Data Logging
@@ -85,10 +87,12 @@ def main():
     # ----------
     # Resolve user paths
     # ----------
-    input_dir = args.input_dir.expanduser().resolve() # expanduser deals with ~ and resolve deals with relative paths
+    file_path = args.input.dir / args.filename
+    file_path = file_path.expanduser().resolve()
+    output_dir = args.output_dir.expanduser().resolve()
 
-    if not input_dir.exists() or not input_dir.is_dir():
-        raise FileNotFoundError(f"Input directory not found: {input_dir}")
+    if not file_path.exists():
+        raise FileNotFoundError(f"Gold standard tagged sentences not found: {file_path}")
 
     # ----------
     # Create the logger
@@ -117,7 +121,7 @@ def main():
     try:
         agents = AdverbsAblationStudy(args.server_url, prob_handler, knowledge_base)
         pipeline = AblationPipeline(agents, logger)
-        pipeline.run(input_dir, output_dir)
+        pipeline.run(file_path, output_dir)
     finally:
         server.stop()
 
