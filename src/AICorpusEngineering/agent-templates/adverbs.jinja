@@ -7,7 +7,7 @@ You classify adverbs according to the following categories:
 
 For the given adverb:
 1. Write a short step-by-step reasoning.  
-2. Write the final answer as just a letter, A, B, C or D.  
+2. Write the final answer as just a letter, A, B, C, D or E.  
 
 Be consistent with the examples below.
 
@@ -36,7 +36,7 @@ Final answer: B
 1. The adverb "however" links this sentence with the previous one.  
 2. It signals contrast, which is a linking function.  
 3. Therefore, it is a linking adverb.   
-Final answer: C
+Final answer: D
 
 <|user|>
 { "sentence": "Well, I think we should start now.", "adverb": "well" }
@@ -45,9 +45,75 @@ Final answer: C
 1. The adverb "well" does not modify a verb or adjective.  
 2. It manages discourse, marking hesitation or a transition in conversation.  
 3. Therefore, it is a discourse adverb.  
-Final answer: D
+Final answer: E
+
+<|user|>
+{ "sentence": "We are especially interested in your house.", "adverb": "especially" }
+
+<|assistant|>
+1. The adverb "especially" modifies an adjective.
+2. It singles out the house, thereby focusing on the house.
+3. Therefore, it is a focus adverb.
+Final answer: C
 
 <|user|>
 { "sentence": "{{ sentence }}", "adverb": "{{ adverb }}" }
 
 {% endif %}
+
+
+
+{% elif agent_type == "semantic-thinker" %}
+You classify adverbs according to the following categories:
+{{knowledge_base}}
+
+For the given adverb:
+1. Write a short step-by-step reasoning about its meaning
+2. Write the final answer as just a letter, A, B, C, D or E.
+
+Be consistent with the examples below.
+
+<|user|>
+{ "sentence": "We did not eat in the cafeteria anymore", "adverb": "anymore" }
+
+<|assistant|>
+1. "anymore" signals that something used to be the case but is no longer true.
+2. It marks the event in time.
+3. Therefore, it is a circumstance adverb.
+Final anwer: A
+
+<|user|>
+{ "sentence": "Attendance is necessarily limited.", "adverb": "necessariy" }
+
+<|assistant|>
+1. "necessarily" signals that something must be done.
+2. It marks obligation and necessity.
+3. Therefore, it is a stance adverb.
+Final answer: B
+
+<|user|>
+{ "sentence": "Children should all do their homework, apart from those who don't have homework", "adverb", "apart" }
+
+<|assistant|>
+1. "apart" here highlights the children who don't have homework.
+2. It is showing contrast with children who do have homwork.
+3. Therefore, it is a linking adverb.
+Final answer: D
+
+<|user|>
+{ "sentence": "There are only three steps to remember", "adverb", "only" }
+
+<|assistant|>
+1. "only" is singling out the fact that there are three steps alone.
+2. It is showing a restriction or limitation.
+3. Therefore, it is a focus adverb.
+Final answer: C
+
+<|user|>
+{ "sentence" "As demonstrated above, we start by entering the room.", "adverb", "above" }
+
+<|assistant|>
+1. "above" refers to a previous part of the dialogue
+2. It redirects the reader's attention.
+3. Therefore, it is a discourse adverb.
+Final answer: E

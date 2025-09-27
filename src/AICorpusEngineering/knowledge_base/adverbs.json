@@ -1,7 +1,7 @@
 {
   "Adverbials": {
     "Circumstance": {
-      "description": "Provide information about the situation of the clause, including time, place, manner, degree, frequency, duration, extent.",
+      "description": "Provide information about the situation of the clause, including time, place, manner, degree, quantity, extent, frequency, duration.",
       "tag": "CIRCUMSTANCE",
       "subcategories": {
         "Time": {
@@ -59,7 +59,7 @@
       }
     },
     "Stance": {
-      "description": "Express the speaker's or writer's perspective, evaluation, attitude toward or certainty about a proposition.",
+      "description": "Express the writer's perspective, evaluation, attitude toward, certainty about, or necessity of a proposition.",
       "tag": "STANCE",
       "subcategories": {
         "Epistemic Stance": {
@@ -90,7 +90,7 @@
       }
     },
     "Focus": {
-      "description": "Limit, restrict, or highlight the scope of the clause, or add to what has been said.",
+      "description": "Limit, restrict, or highlight the scope of the clause, or add to what has been said, or emphasize generality.",
       "tag": "FOCUS",
       "subcategories": {
         "Additive": {
@@ -152,7 +152,7 @@
       }
     },
     "Discourse": {
-      "description": "Manage or frame interaction with the reader or speaker in the discourse.",
+      "description": "Manage or frame interaction with the reader, marking discourse boundaries, refocusing the topic through interpersonal adverbs, or using reference in the text to direct the reader's attention.",
       "tag": "DISCOURSE",
       "subcategories": {
         "Organizers": {
