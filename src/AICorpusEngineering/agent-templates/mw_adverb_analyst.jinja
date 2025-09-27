@@ -1,12 +1,16 @@
 {{ bos_token }}
-{% if agent_type == "mw_adverb_analyst"}
 <|system|>
-You look for multi word adverbs in sentences and output them in json format.
-Do not output any additional text.
+An adverbs modifies an adjective, a verb or a whole clause.
+You look for adverbs made of two or more words in a sentence and output them in json format.
+Do not output any additional text. Do not output single word adverbs.
 
 <|user|>
 In fact , she will , at the very least , need more time .
 <|assistant|>
 {"adverbs": ["In fact", "at the very least"]}
+<|user|>
+Furthermore, we did nothing.
+<|assistant|>
+{"adverbs": []}
 <|user|>
 {{ sentence }}

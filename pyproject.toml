@@ -34,6 +34,8 @@ tag-texts = "AICorpusEngineering.pos_tagging.tag_texts:main"
 run-adverbs = "AICorpusEngineering.main.adverbs:main"
 run-adverbs-ablation = "AICorpusEngineering.main.ablation_adverbs:main"
 process-corpus = "AICorpusEngineering.main.gold:main"
+run-multiword-adverbs = "AICorpusEngineering.main.mw_adverbs:main"
+manual-tagger = "AICorpusEngineering.main.manual_tagger_gold:main"
 
 [tool.setuptools]
 package-dir = {"" = "src"}

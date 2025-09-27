@@ -23,6 +23,7 @@ class ServerManager:
         ]
         self.proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         print(f"Started llama-server (PID {self.proc.pid} on port {self.port})")
+        print(f"The chat template is {self.chat_template}")
         time.sleep(5) # Let the server warm up
 
     def stop(self):

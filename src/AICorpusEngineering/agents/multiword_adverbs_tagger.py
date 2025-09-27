@@ -14,16 +14,18 @@ class MWAdverbs:
     ):
         self.server_url = server_url
 
-    def _send_request(self, payload, agent_type, sentence, temperature=0.0, n_predict=256):
+    def _send_request(self, payload, sentence, temperature=0.001, n_predict=128):
         response = requests.post(
             f"{self.server_url}/chat/completions",
             headers={"Content-Type": "application/json"},
             data=json.dumps({
                 "messages": [{"role": "user", "content": payload}],
-                "chat_template_kwargs": {"agent_type": agent_type, "sentence": sentence},
+                "chat_template_kwargs": {"sentence": sentence},
                 "n_predict": n_predict,
                 "temperature": temperature,
                 "top_p": 0.85,
+                "logprobs": 1000,
+                "echo": False,
                 "stop": ["<|user|>", "<|system|>"]
             })
         )
@@ -40,12 +42,11 @@ class MWAdverbs:
         print(f"\n---- ANALYZING sentence {sentence} ----")
         prompt = ""
         data = self._send_request(
-            prompt, 
-            "mw_adverb_analyst",
+            prompt,
             sentence = sentence,
             temperature = 0.0,
             n_predict = 256
         )
 
         raw = data["choices"][0]["message"]["content"].strip()
-        print(raw)
+        return raw

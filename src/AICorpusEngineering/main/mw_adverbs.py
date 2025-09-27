@@ -14,7 +14,7 @@ def repo_root() -> Path:
 
 def get_chat_template_path() -> Path:
     """Return the installed path to the adverbs.jinja template."""
-    return resources.files("AICorpusEngineering.agent-templates").joinpath("adverbs.jinja")
+    return resources.files("AICorpusEngineering.agent-templates").joinpath("mw_adverb_analyst.jinja")
 
 
 def main():
@@ -49,14 +49,16 @@ def main():
         raise FileNotFoundError(f"Input directory not found: {input_dir}")
 
     chat_template = get_chat_template_path()
+    print(chat_template)
 
     if not chat_template.exists():
         raise FileNotFoundError(f"Chat template not found at {chat_template}")
 
     server = ServerManager(args.server_bin, args.model, chat_template)
+    server.start()
     try:
-        agents = MWAdverbs(args.server_url)
-        pipeline = MWAdverbsPipeline(agents)
+        agent = MWAdverbs(args.server_url)
+        pipeline = MWAdverbsPipeline(agent)
         pipeline.run(input_dir)
     finally:
         server.stop()
