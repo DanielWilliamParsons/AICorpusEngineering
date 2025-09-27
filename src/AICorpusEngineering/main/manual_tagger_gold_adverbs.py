@@ -21,7 +21,7 @@ def manually_tag(path_to_data, path_to_save_data):
     results_data = []
     with path_to_save_data.open("r", encoding="utf-8") as f:
         for line in f:
-            results_data.append[json.loads(line)]
+            results_data.append(json.loads(line))
 
     
     for sentence_data in sentences_data[len(results_data):]:
