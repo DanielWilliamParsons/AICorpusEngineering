@@ -67,6 +67,11 @@
           "examples": ["probably", "certainly", "obviously", "maybe"],
           "tag": "EPISTEMIC"
         },
+        "Inference Stance": {
+            "description": "Express the speaker's degree of assumption",
+            "examples": ["apparently", "seemingly"],
+            "tag": "INFERENCE"
+        },
         "Attitudinal Stance": {
           "description": "Express the speaker’s emotional reaction or evaluation of the proposition.",
           "examples": ["fortunately", "sadly", "hopefully", "interestingly"],
@@ -97,6 +102,11 @@
           "description": "Highlight or single out a specific part of the proposition.",
           "examples": ["especially", "particularly", "in particular"],
           "tag": "FOCUS_PARTICULAR"
+        },
+        "Scope": {
+          "description": "The scope of the validity or generality of the proposition",
+          "examples": ["generally", "broadly", "in general", "typically"],
+          "tag": "SCOPE"
         }
       }
     },

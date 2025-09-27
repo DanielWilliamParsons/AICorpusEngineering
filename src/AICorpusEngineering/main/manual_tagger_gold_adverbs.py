@@ -89,13 +89,16 @@ def circumstance():
 def stance():
     print("\nA: EPISTEMIC")
     print("\nB: ATTITUDE")
-    print("\nC: STYLE")
-    choice = input("\nChoose A, B, or C: ")
+    print("\nC: INFERENCE")
+    print("\nD: STYLE")
+    choice = input("\nChoose A, B, C or D: ")
     if choice == "A":
         return "EPISTEMIC"
     if choice == "B":
         return "ATTITUDE"
     if choice == "C":
+        return "INFERENCE"
+    if choice == "D":
         return "STYLE"
     
 def focus():
