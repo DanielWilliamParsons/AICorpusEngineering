@@ -33,6 +33,11 @@
               "description": "Reduce intensity or strength of the proposition.",
               "examples": ["slightly", "somewhat", "partly"],
               "tag": "DOWNTONER"
+            },
+            "Approximator": {
+                "description": "Approximates the extent or degree of something",
+                "examples": ["around", "about", "approximately"],
+                "tag": "APPROXIMATOR"
             }
           }
         },

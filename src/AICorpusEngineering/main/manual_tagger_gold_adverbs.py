@@ -135,11 +135,14 @@ def linking():
 def discourse():
     print("\nA: DISCOURSE_ORGANIZER")
     print("\nB: INTERPERSONAL")
+    print("\nC: TEXT_DEIXIS")
     choice = input("\nChoose A or B: ")
     if choice == "A":
         return "DISCOURSE_ORGANIZER"
     if choice == "B":
         return "INTERPERSONAL"
+    if choice == "C":
+        return "TEXT_DEIXIS"
 
 
 def main():
