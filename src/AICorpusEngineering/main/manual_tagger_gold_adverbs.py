@@ -105,13 +105,16 @@ def focus():
     print("\nA: ADDITIVE")
     print("\nB: FOCUS_EXCLUSIVE")
     print("\nC: FOCUS_PARTICULAR")
-    choice = input("\nChoose A, B, or C: ")
+    print("\nD: SCOPE")
+    choice = input("\nChoose A, B, C or D: ")
     if choice == "A":
         return "ADDITIVE"
     if choice == "B":
         return "FOCUS_EXCLUSIVE"
     if choice == "C":
         return "FOCUS_PARTICULAR"
+    if choice == "D":
+        return "SCOPE"
 
 
 def linking():
