@@ -6,7 +6,7 @@ You classify adverbs according to the following categories:
 
 For the given adverb:
 1. Write a short step-by-step reasoning.  
-2. Write the final answer as just a letter, A, B, C or D.  
+2. Write the final answer as just a letter, A, B, C, D or E.  
 
 Be consistent with the examples below.
 
@@ -69,7 +69,7 @@ You classify adverbs according to the following categories:
 
 For the given adverb:
 1. Write a short step-by-step reasoning.  
-2. Write the final answer as just a letter, A, B, C or D.  
+2. Write the final answer as just a letter, A, B, C, D or E.  
 
 Be consistent with the example below.
 
@@ -94,7 +94,7 @@ Final answer: A
 You classify adverbs according to the following categories:
 {{ knowledge_base }}
 
-For the given adverb from the given sentence write only the final answer as just a letter, A, B, C or D.
+For the given adverb from the given sentence write only the final answer as just a letter, A, B, C, D or E.
 Return only the final answer and do not add any extra text.
 
 <|user|>
@@ -108,10 +108,11 @@ Return only the final answer and do not add any extra text.
 You classify adverbs according to the following categories:
 A. CIRCUMSTANCE
 B. STANCE
-C. LINKING
-D. DISCOURSE
+C. FOCUS
+D. LINKING
+E. DISCOURSE
 
-For the given adverb from the given sentence write only the final answer as just a letter, A, B, C or D.
+For the given adverb from the given sentence write only the final answer as just a letter, A, B, C, D or E.
 Return only the final answer and do not add any extra text.
 
 <|user|>
@@ -124,12 +125,13 @@ Return only the final answer and do not add any extra text.
 You classify adverbs according to the following categories:
 A. CIRCUMSTANCE
 B. STANCE
-C. LINKING
-D. DISCOURSE
+C. FOCUS
+D. LINKING
+E. DISCOURSE
 
 For the given adverb:
 1. Write a short step-by-step reasoning.  
-2. Write the final answer as just a letter, A, B, C or D.  
+2. Write the final answer as just a letter, A, B, C, D or E.  
 
 Be consistent with the example below.
 
@@ -154,12 +156,13 @@ Final answer: A
 You classify adverbs according to the following categories:
 A. CIRCUMSTANCE
 B. STANCE
-C. LINKING
-D. DISCOURSE
+C. FOCUS
+D. LINKING
+E. DISCOURSE
 
 For the given adverb:
 1. Write a short step-by-step reasoning.  
-2. Write the final answer as just a letter, A, B, C or D.  
+2. Write the final answer as just a letter, A, B, C, D or E.  
 
 Be consistent with the examples below.
 
@@ -188,7 +191,7 @@ Final answer: B
 1. The adverb "however" links this sentence with the previous one.  
 2. It signals contrast, which is a linking function.  
 3. Therefore, it is a linking adverb.   
-Final answer: C
+Final answer: D
 
 <|user|>
 { "sentence": "Well, I think we should start now.", "adverb": "well" }
@@ -197,7 +200,16 @@ Final answer: C
 1. The adverb "well" does not modify a verb or adjective.  
 2. It manages discourse, marking hesitation or a transition in conversation.  
 3. Therefore, it is a discourse adverb.  
-Final answer: D
+Final answer: E
+
+<|user|>
+{ "sentence": "We are especially interested in your house.", "adverb": "especially" }
+
+<|assistant|>
+1. The adverb "especially" modifies an adjective.
+2. It singles out the house, thereby focusing on the house.
+3. Therefore, it is a focus adverb.
+Final answer: C
 
 <|user|>
 { "sentence": "{{ sentence }}", "adverb": "{{ adverb }}" }
