@@ -81,6 +81,11 @@
           "description": "Comment on the manner of speaking, truthfulness, or rhetorical framing.",
           "examples": ["frankly", "honestly", "technically", "confidentially"],
           "tag": "STYLE"
+        },
+        "Necessity": {
+            "description": "Comments the necessity or obligation of the proposition.",
+            "examples": ["better", "necessarily", "compulsorily", "imperatively"],
+            "tag": "NECESSITY"
         }
       }
     },
