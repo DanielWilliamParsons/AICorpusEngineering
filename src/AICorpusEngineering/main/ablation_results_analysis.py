@@ -5,6 +5,7 @@ from sklearn.metrics import accuracy_score, precision_recall_fscore_support
 import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.metrics import confusion_matrix
+from sklearn.metrics import classification_report
 
 
 def repo_root() -> Path:
@@ -52,6 +53,20 @@ def plot_confusion_matrix(df, study_col, labels):
     plt.show()
 
 
+def per_category_report(df, study_col):
+    y_true = df["main_tag"].dropna()
+    y_pred = df.loc[y_true.index, f"{study_col}_category"]
+
+    print(f"\n=== Detailed report for {study_col} ===")
+    print(classification_report(
+        y_true,
+        y_pred,
+        labels=["CIRCUMSTANCE", "STANCE", "FOCUS", "LINKING", "DISCOURSE"],
+        zero_division=0
+    ))
+
+
+
 def main():
     """
     Analyze and summarize the results of the ablation study
@@ -80,5 +95,8 @@ def main():
     labels = ["CIRCUMSTANCE", "STANCE", "FOCUS", "LINKING", "DISCOURSE"]
 
     plot_confusion_matrix(df_expanded, "fewshot_cot", labels)
+    
+    # Compare classes/categories
+    per_category_report(df_expanded, "fewshot_cot")
 
     
