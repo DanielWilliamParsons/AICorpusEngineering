@@ -33,6 +33,8 @@ class AblationPipeline:
             adverb = line["adverb"]
             try:
                 result_by_syntax = self.ablation_agents_interface.base_study(plain_sentence, adverb)
+                if result_by_syntax is None:
+                    continue
                 print(result_by_syntax)
                 study_1_output = self.ablation_agents_interface.kb_oneshot_cot(plain_sentence, adverb)
                 print(study_1_output)

@@ -45,7 +45,7 @@ class AdverbsAblationStudy:
                 timeout = 30,
             )
 
-            if response.status.code != 200:
+            if response.status_code != 200:
                 raise RuntimeError(f"Server error: {response.status_code} with body: {response.text[:200]}")
             return response.json()
         except Exception as e:
@@ -81,7 +81,6 @@ class AdverbsAblationStudy:
             print("Creating knowledge base")
             self.knowledge_base.create_broad_adverb_knowledge_base()
             self.knowledge_base_cache = self.knowledge_base.get_knowledge_base()
-            print(self.knowledge_base_cache)
 
         # ----------
         # Send the data to the LLM
@@ -93,14 +92,17 @@ class AdverbsAblationStudy:
             sentence = sentence,
             adverb = adverb,
             temperature = 0.0,
-            n_predict = 128
+            n_predict = 256
         )
-        print(data)
+        if data is None:
+            print(f"Request failed for adverb '{adverb}', see error logs")
+            return None
 
         # ----------
         # Get the data back from the LLM and process the data
         # ----------
         raw = data["choices"][0]["message"]["content"].strip()
+        print(raw)
         logprobs = data["choices"][0]["logprobs"]
         parsed = self.process_data(raw, logprobs, sentence, adverb, True) # Has chain of thought
 

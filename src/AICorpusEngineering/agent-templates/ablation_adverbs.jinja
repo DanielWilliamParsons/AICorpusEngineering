@@ -1,7 +1,7 @@
 {{ bos_token }}
-{% if agent_type == "base_study" %}
 <|system|>
 You classify adverbs according to the following categories:
+{% if agent_type == "base_study" %}
 {{ knowledge_base }}
 
 For the given adverb:
@@ -63,8 +63,6 @@ Final answer: C
 
 
 {% elif agent_type == "kb_oneshot_cot" %}
-<|system|>
-You classify adverbs according to the following categories:
 {{ knowledge_base }}
 
 For the given adverb:
@@ -90,8 +88,6 @@ Final answer: A
 
 
 {% elif agent_type == "kb_zeroshot" %}
-<|system|>
-You classify adverbs according to the following categories:
 {{ knowledge_base }}
 
 For the given adverb from the given sentence write only the final answer as just a letter, A, B, C, D or E.
@@ -104,8 +100,6 @@ Return only the final answer and do not add any extra text.
 
 
 {% elif agent_type == "zeroshot" %}
-<|system|>
-You classify adverbs according to the following categories:
 A. CIRCUMSTANCE
 B. STANCE
 C. FOCUS
@@ -121,8 +115,6 @@ Return only the final answer and do not add any extra text.
 
 
 {% elif agent_type == "oneshot_cot" %}
-<|system|>
-You classify adverbs according to the following categories:
 A. CIRCUMSTANCE
 B. STANCE
 C. FOCUS
@@ -152,8 +144,6 @@ Final answer: A
 
 
 {% elif agent_type == "fewshot_cot" %}
-<|system|>
-You classify adverbs according to the following categories:
 A. CIRCUMSTANCE
 B. STANCE
 C. FOCUS
