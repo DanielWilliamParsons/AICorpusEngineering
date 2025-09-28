@@ -2,6 +2,10 @@ from pathlib import Path
 import argparse
 import pandas as pd
 from sklearn.metrics import accuracy_score, precision_recall_fscore_support
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.metrics import confusion_matrix
+
 
 def repo_root() -> Path:
     """Return the repository root."""
@@ -30,6 +34,23 @@ def analyze_metrics(df, study_cols):
 
     return pd.DataFrame(results)
 
+def plot_confusion_matrix(df, study_col, labels):
+    """
+    Plot confusion matrix for one study vs. gold labels.
+    """
+    y_true = df["main_tag"].dropna()
+    y_pred = df.loc[y_true.index, f"{study_col}_category"]
+
+    cm = confusion_matrix(y_true, y_pred, labels=labels, normalize="true")
+
+    plt.figure(figsize=(8, 6))
+    sns.heatmap(cm, annot=True, fmt=".2f", cmap="Blues", xticklabels=labels, yticklabels=labels)
+    plt.xlabel("Predicted")
+    plt.ylabel("Gold label")
+    plt.title(f"Confusion Matrix: {study_col}")
+    plt.tight_layout()
+    plt.show()
+
 
 def main():
     """
@@ -55,5 +76,9 @@ def main():
     metrics_df = analyze_metrics(df_expanded, study_cols)
     print("\n=== Accuracy / Precision / Recall / F1 per study ===")
     print(metrics_df)
+
+    labels = ["CIRCUMSTANCE", "STANCE", "FOCUS", "LINKING", "DISCOURSE"]
+
+    plot_confusion_matrix(df_expanded, "fewshot_cot", labels)
 
     
