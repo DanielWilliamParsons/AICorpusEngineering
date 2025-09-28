@@ -40,7 +40,7 @@ class KnowledgeBase:
         self.knowledge_base = "KNOWLEDGE ABOUT ADVERB CATEGORIES:\n\n"
 
         # Letter choices
-        letter_choices = ["A", "B", "C", "D"]
+        letter_choices = ["A", "B", "C", "D", "E"]
         for idx, (category_name, category_info) in enumerate(knowledge_data["Adverbials"].items()):
             description = category_info["description"]
             title = f"{letter_choices[idx]}. {category_name.upper()}"

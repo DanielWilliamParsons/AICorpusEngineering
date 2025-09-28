@@ -78,8 +78,10 @@ class AdverbsAblationStudy:
         # Prepare the knowledge base
         # ----------
         if self.knowledge_base_cache is None:
+            print("Creating knowledge base")
             self.knowledge_base.create_broad_adverb_knowledge_base()
             self.knowledge_base_cache = self.knowledge_base.get_knowledge_base()
+            print(self.knowledge_base_cache)
 
         # ----------
         # Send the data to the LLM
