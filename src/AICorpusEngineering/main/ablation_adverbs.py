@@ -29,7 +29,7 @@ def resolve_repo_path(path_str: str) -> Path:
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Run the tagging pipeline for adverbs")
+    parser = argparse.ArgumentParser(description="Run the ablation study with the gold standard sentences.")
 
     # ----------
     # Necessary user inputs

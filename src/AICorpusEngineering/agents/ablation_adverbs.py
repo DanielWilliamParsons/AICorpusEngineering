@@ -23,8 +23,6 @@ class AdverbsAblationStudy:
             self.knowledge_base = knowledge_base
 
     def _send_request(self, payload, agent_type, knowledge_base, sentence, adverb, temperature=0.001, n_predict=128):
-        print("DEBUG: sending with agent_type =", agent_type)
-
         try:
             response = requests.post(
                 f"{self.server_url}/chat/completions",

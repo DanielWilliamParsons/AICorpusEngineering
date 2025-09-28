@@ -3,6 +3,7 @@ from AICorpusEngineering.logger.logger import NDJSONLogger
 from AICorpusEngineering.error_handler.error_handler import error_handler
 from AICorpusEngineering.logger.logger_registry import get_logger
 import time
+from datetime import timedelta
 
 class AblationPipeline:
     """
@@ -41,6 +42,8 @@ class AblationPipeline:
         # Loop through each sentence and send to LLM for ablation study
         # ----------
         sleep_countdown = 10 # Sleep the program every 10 rounds to let the CPU/GPU cool down
+        start_time = time.time()
+        total_items = len(sentences_data) # For estimating the remaining time to process all items
         for i, line in enumerate(sentences_data, start = 1):
             # Check that this line has not already been completed
             if line["id"] in completions:
@@ -82,8 +85,20 @@ class AblationPipeline:
             }
             self.logger.log_record(result)
             self.logger.log_completion({"complete_id": line["id"]})
-            sleep_countdown -= 1
 
+            # ----------
+            # Progress trackoing
+            # ----------
+            elapsed = time.time() - start_time
+            avg_time = elapsed / i
+            remaining = avg_time * (total_items - i)
+            eta = timedelta(seconds=int(remaining))
+            print(f"\nProgress: {i}/{total_items} ({i/total_items:.1%}) | Elapsed: {timedelta(seconds=int(elapsed))} | ETA: {eta}")
+
+            # ----------
+            # Cooling down
+            # ----------
+            sleep_countdown -= 1
             if sleep_countdown == 0:
                 print("\nCoolin down for 180 seconds...\n")
                 time.sleep(180)
