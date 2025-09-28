@@ -87,7 +87,7 @@ def main():
     # ----------
     # Resolve user paths
     # ----------
-    file_path = args.input.dir / args.filename
+    file_path = args.input_dir / args.filename
     file_path = file_path.expanduser().resolve()
     output_dir = args.output_dir.expanduser().resolve()
 

@@ -93,6 +93,7 @@ class AdverbsAblationStudy:
             temperature = 0.0,
             n_predict = 128
         )
+        print(data)
 
         # ----------
         # Get the data back from the LLM and process the data

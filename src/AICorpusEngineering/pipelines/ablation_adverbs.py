@@ -20,7 +20,8 @@ class AblationPipeline:
         sentences_data = []
         with input_dir.open("r", encoding="utf-8") as f:
             for line in f:
-                sentences_data.append(line)
+                if line.strip():
+                    sentences_data.append(json.loads(line))
         
         # ----------
         # Loop through each sentence and send to LLM for ablation study
@@ -32,11 +33,17 @@ class AblationPipeline:
             adverb = line["adverb"]
             try:
                 result_by_syntax = self.ablation_agents_interface.base_study(plain_sentence, adverb)
+                print(result_by_syntax)
                 study_1_output = self.ablation_agents_interface.kb_oneshot_cot(plain_sentence, adverb)
+                print(study_1_output)
                 study_2_output = self.ablation_agents_interface.kb_zeroshot(plain_sentence, adverb)
+                print(study_2_output)
                 study_3_output = self.ablation_agents_interface.zeroshot(plain_sentence, adverb)
+                print(study_3_output)
                 study_4_output = self.ablation_agents_interface.oneshot_cot(plain_sentence, adverb)
+                print(study_4_output)
                 study_5_output = self.ablation_agents_interface.fewshot_cot(plain_sentence, adverb)
+                print(study_5_output)
             except Exception as e:
                 if error_handler:
                     error_handler.handle(e, context={"line": i, "sentence": plain_sentence, "adverb": adverb}) # Logging of the error is handled by the error_handler so no need to log
