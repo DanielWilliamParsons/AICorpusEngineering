@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.metrics import confusion_matrix
 from sklearn.metrics import classification_report
+import numpy as np
 
 
 def repo_root() -> Path:
@@ -65,6 +66,50 @@ def per_category_report(df, study_col):
         zero_division=0
     ))
 
+def plot_confidence_vs_correctness_multi(df, study_cols, n_bins=10):
+    """
+    Plot calibration curves for multiple studies on the same plot.
+    """
+    bins = np.linspace(0, 1, n_bins+1)
+
+    plt.figure(figsize=(8, 6))
+    plt.plot([0, 1], [0, 1], "k--", label="Perfect calibration")
+
+    for study_col in study_cols:
+        conf_col = f"{study_col}_P(answer_given)"
+        correct_col = f"{study_col}_correct"
+
+        # Drop rows without probabilities
+        data = df[[conf_col, correct_col]].dropna()
+
+        if data.empty:
+            continue
+
+        # Bin confidences
+        data["bin"] = pd.cut(data[conf_col], bins)
+
+        # Compute accuracy per bin
+        grouped = data.groupby("bin").agg(
+            mean_confidence=(conf_col, "mean"),
+            accuracy=(correct_col, "mean"),
+            count=(correct_col, "count")
+        ).reset_index()
+
+        # Plot curve
+        plt.plot(grouped["mean_confidence"], grouped["accuracy"], "o-", label=study_col)
+
+    plt.xlabel("Predicted confidence")
+    plt.ylabel("Empirical accuracy")
+    plt.title("Confidence vs Correctness across studies")
+    plt.legend()
+    plt.tight_layout()
+    plt.show()
+
+
+def add_correctness_flags(df, study_cols, gold_label_col="main_tag"):
+    for col in study_cols:
+        df[f"{col}_correct"] = (df[f"{col}_category"] == df[gold_label_col]).astype(int)
+    return df
 
 
 def main():
@@ -99,4 +144,8 @@ def main():
     # Compare classes/categories
     per_category_report(df_expanded, "fewshot_cot")
 
+    # Confidence vs correctness plot
+    df_with_correctness = add_correctness_flags(df_expanded, study_cols)
+
+    plot_confidence_vs_correctness_multi(df_with_correctness, study_cols)
     
