@@ -94,9 +94,9 @@ def main():
     df_gold = pd.DataFrame(gold_standard)
     df_ablation = pd.DataFrame(ablation_results_all)
 
-    print(df_gold)
-    print(df_ablation)
-
+    # ----------
+    # Merge and expand results
+    # ----------
     df_merged = pd.merge(
         df_gold,
         df_ablation,
@@ -107,10 +107,17 @@ def main():
     study_cols = ["base_study", "kb_oneshot_cot", "kb_zeroshot", "zeroshot", "oneshot_cot", "fewshot_cot"]
     for col in study_cols:
         df_merged = expand_study(df_merged, col)
-    
     df_expanded = df_merged.drop(columns=study_cols)
 
     print(df_expanded.head())
+
+    # ----------
+    # Save data to disk
+    # ----------
+    path_to_save = args.ablation_results_dir / "aggregate_results.pkl"
+    df_expanded.to_pickle(path_to_save)
+    path_to_save = args.ablation_results_dir / "aggregate_results.csv"
+    df_expanded.to_csv(path_to_save, index=False, encoding="utf-8")
     
 if __name__ == "__main__":
     main()

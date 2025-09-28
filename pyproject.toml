@@ -36,7 +36,8 @@ run-adverbs-ablation = "AICorpusEngineering.main.ablation_adverbs:main"
 process-corpus = "AICorpusEngineering.main.gold:main"
 run-multiword-adverbs = "AICorpusEngineering.main.mw_adverbs:main"
 manual-tagger = "AICorpusEngineering.main.manual_tagger_gold_adverbs:main"
-ablation-analysis = "AICorpusEngineering.main.ablation_results_check:main"
+ablation-aggregate = "AICorpusEngineering.main.ablation_results_check:main"
+ablation-analysis = "AICorpusEngineering.main.ablation_results_analysis:main"
 
 [tool.setuptools]
 package-dir = {"" = "src"}
