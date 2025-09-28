@@ -15,6 +15,13 @@ class AblationPipeline:
     def run(self, input_dir, output_dir):
 
         # ----------
+        # Set up data logs and run completion logs
+        # ----------
+        completions = []
+        logs_dir = self.logger.logs_dir # Get the directory to where the log files will be saved
+
+
+        # ----------
         # Load gold standard sentences and append to an array
         # ----------
         sentences_data = []
@@ -53,3 +60,4 @@ class AblationPipeline:
             # ----------
             # Check the final answer with the gold standard and record all the data
             # ----------
+            

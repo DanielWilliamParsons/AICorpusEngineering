@@ -24,7 +24,7 @@ def manually_tag(path_to_data, path_to_save_data):
             results_data.append(json.loads(line))
 
     
-    for sentence_data in sentences_data[len(results_data):]:
+    for idx, sentence_data in enumerate(sentences_data[len(results_data):], start = len(results_data)):
         print(f"\nHere is your sentence. Please tag the adverb: {sentence_data['adverb']}")
         print(f"\n{sentence_data['sentence']}")
         print(f"\nCHOICES:")
@@ -57,6 +57,7 @@ def manually_tag(path_to_data, path_to_save_data):
             print("\nChoose from the discourse adverbs: ")
             result["sub_tag"] = discourse()
 
+        result["id"] = idx
         results_data.append(result)
         print(result)
         with path_to_save_data.open("a", encoding="utf-8") as f:
