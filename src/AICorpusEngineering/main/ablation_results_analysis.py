@@ -1,12 +1,35 @@
 from pathlib import Path
 import argparse
 import pandas as pd
-import json
+from sklearn.metrics import accuracy_score, precision_recall_fscore_support
 
 def repo_root() -> Path:
     """Return the repository root."""
     # adverbs.py is at src/AICorpusEngineering/main/
     return Path(__file__).resolve().parents[4]
+
+def analyze_metrics(df, study_cols):
+    """Compute accuracy, precision, recall, and F1 per study."""
+    results = []
+    for col in study_cols:
+        y_true = df["main_tag"].dropna()  # gold labels
+        y_pred = df.loc[y_true.index, f"{col}_category"]  # model predictions
+
+        acc = accuracy_score(y_true, y_pred)
+        precision, recall, f1, _ = precision_recall_fscore_support(
+            y_true, y_pred, average="macro", zero_division=0
+        )
+
+        results.append({
+            "study": col,
+            "accuracy": acc,
+            "precision": precision,
+            "recall": recall,
+            "f1": f1
+        })
+
+    return pd.DataFrame(results)
+
 
 def main():
     """
@@ -26,4 +49,11 @@ def main():
     aggregate_results_path = args.ablation_results_dir / "aggregate_results.pkl"
     df_expanded = pd.read_pickle(aggregate_results_path)
     print(df_expanded)
+
+    # List of study columns (adjust if you renamed them after expansion)
+    study_cols = ["base_study", "kb_oneshot_cot", "kb_zeroshot", "zeroshot", "oneshot_cot", "fewshot_cot"]
+    metrics_df = analyze_metrics(df_expanded, study_cols)
+    print("\n=== Accuracy / Precision / Recall / F1 per study ===")
+    print(metrics_df)
+
     
