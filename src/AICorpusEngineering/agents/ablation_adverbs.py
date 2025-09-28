@@ -23,12 +23,14 @@ class AdverbsAblationStudy:
             self.knowledge_base = knowledge_base
 
     def _send_request(self, payload, agent_type, knowledge_base, sentence, adverb, temperature=0.001, n_predict=128):
+        print("DEBUG: sending with agent_type =", agent_type)
+
         try:
             response = requests.post(
                 f"{self.server_url}/chat/completions",
                 headers={"Content-Type": "application/json"},
                 data = json.dumps({
-                        "messages": [{"role": "user", "content": payload}],
+                        "messages": [],
                         "chat_template_kwargs": {
                             "agent_type": agent_type, 
                             "knowledge_base": knowledge_base,
@@ -36,7 +38,7 @@ class AdverbsAblationStudy:
                             "adverb": adverb
                         },
                         "n_predict": n_predict,
-                        "predict": n_predict,
+                        "temperature": temperature,
                         "top_p": 0.85,
                         "logprobs": 1000,
                         "echo": False,
