@@ -2,6 +2,7 @@ import json
 from AICorpusEngineering.logger.logger import NDJSONLogger
 from AICorpusEngineering.error_handler.error_handler import error_handler
 from AICorpusEngineering.logger.logger_registry import get_logger
+import time
 
 class AblationPipeline:
     """
@@ -39,7 +40,7 @@ class AblationPipeline:
         # ----------
         # Loop through each sentence and send to LLM for ablation study
         # ----------
-        results = [] # To store the results from the LLMs.
+        sleep_countdown = 10 # Sleep the program every 10 rounds to let the CPU/GPU cool down
         for i, line in enumerate(sentences_data, start = 1):
             # Check that this line has not already been completed
             if line["id"] in completions:
@@ -81,4 +82,10 @@ class AblationPipeline:
             }
             self.logger.log_record(result)
             self.logger.log_completion({"complete_id": line["id"]})
+            sleep_countdown -= 1
+
+            if sleep_countdown == 0:
+                print("\nCoolin down for 180 seconds...\n")
+                time.sleep(180)
+                sleep_countdown = 10
             
