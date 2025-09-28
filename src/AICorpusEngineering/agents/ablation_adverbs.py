@@ -376,7 +376,7 @@ class AdverbsAblationStudy:
         # ----------
         self.prob_handler.set_logprobs(logprobs)
         ppl = self.prob_handler.calculate_reasoning_perplexity()
-        choice_selections = [" A", " B", " C", " D"]
+        choice_selections = [" A", " B", " C", " D", " E"]
         answer_probs = self.prob_handler.calculate_prob_distribution(choice_selections)
 
         # ----------

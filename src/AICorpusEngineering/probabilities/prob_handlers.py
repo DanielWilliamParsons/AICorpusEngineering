@@ -94,7 +94,7 @@ class MCQProbHandler:
         Calculates the probability distribution of the answer choices inside the language model.
         This distribution represents the probability of selecting one of the answer given the prompt and the chain of thought reasoning.
         When indicating choice_selections array, be careful to indicate the correct tokenization for the model used, otherwise the found tokens might be incorrect
-        choice_selections: An array of letter choices for the multiple choices questions, e.g., [" A", " B", " C", " D"] up to " J"
+        choice_selections: An array of letter choices for the multiple choices questions, e.g., [" A", " B", " C", " D", " E"] up to " J"
         """
         content = self.logprobs["content"]
 
