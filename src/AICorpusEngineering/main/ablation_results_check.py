@@ -25,22 +25,26 @@ def main():
     parser.add_argument("gold_standard_dir", type=Path, help="Input the name of the directory where the gold standard data is stored")
     parser.add_argument("gold_standard_filename", help="Input the name of the file containing the tagged gold standard sentences.")
     parser.add_argument("ablation_results_dir", type=Path, help="Input the directory of the ablation study results.")
-    parser.add_argument("ablation_results_file", help="Input the name of the file containing the ablation study results.")
 
     # ----------
     # Resolve the user paths and filenames
     # ----------
     args = parser.parse_args()
     gold_standard_path = args.gold_standard_dir / args.gold_standard_filename
-    ablation_results_path = args.ablation_results_dir / args.ablation_results_file
     gold_standard_path = gold_standard_path.expanduser().resolve()
-    ablation_results_path = ablation_results_path.expanduser().resolve()
+    all_files = list(args.ablation_results_dir.glob("_data_*.ndjson"))
+    
 
     # ----------
     # Read files
     # ----------
     gold_standard = load_ndjson(gold_standard_path)
-    ablation_results = load_ndjson(ablation_results_path)
+    ablation_results = [] # Since there may be many results files as a result of stopping and starting the ablation studies midway.
+    for file in all_files:
+        data = load_ndjson(file)
+        df = pd.DataFrame(data)
+        ablation_results.append(df)
+    ablation_results_all = pd.concat(ablation_results, ignore_index=True)
 
     # ----------
     # Convert to dataframe
