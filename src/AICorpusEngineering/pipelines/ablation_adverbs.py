@@ -19,6 +19,12 @@ class AblationPipeline:
         # ----------
         completions = []
         logs_dir = self.logger.logs_dir # Get the directory to where the log files will be saved
+        # Get the completion logs
+        for run_completion in logs_dir.glob("_run_completion_*.ndjson"):
+            with open(run_completion, "r", encoding="utf-8") as f:
+                for i, line in enumerate(f, start = 1):
+                    json_line = json.loads(line.strip())
+                    completions.append(json_line["complete_id"])
 
 
         # ----------
@@ -33,7 +39,12 @@ class AblationPipeline:
         # ----------
         # Loop through each sentence and send to LLM for ablation study
         # ----------
+        results = [] # To store the results from the LLMs.
         for i, line in enumerate(sentences_data, start = 1):
+            # Check that this line has not already been completed
+            if line["id"] in completions:
+                continue
+            
             sentence = line["sentence"]
             words = sentence.split()
             plain_sentence = " ".join(w.rsplit("_", 1)[0] if "_" in w else w for w in words)
@@ -56,8 +67,18 @@ class AblationPipeline:
             except Exception as e:
                 if error_handler:
                     error_handler.handle(e, context={"line": i, "sentence": plain_sentence, "adverb": adverb}) # Logging of the error is handled by the error_handler so no need to log
-            
             # ----------
-            # Check the final answer with the gold standard and record all the data
+            # Record the result and the completion
             # ----------
+            result = {
+                "base_study": result_by_syntax,
+                "kb_oneshot_cot": study_1_output,
+                "kb_zeroshot": study_2_output,
+                "zeroshot": study_3_output,
+                "oneshot_cot": study_4_output,
+                "fewshot_cot": study_5_output,
+                "id": line["id"]
+            }
+            self.logger.log_record(result)
+            self.logger.log_completion({"complete_id": line["id"]})
             
