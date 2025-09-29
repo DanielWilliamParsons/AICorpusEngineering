@@ -146,6 +146,4 @@ def main():
 
     # Confidence vs correctness plot
     df_with_correctness = add_correctness_flags(df_expanded, study_cols)
-
     plot_confidence_vs_correctness_multi(df_with_correctness, study_cols)
-    

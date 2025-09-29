@@ -11,10 +11,27 @@ class KnowledgeBase:
         self.knowledge_base = ""
         self.knowledge_base_mappings = {}
 
+    def create_examples_knowledge_base(self):
+        """
+        This knowledge base demonstrates the categories with examples.
+        This has been hard-coded here to guarantee the examples
+        Knowledge base look like this:
+        A. CIRCUMSTANCE ADVERBS: (time: yesterday, soon), (place: here, there), (manner: quickly, electronically), (degree: absolutely, slightly, around)
+        B. STANCE ADVERBS: ...
+        """
+        self.knowledge_base = """CATEGORIES OF ADVERBS WITH EXAMPLES
+        A. CIRCUMSTANCE ADVERBS: (time: yesterday, soon), (place: here, outside), (manner: quickly, economically), (degree: absolutely, slightly), (quantity or extent: mostly, largely), (frequency: often, rarely), (duration: briefly, permanently)
+        B. STANCE ADVERBS: (epistemic: probabily, certainly), (inference: apparently, seemingly), (attitude: fortunately, sadly), (style: frankly, honestly), (necessity: necessarily, better)
+        C. FOCUS ADVERBS: (additive: also, too), (restrictive: only, merely), (particularizer: especially, particularly), (scope: generally, broadly)
+        D. LINKING ADVERBS: (result: therefore, thus), (contrast and concession: however, nevertheless), (addition: furthermore, moreover), (enumeration: first, second), (summation: overall, essentially), (transition: incidentally, anyway)
+        E. DISCOURSE ADVERBS: (organizers: well, now), (interpersonal markers: actually, so), (text deixis: above, below) 
+        """
+
     
     def create_broad_adverb_knowledge_base(self):
         """
         Knowledge base looks like this:
+        This knowledge base "describes" the categories
         KNOWLEDGE ABOUT ADVERB CATEGORIES
         A. CIRCUMSTANCE ADVERBS provide information about...
         B. STANCE ADVERBS provide information about ...
