@@ -1,0 +1,212 @@
+{{ bos_token }}
+<|system|>
+You classify adverbs according to the following categories:
+
+{% if agent_type == "base_study" %}
+{{ knowledge_base }}
+
+For the given adverb:
+1. Write a short step-by-step reasoning.  
+2. Write the final answer as just a letter, A, B, C, D or E.  
+
+Be consistent with the examples below.
+
+<|user|>
+{ "sentence": "I was somewhat surprised by the accident.", "adverb": "somewhat" }
+
+<|assistant|>
+1. The adverb "somewhat" modifies the adjective "surprised".  
+2. It shows the degree of surprise. 
+3. Therefore, it is a circumstance adverb.   
+Final answer: A
+
+<|user|>
+{ "sentence": "Clearly, we need to act now.", "adverb": "clearly" }
+
+<|assistant|>
+1. The adverb "clearly" comments on the whole clause.  
+2. It expresses the speaker’s certainty, which is stance.  
+3. Therefore, it is a stance adverb.  
+Final answer: B
+
+<|user|>
+{ "sentence": "However, she decided to continue.", "adverb": "however" }
+
+<|assistant|>
+1. The adverb "however" links this sentence with the previous one.  
+2. It signals contrast, which is a linking function.  
+3. Therefore, it is a linking adverb.   
+Final answer: D
+
+<|user|>
+{ "sentence": "Well, I think we should start now.", "adverb": "well" }
+
+<|assistant|>
+1. The adverb "well" does not modify a verb or adjective.  
+2. It manages discourse, marking hesitation or a transition in conversation.  
+3. Therefore, it is a discourse adverb.  
+Final answer: E
+
+<|user|>
+{ "sentence": "We are especially interested in your house.", "adverb": "especially" }
+
+<|assistant|>
+1. The adverb "especially" modifies an adjective.
+2. It singles out the house, thereby focusing on the house.
+3. Therefore, it is a focus adverb.
+Final answer: C
+
+<|user|>
+{ "sentence": "{{ sentence }}", "adverb": "{{ adverb }}" }
+
+
+
+{% elif agent_type == "kb_oneshot_cot" %}
+{{ knowledge_base }}
+
+For the given adverb:
+1. Write a short step-by-step reasoning.  
+2. Write the final answer as just a letter, A, B, C, D or E.  
+
+Be consistent with the example below.
+
+<|user|>
+{ "sentence": "I was somewhat surprised by the accident.", "adverb": "somewhat" }
+
+<|assistant|>
+1. The adverb "somewhat" modifies the adjective "surprised".  
+2. It shows the degree of surprise. 
+3. Therefore, it is a circumstance adverb.   
+Final answer: A
+
+<|user|>
+{ "sentence": "{{ sentence }}", "adverb": "{{ adverb }}" }
+
+
+
+{% elif agent_type == "kb_zeroshot" %}
+{{ knowledge_base }}
+
+For the given adverb from the given sentence write only the final answer as just a letter, A, B, C, D or E.
+Return only the final answer and do not add any extra text.
+
+<|user|>
+{ "sentence": "I am having a marvelously wonderful day.", "adverb": "marvelously" }
+<|assistant|>
+Final answer: A
+
+<|user|>
+{ "sentence": "{{ sentence }}", "adverb": "{{ adverb }}" }
+
+
+
+{% elif agent_type == "zeroshot" %}
+A. CIRCUMSTANCE
+B. STANCE
+C. FOCUS
+D. LINKING
+E. DISCOURSE
+
+For the given adverb from the given sentence write only the final answer as just a letter, A, B, C, D or E.
+Return only the final answer and do not add any extra text.
+
+<|user|>
+{ "sentence": "I was somewhat surprised by the accident.", "adverb": "somewhat" }
+
+<|assistant|> 
+Final answer: A
+
+<|user|>
+{ "sentence": "{{ sentence }}", "adverb": "{{ adverb }}" }
+
+
+
+{% elif agent_type == "oneshot_cot" %}
+A. CIRCUMSTANCE
+B. STANCE
+C. FOCUS
+D. LINKING
+E. DISCOURSE
+
+For the given adverb:
+1. Write a short step-by-step reasoning.  
+2. Write the final answer as just a letter, A, B, C, D or E.  
+
+Be consistent with the example below.
+
+<|user|>
+{ "sentence": "I was somewhat surprised by the accident.", "adverb": "somewhat" }
+
+<|assistant|>
+1. The adverb "somewhat" modifies the adjective "surprised".  
+2. It shows the degree of surprise. 
+3. Therefore, it is a circumstance adverb.   
+Final answer: A
+
+<|user|>
+{ "sentence": "{{ sentence }}", "adverb": "{{ adverb }}" }
+
+
+
+{% elif agent_type == "fewshot_cot" %}
+A. CIRCUMSTANCE
+B. STANCE
+C. FOCUS
+D. LINKING
+E. DISCOURSE
+
+For the given adverb:
+1. Write a short step-by-step reasoning.  
+2. Write the final answer as just a letter, A, B, C, D or E.  
+
+Be consistent with the examples below.
+
+<|user|>
+{ "sentence": "I was somewhat surprised by the accident.", "adverb": "somewhat" }
+
+<|assistant|>
+1. The adverb "somewhat" modifies the adjective "surprised".  
+2. It shows the degree of surprise. 
+3. Therefore, it is a circumstance adverb.   
+Final answer: A
+
+<|user|>
+{ "sentence": "Clearly, we need to act now.", "adverb": "clearly" }
+
+<|assistant|>
+1. The adverb "clearly" comments on the whole clause.  
+2. It expresses the speaker’s certainty, which is stance.  
+3. Therefore, it is a stance adverb.  
+Final answer: B
+
+<|user|>
+{ "sentence": "However, she decided to continue.", "adverb": "however" }
+
+<|assistant|>
+1. The adverb "however" links this sentence with the previous one.  
+2. It signals contrast, which is a linking function.  
+3. Therefore, it is a linking adverb.   
+Final answer: D
+
+<|user|>
+{ "sentence": "Well, I think we should start now.", "adverb": "well" }
+
+<|assistant|>
+1. The adverb "well" does not modify a verb or adjective.  
+2. It manages discourse, marking hesitation or a transition in conversation.  
+3. Therefore, it is a discourse adverb.  
+Final answer: E
+
+<|user|>
+{ "sentence": "We are especially interested in your house.", "adverb": "especially" }
+
+<|assistant|>
+1. The adverb "especially" modifies an adjective.
+2. It singles out the house, thereby focusing on the house.
+3. Therefore, it is a focus adverb.
+Final answer: C
+
+<|user|>
+{ "sentence": "{{ sentence }}", "adverb": "{{ adverb }}" }
+
+{% endif %}
