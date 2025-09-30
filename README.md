@@ -9,8 +9,22 @@ The models used in this project are Llama-3-8B-Instruct / Llama-3.1-8B-Instruct 
 ## Basic Commands from the command line
 `pip install -e .`
 
+### Tag texts for parts of speech using SpaCy
+Use Parts of Speech tagging from SpaCy to annotate the the syntactic parts of speech of a corpus.
+
+`tag-texts input_dir output_dir --model --workers`
+* **input_dir**: The root directory containing your corpus files. Files are annotated recursively.
+* **output_dir** The root directory where annotated corpus files will be saved. Directory structure of the original corpus is maintained. Annotated sentences are appended on new lines in each document. Paragraphs are indicated with double new lines.
+* **--model** Choose the pos tagging model for SpaCy. Default is en_core_web_trf. This takes the longest to tag the texts, but it is the most accurate. Other models available are 
+* **--workers** For parallel processing, choose the number of CPU cores to use based on your machine. Default is set to 2. Using more cores will speed up the process.
+It is necessary to download the parts of speech tagging model you wish to use. To use the default, run the following in the command line after your python environment has been set up:
+
+`python3 -m spacy download en_core_web_trf`
+
+To get run other models, `python3 -m spacy download en_core_wen_sm` and `python3 -m spacy download en_core_web_md` and `python3 -m spacy download en_core_web_lg`
+
 ### Sample sentences
-Sample sentences from a corpus that contain a tag of interest
+Sample sentences from a corpus that contain a tag of interest. From the command line:
 
 `process-corpus input_dir results_dir results_file --pos_tag --sample_size`
 * **input_dir**: this is the root directory containing your corpus files. Files are extracted recursively.
@@ -19,8 +33,7 @@ Sample sentences from a corpus that contain a tag of interest
 * **--pos_tag**: Set the parts of speech tag that you are interested in sampling sentences for. Default is _ADV for adverbs.
 * **--sample_size**: Set the sample size, i.e., the number of sentences to be sampled. Default is 100.
 
-**Tag texts for parts of speech using SpaCy**
-tag-texts
+
 
 **Annotate adverbs in texts for semantic categories of CIRCUMSTANCE, STANCE, FOCUS, LINKING, DISCOURSE:**
 `run-adverbs`
