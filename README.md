@@ -6,6 +6,30 @@ The purpose of this project is to demonstrate the feasibility of using consumer 
 
 The models used in this project are Llama-3-8B-Instruct / Llama-3.1-8B-Instruct series and the GPT-OSS-20B
 
+## Basic Commands from the command line
+`pip install -e .`
+
+### Sample sentences
+Sample sentences from a corpus that contain a tag of interest
+
+`process-corpus input_dir results_dir results_file --pos_tag --sample_size`
+* **input_dir**: this is the root directory containing your corpus files. Files are extracted recursively.
+* **results_dir**: the directory where all results of the sampling will be stored.
+* **results_file**: defaults to results.ndjson. Ensure your file is labelled with .ndjson
+* **--pos_tag**: Set the parts of speech tag that you are interested in sampling sentences for. Default is _ADV for adverbs.
+* **--sample_size**: Set the sample size, i.e., the number of sentences to be sampled. Default is 100.
+
+**Tag texts for parts of speech using SpaCy**
+tag-texts
+
+**Annotate adverbs in texts for semantic categories of CIRCUMSTANCE, STANCE, FOCUS, LINKING, DISCOURSE:**
+`run-adverbs`
+
+### Run an ablation study to annotate adverbs in texts
+`run-adverbs-ablation`
+
+
+
 ## Pre-requisites
 **Downloads, Specifications, Considerations**
 
