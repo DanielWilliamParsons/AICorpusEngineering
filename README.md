@@ -33,7 +33,14 @@ Sample sentences from a corpus that contain a tag of interest. From the command 
 * **--pos_tag**: Set the parts of speech tag that you are interested in sampling sentences for. Default is _ADV for adverbs.
 * **--sample_size**: Set the sample size, i.e., the number of sentences to be sampled. Default is 100.
 
+### Manual Tagger
+Loop through all the sampled sentences and manually tag them for semantics
 
+`manual-tagger input_dir file_name`
+* **input_dir**: The directory where the sample sentences were stored.
+* **file_name**: The name of the file containing the sampled sentences. Must end with .ndjson
+
+The manually tagged sentences will be saved in the same directory as the input directory and will have the same file name as file_name but appended with the label _tagged.
 
 ### Semantic annotation of adverbs
 Annotate adverbs according to CIRCUMSTANCE, STANCE, FOCUS, LINKING and DISCOURSE. See knowledge base explanation below for details.
@@ -49,7 +56,13 @@ Annotate adverbs according to CIRCUMSTANCE, STANCE, FOCUS, LINKING and DISCOURSE
 
 
 ### Run an ablation study to annotate adverbs in texts
-`run-adverbs-ablation`
+`run-adverbs-ablation input_dir filename output_dir --error_log --data_logs --server_bin --model --server_url`
+
+* **input_dir**: The directory where the tagged gold standard samples are stored.
+
+* **--server_bin**: Full path to the LLM server binary, usually located inside llama.cpp folder. Defaults to using an environment variable which can be set with `export LLM_SERVER_BIN=/full/path/to/server/binary`.
+* **--model**: LLM model to use. Defaults to an environment variable which can be set with `export LLM_MODEL=/full/path/to/model/Meta-Llama-3.1-8B-Instruct-Q4_K_M.gguf`
+* **--server_url**: Location of the server. Default is http://127.0.0.1:8080
 
 
 
