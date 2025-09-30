@@ -79,7 +79,7 @@ class AdverbsAblationStudy:
         # ----------
         if self.knowledge_base_cache is None:
             print("Creating knowledge base")
-            self.knowledge_base.create_broad_adverb_knowledge_base()
+            self.knowledge_base.create_examples_knowledge_base()
             self.knowledge_base_cache = self.knowledge_base.get_knowledge_base()
 
         # ----------
@@ -105,6 +105,7 @@ class AdverbsAblationStudy:
         print(raw)
         logprobs = data["choices"][0]["logprobs"]
         parsed = self.process_data(raw, logprobs, sentence, adverb, True) # Has chain of thought
+        print(parsed)
 
         # ----------
         # Send processed data back to the pipeline
@@ -128,7 +129,7 @@ class AdverbsAblationStudy:
         # Prepare the knowledge base
         # ----------
         if self.knowledge_base_cache is None:
-            self.knowledge_base.create_broad_adverb_knowledge_base()
+            self.knowledge_base.create_examples_knowledge_base()
             self.knowledge_base_cache = self.knowledge_base.get_knowledge_base()
 
         # ----------
@@ -174,7 +175,7 @@ class AdverbsAblationStudy:
         # Prepare the knowledge base
         # ----------
         if self.knowledge_base_cache is None:
-            self.knowledge_base.create_broad_adverb_knowledge_base()
+            self.knowledge_base.create_examples_knowledge_base()
             self.knowledge_base_cache = self.knowledge_base.get_knowledge_base()
 
         # ----------

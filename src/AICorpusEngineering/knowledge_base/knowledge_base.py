@@ -26,6 +26,14 @@ class KnowledgeBase:
         D. LINKING ADVERBS: (result: therefore, thus), (contrast and concession: however, nevertheless), (addition: furthermore, moreover), (enumeration: first, second), (summation: overall, essentially), (transition: incidentally, anyway)
         E. DISCOURSE ADVERBS: (organizers: well, now), (interpersonal markers: actually, so), (text deixis: above, below) 
         """
+        print("Knowledge base was prepared:", self.knowledge_base)
+        self.knowledge_base_mappings = {
+            "A": "CIRCUMSTANCE ADVERBS",
+            "B": "STANCE ADVERBS",
+            "C": "FOCUS ADVERBS",
+            "D": "LINKING ADVERBS",
+            "E": "DISCOURSE ADVERBS"
+        }
 
     
     def create_broad_adverb_knowledge_base(self):

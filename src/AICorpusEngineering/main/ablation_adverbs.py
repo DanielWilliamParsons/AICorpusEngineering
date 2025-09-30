@@ -20,7 +20,7 @@ def repo_root() -> Path:
 
 def get_chat_template_path() -> Path:
     """Return the installed path to the adverbs.jinja template."""
-    return resources.files("AICorpusEngineering.agent-templates").joinpath("ablation_adverbs.jinja")
+    return resources.files("AICorpusEngineering.agent-templates").joinpath("ablation_adverbs_examples_kb.jinja")
 
 
 def resolve_repo_path(path_str: str) -> Path:

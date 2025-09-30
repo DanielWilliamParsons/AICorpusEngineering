@@ -5,6 +5,12 @@ import os
 import importlib.resources as resources
 
 def main():
+    """
+    Sample sentences from a corpus with the purpose of creating a gold standard.
+    The sampling uses uniform random sampling of sentences that have been ranked according to
+    the entropy value associated with the frequency of adverbs in the corpus relative to the
+    frequency of texts containing the corpus.
+    """
     parser = argparse.ArgumentParser(description="Run the tagging pipeline for adverbs")
     parser.add_argument("root_dir", type=Path, help="Input the root directory of your corpus text files.")
     parser.add_argument("results_dir", type=Path, help="Input the directory where you wish to place the results of extracting corpus data.")
