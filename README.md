@@ -76,9 +76,14 @@ Aggregate the results of the ablation study into dataframes for later analysis.
 
 * **gold_standard_dir**: Path to the directory where the gold standard tagged sentences are stored.
 * **gold_standard_filename**: File name for the ndjson file that contains the gold standard tagged sentences.
-* **ablation_results_dir**: Path to the directory where the results of the results of the ablation study are stored.
+* **ablation_results_dir**: Path to the directory where the results of the ablation study are stored.
 
-### 
+### Analyze the ablation study results
+Analyze the results - accuracy, precision, f1 metrics, confusion matrix, confidence vs correctness plots
+
+`ablation-analysis ablation_results_dir`
+
+* **ablation_results_dir**: Path to the directory where the results of the ablation study are stored.
 
 
 
