@@ -15,6 +15,16 @@ def main():
     parser.add_argument("root_dir", type=Path, help="Input the root directory of your corpus text files.")
     parser.add_argument("results_dir", type=Path, help="Input the directory where you wish to place the results of extracting corpus data.")
     parser.add_argument("results_file", default="results.ndjson", help="Name of the file to save results, ndjson format")
+    parser.add_argument(
+        "--pos_tag",
+        default = "_ADV",
+        help = "Specify the pos tag for which you would like to sample sentences. Sentences containing the tag will be sampled. Default is _ADV"
+    )
+    parser.add_argument(
+        "--sample_size",
+        default=100,
+        help = "Specify the number of sentences you wish to sample. Default is 100"
+    )
 
     args = parser.parse_args()
     root_dir = args.root_dir.expanduser().resolve()
@@ -25,7 +35,7 @@ def main():
     results_dir.mkdir(parents=True, exist_ok=True)
 
     process = TextProc(root_dir, results_dir, args.results_file)
-    process.collect_lang("_ADV")
+    process.collect_lang(args.pos_tag)
     process.aggregate()
-    process.sample_words(n=100)
+    process.sample_words(n=args.sample_size)
     process.sample_sentences()
