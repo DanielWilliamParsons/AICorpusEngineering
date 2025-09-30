@@ -58,8 +58,11 @@ Annotate adverbs according to CIRCUMSTANCE, STANCE, FOCUS, LINKING and DISCOURSE
 ### Run an ablation study to annotate adverbs in texts
 `run-adverbs-ablation input_dir filename output_dir --error_log --data_logs --server_bin --model --server_url`
 
-* **input_dir**: The directory where the tagged gold standard samples are stored.
-
+* **input_dir**: The directory where the tagged gold standard samples are stored. This is the same as the input_dir used in the manual tagging work and the same as the output directory used in the sampling sentences work. No default set.
+* **filename**: The name of the file containing the tagged gold standard samples. This is the same name as the file containing the sample sentences with the label _tagged appended before .ndjson. No default set.
+* **output_dir**: The name of the output directory where results of the ablation study will be stored. No default set.
+* **--error_logs**: Defaults to the output_dir - recommended not to change.
+* **--data_logs**: Defaults to the output_dir - changing renders the output_dir redundant, so recommended not to change
 * **--server_bin**: Full path to the LLM server binary, usually located inside llama.cpp folder. Defaults to using an environment variable which can be set with `export LLM_SERVER_BIN=/full/path/to/server/binary`.
 * **--model**: LLM model to use. Defaults to an environment variable which can be set with `export LLM_MODEL=/full/path/to/model/Meta-Llama-3.1-8B-Instruct-Q4_K_M.gguf`
 * **--server_url**: Location of the server. Default is http://127.0.0.1:8080
