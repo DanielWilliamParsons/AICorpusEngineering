@@ -67,6 +67,19 @@ Annotate adverbs according to CIRCUMSTANCE, STANCE, FOCUS, LINKING and DISCOURSE
 * **--model**: LLM model to use. Defaults to an environment variable which can be set with `export LLM_MODEL=/full/path/to/model/Meta-Llama-3.1-8B-Instruct-Q4_K_M.gguf`
 * **--server_url**: Location of the server. Default is http://127.0.0.1:8080
 
+Note - this may be updated later to reflect ability to select different knowledge bases.
+
+### Aggregate ablation study results
+Aggregate the results of the ablation study into dataframes for later analysis.
+
+`ablation-aggregate gold_standard_dir gold_standard_filename ablation_results_dir`
+
+* **gold_standard_dir**: Path to the directory where the gold standard tagged sentences are stored.
+* **gold_standard_filename**: File name for the ndjson file that contains the gold standard tagged sentences.
+* **ablation_results_dir**: Path to the directory where the results of the results of the ablation study are stored.
+
+### 
+
 
 
 ## Pre-requisites
