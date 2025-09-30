@@ -35,8 +35,18 @@ Sample sentences from a corpus that contain a tag of interest. From the command 
 
 
 
-**Annotate adverbs in texts for semantic categories of CIRCUMSTANCE, STANCE, FOCUS, LINKING, DISCOURSE:**
-`run-adverbs`
+### Semantic annotation of adverbs
+Annotate adverbs according to CIRCUMSTANCE, STANCE, FOCUS, LINKING and DISCOURSE. See knowledge base explanation below for details.
+
+`run-adverbs input_dir output_dir --error_logs --data_logs --server_bin --model --server_url`
+* **input_dir**: The root directory of the corpus you are interested in tagging.
+* **output_dir**: The directory where tagged results will be saved
+* **--error_logs**: The location of the error logs that track any errors in outputs from the LLM. Defaults to writing time stamped error log files in the output_dir in ndjson format.
+* **--data_logs**: The location where the annotated sentences and related metadata are stored. Defaults to writing time stamped files in the output_dir in ndjson format.
+* **--server_bin**: Full path to the LLM server binary, usually located inside llama.cpp folder. Defaults to using an environment variable which can be set with `export LLM_SERVER_BIN=/full/path/to/server/binary`.
+* **--model**: LLM model to use. Defaults to an environment variable which can be set with `export LLM_MODEL=/full/path/to/model/Meta-Llama-3.1-8B-Instruct-Q4_K_M.gguf`
+* **--server_url**: Location of the server. Default is http://127.0.0.1:8080
+
 
 ### Run an ablation study to annotate adverbs in texts
 `run-adverbs-ablation`
