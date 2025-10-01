@@ -27,7 +27,7 @@ To get run other models, `python3 -m spacy download en_core_wen_sm` and `python3
 Sample sentences from a corpus that contain a tag of interest. From the command line:
 
 `process-corpus input_dir results_dir results_file --pos_tag --sample_size`
-* **input_dir**: this is the root directory containing your corpus files. Files are extracted recursively.
+* **input_dir**: this is the root directory containing your pos-tagged corpus files. Files are read from folders recursively.
 * **results_dir**: the directory where all results of the sampling will be stored.
 * **results_file**: defaults to results.ndjson. Ensure your file is labelled with .ndjson
 * **--pos_tag**: Set the parts of speech tag that you are interested in sampling sentences for. Default is _ADV for adverbs.

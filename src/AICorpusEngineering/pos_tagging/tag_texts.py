@@ -9,10 +9,13 @@ from concurrent.futures import ProcessPoolExecutor
 class SpacyTagger:
     # Defaults to smallest rule based tagger, but can be upgraded to "en_core_web_trf" (transformer) or "en_core_wb_md"
     # Retrieve on the command line with python3 -m spacy download en_core_web_trf
-    def __init__(self, model: str = "en_core_web_sm"):
-        print(f"Creating spaCy tagger with model {model}")
-        self.nlp = spacy.load(model, disable=["ner", "parser"]) # Faster, POS only!
-        self.nlp.add_pipe("sentencizer") # To allow parsing sentence by sentence
+    def __init__(self, model: str = "en_core_web_sm", parse: bool = False):
+        print(f"Creating spaCy tagger with model {model} | Dependency parse: {parse}")
+        if parse:
+            self.nlp = spacy.load(model, disable=["ner"])
+        else:
+            self.nlp = spacy.load(model, disable=["ner", "parser"])
+            self.nlp.add_pipe("sentencizer") # To allow parsing sentence by sentence
 
     def normalize_paragraphs(self, text: str):
         """Split the text into paragraphs by line breaks, collapsing multiple breaks"""
@@ -20,12 +23,12 @@ class SpacyTagger:
         return text.splitlines()
     
     def tag_paragraph(self, paragraph: str) -> str:
-        """Run spaCy tagging on a single paragraph."""
+        """Run spaCy tagging on a single paragraph. POS tagging only - (legacy mode)"""
         doc = self.nlp(paragraph)
         return " ".join(f"{token.text}_{token.pos_}" for token in doc)
     
     def tag_text_sentence_per_line(self, text: str) -> str:
-        """Process text paragraph by paragraph, sentence by sentence"""
+        """Process text paragraph by paragraph, sentence by sentence (legacy mode)"""
         paragraphs = self.normalize_paragraphs(text)
         tagged_paragraphs = []
         for p in paragraphs:
@@ -36,6 +39,21 @@ class SpacyTagger:
             ]
             tagged_paragraphs.append("\n".join(tagged_sentences))
         return "\n\n".join(tagged_paragraphs) # blank line between paragraphs
+    
+    def tag_text_conllu(self, text: str) -> str:
+        """Dependency parse in CoNLL-like format."""
+        paragraphs = self.normalize_paragraphs(text)
+        tagged_paragraphs = []
+        for i, p in enumerate(paragraphs, 1):
+            doc = self.nlp(p)
+            tagged_sentences = []
+            for sent in doc.sents:
+                sent_lines = []
+                for token in sent:
+                    sent_lines.append(f"{token.text}\t{token.pos_}\t{token.head.text}")
+                tagged_sentences.append("\n".join(sent_lines))
+            tagged_paragraphs.append(f"# newpar id={i}\n" + "\n\n".join(tagged_sentences))
+        return "\n\n".join(tagged_paragraphs)
     
     def tag_text(self, text: str) -> str:
         """Process full text by paragraphs"""
@@ -49,7 +67,7 @@ class FileProcessor:
         self.output_root = output_root
         self.tagger = tagger
 
-    def process_file(self, file_path: Path):
+    def process_file(self, file_path: Path, parse: bool = False):
         """Read, tag, and save a single file."""
         print(f"Worker processing: {file_path}")
         if self.tagger is None:
@@ -65,7 +83,11 @@ class FileProcessor:
         with file_path.open("r", encoding="utf-8", errors="ignore") as f:
             text = f.read()
         print(f"Tagging text in {f}")
-        tagged_text = self.tagger.tag_text_sentence_per_line(text)
+        if parse:
+            tagged_text = self.tagger.tag_text_conllu(text)
+        else:
+            tagged_text = self.tagger.tag_text_sentence_per_line(text)
+        
         with output_path.open("w", encoding="utf-8") as f:
             f.write(tagged_text)
 
@@ -76,10 +98,10 @@ class FileProcessor:
 
 def process_file_wrapper(args):
     """Wrapper to allow parallel execution with ProcessPoolExecutor"""
-    file_path, input_root, output_root, model = args
-    tagger = SpacyTagger(model=model)
+    file_path, input_root, output_root, model, parse = args
+    tagger = SpacyTagger(model=model, parse = parse)
     processor = FileProcessor(input_root, output_root, tagger)
-    processor.process_file(file_path)
+    processor.process_file(file_path, parse = parse)
 
 def main():
     parser = argparse.ArgumentParser(description="Tag text files using spaCy POS tagger")
@@ -97,6 +119,11 @@ def main():
         default=2,
         help="Number of parallel workers (default: 2)"
     )
+    parser.add_argument(
+        "--parse",
+        action="store_true",
+        help="Enable full dependency parsing (defulat: POS only)"
+    )
     args = parser.parse_args()
 
     input_root = args.input_folder.resolve()
@@ -111,7 +138,7 @@ def main():
     files = processor.collect_files()
 
     # Parallel execution with user-chosen model
-    tasks = [(f, input_root, output_root, args.model) for f in files]
+    tasks = [(f, input_root, output_root, args.model, args.parse) for f in files]
     with ProcessPoolExecutor(max_workers=args.workers) as executor:
         list(executor.map(process_file_wrapper, tasks))
 

@@ -14,12 +14,16 @@ def repo_root() -> Path:
     # adverbs.py is at src/AICorpusEngineering/main/
     return Path(__file__).resolve().parents[4]
 
+def normalize_labels(series):
+    return series.str.replace(r"\s+ADVERBS$", "", regex=True)
+
 def analyze_metrics(df, study_cols):
     """Compute accuracy, precision, recall, and F1 per study."""
     results = []
+    y_true = df["main_tag"].dropna()  # gold labels
     for col in study_cols:
-        y_true = df["main_tag"].dropna()  # gold labels
-        y_pred = df.loc[y_true.index, f"{col}_category"]  # model predictions
+        raw_pred = df.loc[y_true.index, f"{col}_category"]
+        y_pred = normalize_labels(raw_pred)
 
         acc = accuracy_score(y_true, y_pred)
         precision, recall, f1, _ = precision_recall_fscore_support(
@@ -36,12 +40,13 @@ def analyze_metrics(df, study_cols):
 
     return pd.DataFrame(results)
 
-def plot_confusion_matrix(df, study_col, labels):
+def plot_confusion_matrix(df, study_col, labels, outpath=None):
     """
     Plot confusion matrix for one study vs. gold labels.
     """
     y_true = df["main_tag"].dropna()
-    y_pred = df.loc[y_true.index, f"{study_col}_category"]
+    raw_pred = df.loc[y_true.index, f"{study_col}_category"]
+    y_pred = normalize_labels(raw_pred)
 
     cm = confusion_matrix(y_true, y_pred, labels=labels, normalize="true")
 
@@ -51,22 +56,37 @@ def plot_confusion_matrix(df, study_col, labels):
     plt.ylabel("Gold label")
     plt.title(f"Confusion Matrix: {study_col}")
     plt.tight_layout()
-    plt.show()
+
+    if outpath:
+        plt.savefig(outpath, dpi=300)
+        plt.close()
+    else:
+        plt.show()
 
 
-def per_category_report(df, study_col):
+def per_category_report(df, study_col, labels, outpath=None):
     y_true = df["main_tag"].dropna()
-    y_pred = df.loc[y_true.index, f"{study_col}_category"]
+    raw_pred = df.loc[y_true.index, f"{study_col}_category"]
+    y_pred = normalize_labels(raw_pred)
 
     print(f"\n=== Detailed report for {study_col} ===")
-    print(classification_report(
+    report = classification_report(
         y_true,
         y_pred,
-        labels=["CIRCUMSTANCE", "STANCE", "FOCUS", "LINKING", "DISCOURSE"],
-        zero_division=0
-    ))
+        labels=labels,
+        zero_division=0,
+        output_dict=True
+    )
 
-def plot_confidence_vs_correctness_multi(df, study_cols, n_bins=10):
+    report_df = pd.DataFrame(report).transpose()
+
+    if outpath:
+        report_df.to_csv(outpath)
+    else:
+        print(f"\n=== Detailed report for {study_col} ===")
+        print(report_df)
+
+def plot_confidence_vs_correctness_multi(df, study_cols, outpath=None, n_bins=10):
     """
     Plot calibration curves for multiple studies on the same plot.
     """
@@ -103,12 +123,19 @@ def plot_confidence_vs_correctness_multi(df, study_cols, n_bins=10):
     plt.title("Confidence vs Correctness across studies")
     plt.legend()
     plt.tight_layout()
-    plt.show()
+    
+    if outpath:
+        plt.savefig(outpath, dpi=300)
+        plt.close()
+    else:
+        plt.show()
 
 
 def add_correctness_flags(df, study_cols, gold_label_col="main_tag"):
     for col in study_cols:
-        df[f"{col}_correct"] = (df[f"{col}_category"] == df[gold_label_col]).astype(int)
+        preds = normalize_labels(df[f"{col}_category"])
+        gold = df[gold_label_col]
+        df[f"{col}_correct"] = (preds==gold).astype(int)
     return df
 
 
@@ -130,20 +157,30 @@ def main():
     aggregate_results_path = args.ablation_results_dir / "aggregate_results.pkl"
     df_expanded = pd.read_pickle(aggregate_results_path)
     print(df_expanded)
+    
+    # Analysis output directory
+    outdir = args.ablation_results_dir / "analysis_outputs"
+    outdir.mkdir(parents=True, exist_ok=True)
 
     # List of study columns (adjust if you renamed them after expansion)
     study_cols = ["base_study", "kb_oneshot_cot", "kb_zeroshot", "zeroshot", "oneshot_cot", "fewshot_cot"]
     metrics_df = analyze_metrics(df_expanded, study_cols)
+
     print("\n=== Accuracy / Precision / Recall / F1 per study ===")
     print(metrics_df)
+    metrics_df.to_csv(outdir / "summary_metrics.csv", index=False)
 
     labels = ["CIRCUMSTANCE", "STANCE", "FOCUS", "LINKING", "DISCOURSE"]
+    # Per study outputs
+    for col in study_cols:
+        # Confusion matrix
+        cm_path = outdir / f"{col}_confusion_matrix.png"
+        plot_confusion_matrix(df_expanded, col, labels, outpath=cm_path)
 
-    plot_confusion_matrix(df_expanded, "fewshot_cot", labels)
-    
-    # Compare classes/categories
-    per_category_report(df_expanded, "fewshot_cot")
+        # Per category report
+        report_path = outdir / f"{col}_classification_report.csv"
+        per_category_report(df_expanded, col, labels, outpath=report_path)
 
     # Confidence vs correctness plot
     df_with_correctness = add_correctness_flags(df_expanded, study_cols)
-    plot_confidence_vs_correctness_multi(df_with_correctness, study_cols)
+    plot_confidence_vs_correctness_multi(df_with_correctness, study_cols, outpath=outdir / "calibration_plot.png")

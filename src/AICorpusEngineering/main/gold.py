@@ -23,6 +23,7 @@ def main():
     parser.add_argument(
         "--sample_size",
         default=100,
+        type=int,
         help = "Specify the number of sentences you wish to sample. Default is 100"
     )
 
