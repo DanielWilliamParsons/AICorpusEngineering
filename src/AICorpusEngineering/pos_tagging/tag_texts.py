@@ -50,7 +50,7 @@ class SpacyTagger:
             for sent in doc.sents:
                 sent_lines = []
                 for token in sent:
-                    sent_lines.append(f"{token.text}\t{token.pos_}\t{token.head.text}")
+                    sent_lines.append(f"{token.text}\t{token.pos_}\t{token.head.text}\t{token.dep_}")
                 tagged_sentences.append("\n".join(sent_lines))
             tagged_paragraphs.append(f"# newpar id={i}\n" + "\n\n".join(tagged_sentences))
         return "\n\n".join(tagged_paragraphs)
