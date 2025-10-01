@@ -10,13 +10,14 @@ The models used in this project are Llama-3-8B-Instruct / Llama-3.1-8B-Instruct 
 `pip install -e .`
 
 ### Tag texts for parts of speech using SpaCy
-Use Parts of Speech tagging from SpaCy to annotate the the syntactic parts of speech of a corpus.
+Use Parts of Speech tagging from SpaCy to annotate the syntactic parts of speech of a corpus.
 
-`tag-texts input_dir output_dir --model --workers`
+`tag-texts input_dir output_dir --model --workers --parse`
 * **input_dir**: The root directory containing your corpus files. Files are annotated recursively.
 * **output_dir** The root directory where annotated corpus files will be saved. Directory structure of the original corpus is maintained. Annotated sentences are appended on new lines in each document. Paragraphs are indicated with double new lines.
 * **--model** Choose the pos tagging model for SpaCy. Default is en_core_web_trf. This takes the longest to tag the texts, but it is the most accurate. Other models available are 
 * **--workers** For parallel processing, choose the number of CPU cores to use based on your machine. Default is set to 2. Using more cores will speed up the process.
+* **--parse** Set to true to add dependency parsing of texts.
 It is necessary to download the parts of speech tagging model you wish to use. To use the default, run the following in the command line after your python environment has been set up:
 
 `python3 -m spacy download en_core_web_trf`
