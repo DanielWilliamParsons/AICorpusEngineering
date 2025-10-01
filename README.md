@@ -17,8 +17,12 @@ Use Parts of Speech tagging from SpaCy to annotate the syntactic parts of speech
 * **output_dir** The root directory where annotated corpus files will be saved. Directory structure of the original corpus is maintained. Annotated sentences are appended on new lines in each document. Paragraphs are indicated with double new lines.
 * **--model** Choose the pos tagging model for SpaCy. Default is en_core_web_trf. This takes the longest to tag the texts, but it is the most accurate. Other models available are 
 * **--workers** For parallel processing, choose the number of CPU cores to use based on your machine. Default is set to 2. Using more cores will speed up the process.
-* **--parse** Set to true to add dependency parsing of texts.
+* **--parse** Use this flag to set a boolean to true in order to carry out dependency parsing of texts.
 It is necessary to download the parts of speech tagging model you wish to use. To use the default, run the following in the command line after your python environment has been set up:
+
+Example: `tag-texts MY_CORPUS_DIR MY_CORPUS_DIR_PARSED --workers 4 --parse` will take the corpus files in the directory called MY_CORPUS_DIR, and with --parse indicated, will carry out dependency parsing of the texts using 4 CPUs, saving all the files to a folder called MY_CORPUS_DIR_PARSED. Files will be saved as txt files in the CoNLL-U format.
+
+Example: `tag-texts MY_CORPUS_DATA MY CORPUS_DIR_TAGGED` will use the default settings of 2 CPUs to tag your corpus with parts of speech only. The parts of speech tags will be added to the words like so: These_PRN are_VB some_DET words_NN.
 
 `python3 -m spacy download en_core_web_trf`
 
