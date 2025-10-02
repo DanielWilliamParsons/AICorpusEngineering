@@ -11,7 +11,6 @@ import numpy as np
 
 def repo_root() -> Path:
     """Return the repository root."""
-    # adverbs.py is at src/AICorpusEngineering/main/
     return Path(__file__).resolve().parents[4]
 
 def normalize_labels(series):

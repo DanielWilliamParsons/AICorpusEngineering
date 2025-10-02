@@ -50,7 +50,7 @@ class SpacyTagger:
             for sent in doc.sents:
                 sent_lines = []
                 for token in sent:
-                    sent_lines.append(f"{token.text}\t{token.pos_}\t{token.head.text}\t{token.dep_}")
+                    sent_lines.append(f"{token.text}\t{token.pos_}\t{token.tag_}\t{token.head.text}\t{token.dep_}")
                 tagged_sentences.append("\n".join(sent_lines))
             tagged_paragraphs.append(f"# newpar id={i}\n" + "\n\n".join(tagged_sentences))
         return "\n\n".join(tagged_paragraphs)
@@ -80,7 +80,7 @@ class FileProcessor:
         output_path.parent.mkdir(parents=True, exist_ok=True)
 
         # Read, process, write
-        with file_path.open("r", encoding="utf-8", errors="ignore") as f:
+        with file_path.open("r", encoding="utf-8-sig", errors="ignore") as f:
             text = f.read()
         print(f"Tagging text in {f}")
         if parse:

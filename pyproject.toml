@@ -38,6 +38,7 @@ run-adverbs-ablation = "AICorpusEngineering.main.ablation_adverbs:main"
 ablation-aggregate = "AICorpusEngineering.main.ablation_results_check:main"
 ablation-analysis = "AICorpusEngineering.main.ablation_results_analysis:main"
 run-multiword-adverbs = "AICorpusEngineering.main.mw_adverbs:main"
+train-multiword-adverbs-classifier = "AICorpusEngineering.mw_adverbs.main:train"
 
 
 [tool.setuptools]
