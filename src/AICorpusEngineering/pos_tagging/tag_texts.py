@@ -49,8 +49,11 @@ class SpacyTagger:
             tagged_sentences = []
             for sent in doc.sents:
                 sent_lines = []
-                for token in sent:
-                    sent_lines.append(f"{token.text}\t{token.pos_}\t{token.tag_}\t{token.head.text}\t{token.dep_}")
+                for j, token in enumerate(sent, 1):
+                    head_id = 0 if token.head == token else token.head.i - sent.start + 1
+                    feats = token.morph if token.morph else "_"
+                    external = f"{token.head.head.i - sent.start + 1}:{token.head.dep_}"
+                    sent_lines.append(f"{j}\t{token.text}\t{token.lemma_}\t{token.pos_}\t{token.tag_}\t{feats}\t{head_id}\t{token.dep_}\t{external}\t")
                 tagged_sentences.append("\n".join(sent_lines))
             tagged_paragraphs.append(f"# newpar id={i}\n" + "\n\n".join(tagged_sentences))
         return "\n\n".join(tagged_paragraphs)
