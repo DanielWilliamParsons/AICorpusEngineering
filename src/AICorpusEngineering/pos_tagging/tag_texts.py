@@ -1,6 +1,7 @@
 import os
 import sys
 import spacy
+import spacy_udpipe
 import re
 from pathlib import Path
 import argparse
@@ -9,14 +10,33 @@ from concurrent.futures import ProcessPoolExecutor
 class SpacyTagger:
     # Defaults to smallest rule based tagger, but can be upgraded to "en_core_web_trf" (transformer) or "en_core_wb_md"
     # Retrieve on the command line with python3 -m spacy download en_core_web_trf
-    def __init__(self, model: str = "en_core_web_sm", parse: bool = False):
+    # For udpipe, on CLI: python -m spacy_udpipe download en for parsing model.
+    def __init__(self, model: str = "en_core_web_sm", parse: bool = False, udpipe: bool = False):
         print(f"Creating spaCy tagger with model {model} | Dependency parse: {parse}")
-        if parse:
+        if udpipe:
+            self.nlp = self.load_udpipe("en")
+        elif parse:
             self.nlp = spacy.load(model, disable=["ner"])
         else:
             self.nlp = spacy.load(model, disable=["ner", "parser"])
             self.nlp.add_pipe("sentencizer") # To allow parsing sentence by sentence
 
+    def load_udpipe(self, lang: str = "en"):
+        """
+        Load a spaCy-UDPipe model, downloading it once if missing.
+        """
+        # Default cache path used by spacy-udpipe
+        cache_dir = os.path.expanduser("~/.cache/spacy-udpipe")
+        model_dir = os.path.join(cache_dir, lang)
+
+        # If not already downloaded, fetch it
+        if not os.path.exists(model_dir):
+            print(f"Downloading UDPipe model for '{lang}'...")
+            spacy_udpipe.download(lang)
+
+        # Load from cache
+        return spacy_udpipe.load(lang)
+    
     def normalize_paragraphs(self, text: str):
         """Split the text into paragraphs by line breaks, collapsing multiple breaks"""
         text = re.sub(r'\n\s*\n+', '\n', text.strip()) # Collapses multiple new lines
@@ -70,7 +90,7 @@ class FileProcessor:
         self.output_root = output_root
         self.tagger = tagger
 
-    def process_file(self, file_path: Path, parse: bool = False):
+    def process_file(self, file_path: Path, parse: bool = False, udpipe: bool = False):
         """Read, tag, and save a single file."""
         print(f"Worker processing: {file_path}")
         if self.tagger is None:
@@ -86,7 +106,9 @@ class FileProcessor:
         with file_path.open("r", encoding="utf-8-sig", errors="ignore") as f:
             text = f.read()
         print(f"Tagging text in {f}")
-        if parse:
+        if udpipe:
+            tagged_text = self.tagger.tag_text_conllu(text)
+        elif parse:
             tagged_text = self.tagger.tag_text_conllu(text)
         else:
             tagged_text = self.tagger.tag_text_sentence_per_line(text)
@@ -101,10 +123,10 @@ class FileProcessor:
 
 def process_file_wrapper(args):
     """Wrapper to allow parallel execution with ProcessPoolExecutor"""
-    file_path, input_root, output_root, model, parse = args
-    tagger = SpacyTagger(model=model, parse = parse)
+    file_path, input_root, output_root, model, parse, udpipe = args
+    tagger = SpacyTagger(model=model, parse = parse, udpipe = udpipe)
     processor = FileProcessor(input_root, output_root, tagger)
-    processor.process_file(file_path, parse = parse)
+    processor.process_file(file_path, parse = parse, udpipe = udpipe)
 
 def main():
     parser = argparse.ArgumentParser(description="Tag text files using spaCy POS tagger")
@@ -125,7 +147,12 @@ def main():
     parser.add_argument(
         "--parse",
         action="store_true",
-        help="Enable full dependency parsing (defulat: POS only)"
+        help="Enable full dependency parsing (default: POS only)"
+    )
+    parser.add_argument(
+        "--udpipe",
+        action="store_true",
+        help="Enable depemdency parsing with Universal Dependencies"
     )
     args = parser.parse_args()
 
@@ -141,7 +168,7 @@ def main():
     files = processor.collect_files()
 
     # Parallel execution with user-chosen model
-    tasks = [(f, input_root, output_root, args.model, args.parse) for f in files]
+    tasks = [(f, input_root, output_root, args.model, args.parse, args.udpipe) for f in files]
     with ProcessPoolExecutor(max_workers=args.workers) as executor:
         list(executor.map(process_file_wrapper, tasks))
 

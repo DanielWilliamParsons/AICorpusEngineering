@@ -1,19 +1,23 @@
 from nltk.corpus import wordnet as wn
 import spacy
 import random
+import json
+from pathlib import Path
 
 class ExtractAdverbs:
     """
     Exhaustively extract multiword adverb candidates from a dependency parsed corpus.
     """
 
-    def __init__(self, filepath):
+    def __init__(self, filepath, path_to_save):
         """
         Set up the extractor
         """
         self.filepath = filepath
         self.sentences = []
         self.nlp = spacy.load("en_core_web_lg")
+        self.path_to_save = path_to_save / "features.jsonl"
+        print(self.path_to_save)
 
     def _is_multiword_adverb(self, phrase):
         # lowercase, replace spaces with underscores
@@ -29,6 +33,7 @@ class ExtractAdverbs:
         return doc.vector
 
     def load_conll_file(self):
+        """ Load up the CoNLL-U file indiciated by the self.filepath """
         current_sent = []
         with open(self.filepath, "r", encoding="utf-8-sig") as f:
             for line in f:
@@ -56,9 +61,7 @@ class ExtractAdverbs:
         if current_sent:
             self.sentences.append(current_sent)
 
-        print(self.sentences)
-
-    def extract_features(self, sentence):
+    def _extract_features(self, sentence):
         """Extract candidate multiple word adverbs as spaCy spans and set up feature vector."""
         feature_rows = []
 
@@ -101,18 +104,21 @@ class ExtractAdverbs:
                     j += 1
         return feature_rows
         
-        
-        
     def run_extraction(self):
         """
         Run the rule-based extraction
+        Will balance positive and negative results
         """
         text_features = []
         for sent in self.sentences:
-            text_features.extend(self.extract_features(sent))
+            text_features.extend(self._extract_features(sent))
 
         positives = [row for row in text_features if row[1] == 1]
         negatives = [row for row in text_features if row[1] == 0]
+
+        if not positives:
+            print("No positive examples found in this text, skipping")
+            return
 
         if positives:
             if len(negatives) > len(positives):
@@ -121,5 +127,12 @@ class ExtractAdverbs:
             balanced_rows = positives + negatives
             random.shuffle(balanced_rows) # mix up the rows
 
-        print(balanced_rows)
+        path = Path(self.path_to_save)
+        path.parent.mkdir(parents=True, exist_ok=True)
+
+        with open(self.path_to_save, "a") as f:
+            for feats, label in balanced_rows:
+                row = feats.copy()
+                row["label"] = label
+                f.write(json.dumps(row) + "\n")
             
