@@ -16,7 +16,7 @@ def train():
     parser.add_argument("corpus_dir", type=Path, help="Input the root directory of your corpus folder.")
     args = parser.parse_args()
 
-    filepath = args.corpus_dir.expanduser().resolve() / "ICNALE_W_CHN_A2_0_N100/W_CHN_PTJ0_046_A2_0.txt"
+    filepath = args.corpus_dir.expanduser().resolve() / "ICNALE_W_CHN_A2_0_N100/W_CHN_PTJ0_038_A2_0.txt"
 
     extraction_tool = ExtractAdverbs(filepath)
     extraction_tool.load_conll_file()
