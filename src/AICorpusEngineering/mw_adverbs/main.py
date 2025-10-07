@@ -16,6 +16,10 @@ def observe_rules():
     """
     In order to extract candidate multi-word adverbs, we need to observe the rules
     that multi-word adverbs tend to follow.
+    Once a corpus of .txt texts has been collected and dependency parsed, collect adverb data from the command line.
+    CLI Examples:
+    observe-multiword-adverbs BAWE_PARSED BAWE_phrases/ADP_PRON.txt --phrases "ADP * PRON"
+    observe-multiword-adverbs BAWE_PARSED BAWE_phrases/ADJ_NOUN.txt --phrases "ADJ * NOUN"  
     """
     parser = argparse.ArgumentParser(description="Observe rules followed by multiword adverbs")
     parser.add_argument("corpus_dir", type=Path, help="Input the root directory of the corpus you wish to observe")
@@ -59,6 +63,13 @@ def observe_rules():
             for phrase in phrases_in_group:
                 phrases_to_observe.append(phrase)
     print(phrases_to_observe)
+
+def aggregate_rules():
+    """
+    Once all the adverb dependency rules data has been collected,
+    aggregate the _add.csv files to get a broad set of rules that
+    can be used for multiword adverb extraction.
+    """
 
 
     # Get the corpus file names into an array
