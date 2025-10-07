@@ -39,6 +39,7 @@ ablation-aggregate = "AICorpusEngineering.main.ablation_results_check:main"
 ablation-analysis = "AICorpusEngineering.main.ablation_results_analysis:main"
 run-multiword-adverbs = "AICorpusEngineering.main.mw_adverbs:main"
 observe-multiword-adverbs = "AICorpusEngineering.mw_adverbs.main:observe_rules"
+aggregate-multiword-adverbs-rules = "AICorpusEngineering.mw_adverbs.main:aggregate_rules"
 train-multiword-adverbs-classifier = "AICorpusEngineering.mw_adverbs.main:extract_features"
 
 

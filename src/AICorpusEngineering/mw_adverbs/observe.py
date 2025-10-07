@@ -1,4 +1,6 @@
 import pandas as pd
+import os
+from pathlib import Path
 class ObserveAdverbs:
     
     def __init__(self, filepath, results_path):
@@ -102,3 +104,26 @@ class ObserveAdverbs:
             mode="w",
             encoding = "utf-8-sig"
         )
+    
+    def aggregate_rules(self):
+        """
+        Use the results path to aggregate all the data in the _agg.csv files
+        """
+        results_dir = Path(self.results_path).parent
+        file_paths = list(results_dir.rglob("*_agg.csv"))
+        dfs = []
+        for file in file_paths:
+            df = pd.read_csv(file, encoding="utf-8-sig")
+            df["source_file"] = file.name
+            dfs.append(df)
+
+        combined_df = pd.concat(dfs, ignore_index=True)
+        agg_df = (
+            combined_df.groupby(["length", "initial_DEPREL", "final_DEPREL", "initial_DEPS", "final_DEPS"], as_index=False)
+                .agg({
+                    "count": "sum",
+                    "source_file": lambda x: ", ".join(sorted(set(x)))
+                })
+                .sort_values("count", ascending=False)
+        )
+        agg_df.to_csv(self.results_path, index=False, encoding="utf-8-sig")

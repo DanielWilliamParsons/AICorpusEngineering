@@ -64,14 +64,6 @@ def observe_rules():
                 phrases_to_observe.append(phrase)
     print(phrases_to_observe)
 
-def aggregate_rules():
-    """
-    Once all the adverb dependency rules data has been collected,
-    aggregate the _add.csv files to get a broad set of rules that
-    can be used for multiword adverb extraction.
-    """
-
-
     # Get the corpus file names into an array
     file_paths = []
     for dirpath, dirnames, filenames in os.walk(corpus_path):
@@ -86,6 +78,24 @@ def aggregate_rules():
         extraction_tool.load_conll_file()
         extraction_tool.extract_phrase_sentences(phrases_to_observe)
     extraction_tool.aggregate_dependency_data()
+
+def aggregate_rules():
+    """
+    Once all the adverb dependency rules data has been collected,
+    aggregate the _agg.csv files from the corpus phrases folder to get a broad set of rules that
+    can be used for multiword adverb extraction.
+    Examples of CLI commands:
+    aggregate-multiword-adverbs-rules BAWE_PARSED BAWE_phrases/adverb_rules.csv
+    aggregate-multiword-adverbs-rules BAWE_PARSED BAWE_phrases/aggregate_adverb_rules.csv
+    """
+    parser = argparse.ArgumentParser(description="Observe rules followed by multiword adverbs")
+    parser.add_argument("corpus_dir", type=Path, help="Input the root directory of the corpus you wish to observe")
+    parser.add_argument("results_path", type=Path, help="e.g. path/to/dir/where/rules/were/aggregated/with/observe-multiword-adverbs/all_aggregates.csv")
+    args = parser.parse_args()
+    results_path = args.results_path.expanduser().resolve()
+    corpus_dir = args.corpus_dir.expanduser().resolve()
+    extraction_tool = ObserveAdverbs(corpus_dir, results_path)
+    extraction_tool.aggregate_rules()
 
 
 def extract_features():
