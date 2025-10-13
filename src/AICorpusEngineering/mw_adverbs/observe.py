@@ -1,14 +1,15 @@
 import pandas as pd
 from pathlib import Path
-import os, json
+import os
+from nltk.corpus import wordnet as wn
 class ObserveAdverbs:
     
     def __init__(self, filepath, results_path):
         self.filepath = filepath
         self.sentences = []
         self.results_path = results_path
-        self.phrase_df = pd.DataFrame(columns=["phrase", "length", "sentence", "initial_XPOS", "final_XPOS", "initial_DEPREL", "final_DEPREL", "initial_DEPS", "final_DEPS", "first_word", "last_word", "in_list", "POS_before", "POS_after", "head_tok", "head_tok_upos", "head_tok_xpos", "punct_before", "punct_after"])
-    
+        self.phrase_df = pd.DataFrame(columns=["phrase", "length", "sentence", "initial_XPOS", "final_XPOS", "initial_DEPREL", "final_DEPREL", "initial_DEPS", "final_DEPS", "first_word", "last_word", "in_list", "POS_before", "POS_after", "head_tok", "head_tok_upos", "head_tok_xpos", "punct_before", "punct_after", "wn_exists", "wn_head_pos", "wn_head_lexname", "wn_head_synset_count", "position_ratio", "dependency_string", "pos_string", "depth_to_root"])
+
     def load_conll_file(self):
         """ Load up the CoNLL-U file indiciated by the self.filepath """
         current_sent = []
@@ -130,6 +131,51 @@ class ObserveAdverbs:
         )
         agg_df.to_csv(self.results_path, index=False, encoding="utf-8-sig")
 
+    @staticmethod
+    def get_wordnet_features(word):
+        """
+        Return WordNet lexical semantic info for a word.
+        """
+        synsets = wn.synsets(word)
+        if not synsets:
+            return {
+                "wn_exists": False,
+                "wn_pos": "",
+                "wn_lexname": "",
+                "wn_synset_count": 0
+            }
+        first_syn = synsets[0]
+        wn_pos_map = {
+            "n": "NOUN",
+            "v": "VERB",
+            "a": "ADJ",
+            "s": "ADJ",
+            "r": "ADV"
+        }
+        return {
+            "wn_exists": True,
+            "wn_pos": wn_pos_map.get(first_syn.pos(), first_syn.pos()),
+            "wn_lexname": first_syn.lexname(),
+            "wn_synset_count": len(synsets)
+        }
+    
+    @staticmethod
+    def dependency_depth(token, tokens_by_id):
+        """
+        Return number of edges from token to root
+        """
+        depth = 0
+        current = token
+        visited = set()
+        while current["head"] != "0" and current["head"] not in visited:
+            visited.add(current["id"])
+            head_id = current["head"]
+            if head_id not in tokens_by_id:
+                break
+            current = tokens_by_id[head_id]
+            depth += 1
+        return depth
+    
     def extract_candidate_adverbs_with_rules(self, patterns_df, mw_adverbs):
         """
         Apply the rules inferred from the observations to extract
@@ -192,6 +238,25 @@ class ObserveAdverbs:
                                 match_info["head_tok_xpos"] = head_tok["xpos"]
                                 match_info["punct_before"] = 1 if i > 0 and upos[i-1] == "PUNCT" else 0
                                 match_info["punct_after"] = 1 if i + pattern_length < len(upos) and upos[i + pattern_length] == "PUNCT" else 0
+
+                                # --- 3.2: WordNet Lexical Semantics - decided to remove this
+                                # wn_info = self.get_wordnet_features(head_tok["lemma"].lower())
+                                # match_info["wn_head_exists"] = wn_info["wn_exists"]
+                                # match_info["wn_head_pos"] = wn_info["wn_pos"]
+                                # match_info["wn_head_lexname"] = wn_info["wn_lexname"]
+                                # match_info["wn_head_synset_count"] = wn_info["wn_synset_count"]
+
+                                # --- 3.3: Positional information
+                                match_info["position_ratio"] = i / len(xpos)
+
+                                # --- 3.4: Frequency data
+
+
+                                # --- 3.5: Syntactic features
+                                match_info["dependency_string"] = " ".join(deprel[i:i+pattern_length])
+                                match_info["pos_string"] = " ".join(xpos[i:i+pattern_length])
+                                depth_to_root = self.dependency_depth(tok, tokens_by_id)
+                                match_info["depth_to_root"] = depth_to_root
 
                                 self.phrase_df.loc[len(self.phrase_df)] = match_info
                                 print(self.phrase_df)
