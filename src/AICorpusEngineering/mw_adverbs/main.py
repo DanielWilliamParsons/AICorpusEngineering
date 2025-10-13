@@ -6,6 +6,7 @@ import os
 from collections import defaultdict
 import random
 import json
+import pandas as pd
 
 def repo_root() -> Path:
     """Return the repository root."""
@@ -88,7 +89,7 @@ def aggregate_rules():
     aggregate-multiword-adverbs-rules BAWE_PARSED BAWE_phrases/adverb_rules.csv
     aggregate-multiword-adverbs-rules BAWE_PARSED BAWE_phrases/aggregate_adverb_rules.csv
     """
-    parser = argparse.ArgumentParser(description="Observe rules followed by multiword adverbs")
+    parser = argparse.ArgumentParser(description="Aggregate all the observed rules.")
     parser.add_argument("corpus_dir", type=Path, help="Input the root directory of the corpus you wish to observe")
     parser.add_argument("results_path", type=Path, help="e.g. path/to/dir/where/rules/were/aggregated/with/observe-multiword-adverbs/all_aggregates.csv")
     args = parser.parse_args()
@@ -96,6 +97,42 @@ def aggregate_rules():
     corpus_dir = args.corpus_dir.expanduser().resolve()
     extraction_tool = ObserveAdverbs(corpus_dir, results_path)
     extraction_tool.aggregate_rules()
+
+def extract_adverbs_with_rules():
+    """
+    Could be updated to extract features for neural classifier...
+    Examples of CLI commands:
+    extract-adverbs-with-rules BAWE_PARSED BAWE_phrases/adverb_rules.csv BAWE_phrases/extracted_adverbs.csv
+    """
+    parser = argparse.ArgumentParser(description="Apply the observed rules to extract multiword adverbs.")
+    parser.add_argument("corpus_dir", type=Path, help="Input the root directory of the corpus you wish to extract from")
+    parser.add_argument("rules_path", type=Path, help="e.g. path/to/dir/where/rules/were/aggregated/with/observe-multiword-adverbs/all_aggregates.csv")
+    parser.add_argument("results_path", type=Path, help="path/to/dir/where/extracted/adverbs/dataframe/is/saved/saved_adverbs.csv")
+    args = parser.parse_args()
+    corpus_dir = args.corpus_dir.expanduser().resolve()
+    rules_path = args.rules_path.expanduser().resolve()
+    results_path = args.results_path.expanduser().resolve()
+    # Get the file containing the multiword adverbs list
+    script_dir = Path(__file__).resolve().parent
+    multiword_adverbs_file_path = script_dir / "multiword_adverbs_generalized.ndjson"
+
+    # Load up the multiword adverbs list
+    mw_adverbs = []
+    with multiword_adverbs_file_path.open("r", encoding="utf-8-sig") as f:
+        for line in f:
+            json_data = json.loads(line)
+            mw_adverbs_list = set(json_data["Phrases"].split(", "))
+            mw_adverbs.append(mw_adverbs_list)
+    
+    # Read in the rules as a dataframe
+    patterns_df = pd.read_csv(rules_path)
+
+    file_paths = [p for p in corpus_dir.rglob("*.txt") if p.is_file()]
+    for filepath in file_paths:
+        extraction_tool = ObserveAdverbs(filepath, results_path)
+        extraction_tool.load_conll_file()
+        extraction_tool.extract_candidate_adverbs_with_rules(patterns_df, mw_adverbs)
+
 
 
 def extract_features():
