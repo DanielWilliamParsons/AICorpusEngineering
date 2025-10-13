@@ -230,7 +230,7 @@ class ObserveAdverbs:
                                 # --- 3.1: Lexical features
                                 match_info["first_word"] = words[i]
                                 match_info["last_word"] = words[i + pattern_length - 1]
-                                match_info["in_list"] = 1 if " ".join(words[i:i+pattern_length]) in mw_adverbs else 0
+                                match_info["in_list"] = 1 if " ".join(words[i:i+pattern_length]).lower() in mw_adverbs else 0
                                 match_info["POS_before"] = xpos[i-1] if i - 1 >= 0 else ""
                                 match_info["POS_after"] = xpos[i + pattern_length] if i + pattern_length < len(xpos) else ""
                                 match_info["head_tok"] = head_tok["form"]

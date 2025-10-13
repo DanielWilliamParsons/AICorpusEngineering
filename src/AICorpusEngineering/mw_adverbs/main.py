@@ -116,13 +116,13 @@ def extract_adverbs_with_rules():
     script_dir = Path(__file__).resolve().parent
     multiword_adverbs_file_path = script_dir / "multiword_adverbs_generalized.ndjson"
 
-    # Load up the multiword adverbs list
-    mw_adverbs = []
+    # Load up the multiword adverbs list as a set
+    mw_adverbs = set()
     with multiword_adverbs_file_path.open("r", encoding="utf-8-sig") as f:
         for line in f:
             json_data = json.loads(line)
-            mw_adverbs_list = set(json_data["Phrases"].split(", "))
-            mw_adverbs.append(mw_adverbs_list)
+            phrases = [p.strip() for p in json_data["Phrases"].split(",") if p.strip()]
+            mw_adverbs.update(phrases)
     
     # Read in the rules as a dataframe
     patterns_df = pd.read_csv(rules_path)
